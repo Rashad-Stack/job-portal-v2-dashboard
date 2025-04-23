@@ -24,6 +24,14 @@ function DashboardNavbar({ toggleSidebar }) {
     if (!name) return ""; // Return an empty string if the name is falsy
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
   };
+  const LogOut = () => {
+    localStorage.clear(); // Clears all data in localStorage
+    // If you're using cookies for token, clear the cookie as well
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; // Remove cookie
+
+    // Optional: Redirect to login page (if required)
+    window.location.href = "/login"; // or use react-router to navigate
+  };
 
   const handleDropDown = () => {
     setProfileOpen(!isProfileOpen);
@@ -62,7 +70,7 @@ function DashboardNavbar({ toggleSidebar }) {
                   <ul className="py-1">
                     <li>
                       <Link
-                        to="/login"
+                        onClick={() => LogOut()}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       >
                         Sign out
