@@ -1,33 +1,38 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import JobsTable from '../../components/jobs/JobsTable';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import JobsTable from "../../components/jobs/JobsTable";
 
 const AllJobs = () => {
   const initialState = [
     {
-      _id: '111111',
-      title: 'Jr. MERN Stack Developer',
-      company: 'bdCalling IT Ltd',
-      location: 'Banasree, Rampura, Dhaka',
+      _id: "111111",
+      title: "Sr. MERN Stack Developer",
+      companyName: "Tech Solutions Ltd",
+      location: "Dhaka, Bangladesh",
+      jobType: "Full Time",
+      salary: "$2000 - $3000",
+      experience: "3-5 years",
+      deadline: "2024-04-30",
+      skills: "React, Node.js, MongoDB, Express",
+      vacancy: 2,
     },
     {
-      _id: '111111',
-      title: 'Jr. MERN Stack Developer',
-      company: 'bdCalling IT Ltd',
-      location: 'Banasree, Rampura, Dhaka',
-    },
-    {
-      _id: '111111',
-      title: 'Jr. MERN Stack Developer',
-      company: 'bdCalling IT Ltd',
-      location: 'Banasree, Rampura, Dhaka',
+      _id: "222222",
+      title: "UI/UX Designer",
+      companyName: "Creative Studio",
+      location: "Remote",
+      jobType: "Full Time",
+      salary: "$1500 - $2500",
+      experience: "2-4 years",
+      deadline: "2024-04-25",
+      skills: "Figma, Adobe XD, User Research",
+      vacancy: 1,
     },
   ];
 
   const [jobs, setJobs] = useState(initialState);
-  console.log(jobs);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   //   useEffect(() => {
   //     fetchJobs();
@@ -48,36 +53,43 @@ const AllJobs = () => {
       if (response.status === 200) {
         setJobs(jobs.filter((job) => job._id !== id));
       } else {
-        setError('Failed to delete job.');
+        setError("Failed to delete job.");
       }
     } catch (error) {
-      setError('Failed to delete job.');
+      setError("Failed to delete job.");
     }
   };
 
   return (
-    <div className="sm:max-w-7xl w-full mx-auto p-4 mt-10 bg-white shadow rounded-lg">
-      <h2 className="sm:text-2xl text-center sm:mt-0 mt-2 mb-4 text-xl font-semibold text-gray-600">
-        All Jobs
-      </h2>
-      {error && <p className="text-red-500">{error}</p>}
-      <div className="my-6">
-        <table className="sm:max-w-7xl w-full table-auto">
-          <thead>
-            <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
-              <th className="p-3 text-left">Title</th>
-              <th className="p-3 text-left">Company</th>
-              <th className="p-3 text-center">Location</th>
-              <th className="p-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-600 text-sm font-light">
-            {Array.isArray(jobs) &&
-              jobs.map((job, index) => (
-                <JobsTable key={job._id} job={job} index={index} handleDelete={handleDelete} />
-              ))}
-          </tbody>
-        </table>
+    <div className="min-h-screen bg-gray-50/60 py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
+          <div className="p-6 bg-gradient-to-r from-indigo-600 to-purple-600">
+            <h1 className="text-2xl md:text-3xl font-bold text-white">
+              All Job Posts
+            </h1>
+          </div>
+
+          <div className="p-6">
+            {error && (
+              <div className="p-4 mb-4 bg-red-50 border-l-4 border-red-500 text-red-700">
+                {error}
+              </div>
+            )}
+
+            <div className="grid gap-6">
+              {Array.isArray(jobs) &&
+                jobs.map((job, index) => (
+                  <JobsTable
+                    key={job._id}
+                    job={job}
+                    index={index}
+                    handleDelete={handleDelete}
+                  />
+                ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
