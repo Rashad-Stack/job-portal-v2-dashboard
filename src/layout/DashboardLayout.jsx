@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import DashboardSidebar from '../components/dashboard/DashboardSidebar';
-import { Outlet } from 'react-router-dom';
-import DashboardNavbar from '../components/dashboard/DashboardNavbar';
-import useDeviceSize from '../hooks/useDeviceSize';
+import React, { useEffect, useState } from "react";
+import DashboardSidebar from "../components/dashboard/DashboardSidebar";
+import { Outlet } from "react-router-dom";
+import DashboardNavbar from "../components/dashboard/DashboardNavbar";
+import useDeviceSize from "../hooks/useDeviceSize";
 
 function DashboardLayout() {
   const isMobile = useDeviceSize();
@@ -19,7 +19,7 @@ function DashboardLayout() {
 
   return (
     <>
-      <div className=" bg-gray-100 w-full h-screen">
+      <div className=" bg-gray-100 w-full">
         <DashboardNavbar toggleSidebar={toggleSidebar} />
         {isSidebarOpen && <DashboardSidebar toggleSidebar={toggleSidebar} />}
         <main>
