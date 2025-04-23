@@ -1,20 +1,41 @@
-import { FaArrowRight } from 'react-icons/fa6';
-import { Link } from 'react-router-dom';
+import {
+  FaBriefcase,
+  FaList,
+  FaMousePointer,
+  FaUserCheck,
+} from "react-icons/fa";
+
+const getIcon = (title) => {
+  switch (title) {
+    case "Total Jobs":
+      return <FaBriefcase className="text-2xl md:text-3xl" />;
+    case "Categories":
+      return <FaList className="text-2xl md:text-3xl" />;
+    case "Total Clicks":
+      return <FaMousePointer className="text-2xl md:text-3xl" />;
+    case "Applications":
+      return <FaUserCheck className="text-2xl md:text-3xl" />;
+    default:
+      return null;
+  }
+};
 
 export default function TopCard({ title, num }) {
   return (
-    <div className="w-full p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-      <h1 className="mb-2 text-xl font-urbanist font-bold tracking-tight text-gray-900 dark:text-white">
-        {title}
-      </h1>
-      <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">{num}</p>
-      <Link
-        to="/"
-        className="inline-flex gap-1 items-center px-3 py-2 text-sm font-medium text-center text-white bg-[#E5383B] rounded-[8px]"
-      >
-        Read more
-        <FaArrowRight />
-      </Link>
+    <div className="relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 group">
+      <div className="flex flex-col items-center text-center space-y-4">
+        <div className="bg-indigo-50 rounded-xl w-16 h-16 flex items-center justify-center text-indigo-600 group-hover:bg-indigo-100 transition-colors duration-300">
+          {getIcon(title)}
+        </div>
+        <div>
+          <h2 className="font-semibold text-gray-800 text-lg md:text-xl mb-1">
+            {title}
+          </h2>
+          <p className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            {num}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

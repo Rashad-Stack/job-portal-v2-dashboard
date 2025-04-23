@@ -79,7 +79,7 @@ export default function JobsTable({ job, index, handleDelete }) {
 
           <div className="flex flex-col sm:flex-row gap-3">
             <Link
-              to={`/dashboard/view-job/${job._id}`}
+              to={`/jobs/view/${job._id}`}
               className="inline-flex justify-center items-center px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors"
             >
               View

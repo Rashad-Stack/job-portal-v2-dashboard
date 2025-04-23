@@ -1,13 +1,14 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import DashboardLayout from "../layout/DashboardLayout";
 import Home from "../pages/Home/Home";
-import Login from "../pages/Login/Login";
+import Login from "../pages/Auth/Login";
 import Register from "../pages/Register/Register";
 import Profile from "../pages/Profile/Profile";
 import ChangePassword from "../pages/Password/ChangePassword";
 import JobCreate from "../pages/Jobs/JobCreate";
 import AllJobs from "../pages/Jobs/AllJobs";
 import JobEdit from "../pages/Jobs/JobEdit";
+import JobView from "../pages/Jobs/JobView";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/dashboard",
+        element: <Navigate to="/" replace />,
       },
       {
         path: "/dashboard/profile",
@@ -37,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "/jobs/edit/:id",
         element: <JobEdit />,
+      },
+      {
+        path: "/jobs/view/:id",
+        element: <JobView />,
       },
     ],
   },
