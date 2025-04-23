@@ -1,46 +1,60 @@
-import { createBrowserRouter } from 'react-router-dom';
-import DashboardLayout from '../layout/DashboardLayout';
-import Home from '../pages/Home/Home';
-import Login from '../pages/Login/Login';
-import Register from '../pages/Register/Register';
-import Profile from '../pages/Profile/Profile';
-import ChangePassword from '../pages/Password/ChangePassword';
-import JobCreate from '../pages/Jobs/JobCreate';
-import AllJobs from '../pages/Jobs/AllJobs';
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import DashboardLayout from "../layout/DashboardLayout";
+import Home from "../pages/Home/Home";
+import Login from "../pages/Auth/Login";
+import Register from "../pages/Register/Register";
+import Profile from "../pages/Profile/Profile";
+import ChangePassword from "../pages/Password/ChangePassword";
+import JobCreate from "../pages/Jobs/JobCreate";
+import AllJobs from "../pages/Jobs/AllJobs";
+import JobEdit from "../pages/Jobs/JobEdit";
+import JobView from "../pages/Jobs/JobView";
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <DashboardLayout />,
     children: [
       {
-        path: '/',
+        path: "/",
         element: <Home />,
       },
       {
-        path: '/dashboard/profile',
+        path: "/dashboard",
+        element: <Navigate to="/" replace />,
+      },
+      {
+        path: "/dashboard/profile",
         element: <Profile />,
       },
       {
-        path: '/settings/change-password',
+        path: "/settings/change-password",
         element: <ChangePassword />,
       },
       {
-        path: '/jobs/create',
+        path: "/jobs/create",
         element: <JobCreate />,
       },
       {
-        path: '/jobs/read',
+        path: "/jobs/read",
         element: <AllJobs />,
+      },
+      {
+        path: "/jobs/edit/:id",
+        element: <JobEdit />,
+      },
+      {
+        path: "/jobs/view/:id",
+        element: <JobView />,
       },
     ],
   },
   {
-    path: '/login',
+    path: "/login",
     element: <Login />,
   },
   {
-    path: '/register',
+    path: "/register",
     element: <Register />,
   },
 ]);

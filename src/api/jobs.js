@@ -1,0 +1,125 @@
+const API_BASE_URL = "http://localhost:3000/api/v1/job";
+
+// Helper function to get auth headers
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    throw new Error("Authentication token not found. Please log in again.");
+  }
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+};
+
+// Get all jobs
+export const getAllJobs = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/all`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch jobs");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching jobs:", error);
+    throw error;
+  }
+};
+
+// Get job by ID
+export const getJobById = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/${id}`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch job");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching job:", error);
+    throw error;
+  }
+};
+
+// Create new job
+export const createJob = async (jobData) => {
+  try {
+    // Transform data to match schema requirements
+    const transformedData = {
+      ...jobData,
+      vacancy: parseInt(jobData.vacancy) || 1,
+      salaryType: jobData.salaryType.toUpperCase(),
+      salaryMin: jobData.salaryRange?.min
+        ? parseFloat(jobData.salaryRange.min)
+        : null,
+      salaryMax: jobData.salaryRange?.max
+        ? parseFloat(jobData.salaryRange.max)
+        : null,
+      fixedSalary: jobData.fixedSalary ? parseFloat(jobData.fixedSalary) : null,
+      deadline: jobData.deadline
+        ? new Date(jobData.deadline).toISOString()
+        : null,
+      // Convert arrays to strings as per schema
+      responsibilities: Array.isArray(jobData.responsibilities)
+        ? jobData.responsibilities.join("\n")
+        : jobData.responsibilities,
+      skills: Array.isArray(jobData.skills)
+        ? jobData.skills.join("\n")
+        : jobData.skills,
+    };
+
+    const response = await fetch(`${API_BASE_URL}/create`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      body: JSON.stringify(transformedData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to create job");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating job:", error);
+    throw error;
+  }
+};
+
+// Update job
+export const updateJob = async (id, jobData) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/update/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      credentials: "include",
+      body: JSON.stringify(jobData),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to update job");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating job:", error);
+    throw error;
+  }
+};
+
+// Delete job
+export const deleteJob = async (id) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/delete/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders(),
+      credentials: "include",
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to delete job");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error deleting job:", error);
+    throw error;
+  }
+};
