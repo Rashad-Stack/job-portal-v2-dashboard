@@ -15,6 +15,7 @@ function DashboardNavbar({ toggleSidebar }) {
       try {
         const decoded = jwtDecode(token); // 👈 correct usage
         setUserInfo(decoded);
+        console.log(decoded);
       } catch (error) {
         console.error("Error decoding token:", error);
       }
