@@ -44,7 +44,6 @@ const JobCreate = () => {
 
     deadline: "",
   });
-  console.log(formData);
 
   const [currentResponsibility, setCurrentResponsibility] = useState("");
   const [error, setError] = useState("");
