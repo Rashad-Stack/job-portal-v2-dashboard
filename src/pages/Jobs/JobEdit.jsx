@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getJobById, updateJob } from "../../api/jobs";
+import axios from "axios";
 
 const JobEdit = () => {
+  const [currentResponsibility, setCurrentResponsibility] = useState("");
   const { id } = useParams();
+  const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -16,10 +21,10 @@ const JobEdit = () => {
     education: "",
     responsibilities: [],
     skills: "",
-    salaryType: "negotiable",
+    salaryType: "NEGOTIABLE",
     salaryRange: {
-      min: "",
-      max: "",
+      salaryMin: null,
+      salaryMax: null,
     },
     fixedSalary: "",
     additionalRequirements: "",
@@ -30,43 +35,46 @@ const JobEdit = () => {
     vacancy: "",
   });
 
-  const [currentResponsibility, setCurrentResponsibility] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const job = await getJobById(id);
+        setLoading(true);
+        setError("");
+        const { data } = await axios.get(
+          `http://localhost:3000/api/v1/job/${id}`
+        );
+        const jobDetails = data.data;
+        setJob(jobDetails);
 
-        // Map the API response to our form fields
-        const mappedData = {
-          title: job.title || "",
-          companyName: job.companyName || "",
-          location: job.location || "",
-          jobType: job.jobType || "",
-          deadline: job.deadline || "",
-          experience: job.experience || "",
-          education: job.education || "",
-          responsibilities: job.responsibilities || [],
-          skills: job.skills || "",
-          salaryType: job.salaryType || "negotiable",
+        setFormData({
+          title: jobDetails.title || "",
+          companyName: jobDetails.companyName || "",
+          location: jobDetails.location || "",
+          jobType: jobDetails.jobType || "",
+          deadline: jobDetails.deadline?.split("T")[0] || "", // in case it's an ISO string
+          experience: jobDetails.experience || "",
+          education: jobDetails.education || "",
+          responsibilities: Array.isArray(jobDetails.responsibilities)
+            ? jobDetails.responsibilities
+            : [],
+
+          skills: jobDetails.skills || "",
+          salaryType: jobDetails.salaryType || "NEGOTIABLE",
           salaryRange: {
-            min: job.salaryRange?.min || "",
-            max: job.salaryRange?.max || "",
+            min: jobDetails.salaryRange?.min || "",
+            max: jobDetails.salaryRange?.max || "",
           },
-          fixedSalary: job.fixedSalary || "",
-          additionalRequirements: job.requirements || "",
-          lunch: job.lunch || false,
-          salaryReview: job.salaryReview || false,
-          otherBenefits: job.benefits || "",
-          companyInfo: job.description || "",
-          vacancy: job.vacancy || "",
-        };
-
-        setFormData(mappedData);
+          fixedSalary: jobDetails.fixedSalary || "",
+          additionalRequirements: jobDetails.additionalRequirements || "",
+          lunch: jobDetails.lunch || false,
+          salaryReview: jobDetails.salaryReview || false,
+          otherBenefits: jobDetails.otherBenefits || "",
+          companyInfo: jobDetails.companyInfo || "",
+          vacancy: jobDetails.vacancy || "",
+        });
       } catch (err) {
-        setError("Failed to fetch job data");
+        console.error("Failed to fetch job:", err.message);
+        setError("Failed to fetch job. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -100,6 +108,26 @@ const JobEdit = () => {
       }));
     }
   };
+  const validateForm = () => {
+    if (!formData.title || !formData.companyName || !formData.location) {
+      setError("Please fill out all required fields.");
+      return false;
+    }
+
+    if (formData.salaryType === "range") {
+      if (!formData.salaryRange.min || !formData.salaryRange.max) {
+        setError("Please provide both minimum and maximum salary.");
+        return false;
+      }
+    }
+
+    if (formData.salaryType === "fixed" && !formData.fixedSalary) {
+      setError("Please provide a fixed salary.");
+      return false;
+    }
+
+    return true;
+  };
 
   const addResponsibility = () => {
     if (currentResponsibility.trim()) {
@@ -128,15 +156,37 @@ const JobEdit = () => {
     }
   };
 
+  const updateJobAdmin = async () => {
+    try {
+      console.log(formData);
+    } catch (error) {
+      console.error("Admin update failed:", error);
+    }
+  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const sanitizeData = () => {
+    const sanitized = { ...formData };
+    sanitized.title = formData.title.trim();
+    sanitized.skills = formData.skills.trim();
+    sanitized.responsibilities = formData.responsibilities.map((r) => r.trim());
+    return sanitized;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     setError("");
 
+    const cleanedFormData = sanitizeData();
+
     try {
-      await updateJob(id, formData);
-      navigate("/dashboard/jobs");
+      await updateJob(id, cleanedFormData);
+      navigate("/jobs/read");
     } catch (err) {
-      setError("Failed to update job");
+      setError(err.response?.data?.message || "Failed to update job");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -218,11 +268,11 @@ const JobEdit = () => {
                     required
                   >
                     <option value="">Select Job Type</option>
-                    <option value="Full-time">Full-time</option>
-                    <option value="Part-time">Part-time</option>
-                    <option value="Contract">Contract</option>
-                    <option value="Internship">Internship</option>
-                    <option value="Remote">Remote</option>
+                    <option value="FULL_TIME">Full-time</option>
+                    <option value="PART_TIME">Part-time</option>
+                    <option value="CONTRACT">Contract</option>
+                    <option value="INTERNSHIP">Internship</option>
+                    <option value="REMOTE">Remote</option>
                   </select>
                 </div>
                 <div>
@@ -323,6 +373,7 @@ const JobEdit = () => {
               <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
                 Responsibilities
               </h2>
+
               <div className="space-y-4">
                 <div className="flex gap-2">
                   <input
@@ -343,7 +394,10 @@ const JobEdit = () => {
                 </div>
 
                 <div className="space-y-2">
-                  {formData.responsibilities.map((responsibility, index) => (
+                  {(Array.isArray(formData.responsibilities)
+                    ? formData.responsibilities
+                    : []
+                  ).map((responsibility, index) => (
                     <div
                       key={index}
                       className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg group"
@@ -368,7 +422,7 @@ const JobEdit = () => {
               <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
                 Salary Information
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Salary Type*
@@ -380,12 +434,12 @@ const JobEdit = () => {
                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     required
                   >
-                    <option value="negotiable">Negotiable</option>
-                    <option value="range">Salary Range</option>
-                    <option value="fixed">Fixed Salary</option>
+                    <option value="NEGOTIABLE">Negotiable</option>
+                    <option value="RANGE">Salary Range</option>
+                    <option value="FIXED">Fixed Salary</option>
                   </select>
                 </div>
-                {formData.salaryType === "range" && (
+                {formData.salaryType === "RANGE" && (
                   <>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -413,7 +467,7 @@ const JobEdit = () => {
                     </div>
                   </>
                 )}
-                {formData.salaryType === "fixed" && (
+                {formData.salaryType === "FIXED" && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Fixed Salary
@@ -497,9 +551,9 @@ const JobEdit = () => {
             <div className="pt-6">
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
               >
-                Update Job Post
+                {isSubmitting ? "Updating..." : "Update Job"}
               </button>
             </div>
           </form>
