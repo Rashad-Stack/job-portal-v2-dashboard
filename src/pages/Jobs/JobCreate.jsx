@@ -32,8 +32,8 @@ const JobCreate = () => {
     responsibilities: [], // Changed to array
 
     // Benefits
-    lunch: false,
-    salaryReview: false,
+    lunch: "",
+    salaryReview: "",
     otherBenefits: "",
 
     // Skills
@@ -44,6 +44,7 @@ const JobCreate = () => {
 
     deadline: "",
   });
+  console.log(formData);
 
   const [currentResponsibility, setCurrentResponsibility] = useState("");
   const [error, setError] = useState("");
@@ -56,7 +57,6 @@ const JobCreate = () => {
       setFormData((prev) => ({
         ...prev,
         salaryType: value,
-        // Reset other salary fields when type changes
         salaryRange: { min: "", max: "" },
         fixedSalary: "",
       }));
@@ -67,6 +67,16 @@ const JobCreate = () => {
           ...prev.salaryRange,
           [name.split(".")[1]]: value,
         },
+      }));
+    } else if (name === "lunch") {
+      setFormData((prev) => ({
+        ...prev,
+        lunch: checked ? "Provided" : "",
+      }));
+    } else if (name === "salaryReview") {
+      setFormData((prev) => ({
+        ...prev,
+        salaryReview: checked ? "Yearly" : "",
       }));
     } else {
       setFormData((prev) => ({
@@ -182,7 +192,7 @@ const JobCreate = () => {
       }
 
       await createJob(formData);
-      navigate("/dashboard/jobs");
+      navigate("/jobs/read");
     } catch (error) {
       console.error("Error creating job:", error);
       if (error.message.includes("Authentication token not found")) {
@@ -389,10 +399,10 @@ const JobCreate = () => {
                   required
                 >
                   <option value="">Select Job Type</option>
-                  <option value="Full Time">Full Time</option>
-                  <option value="Part Time">Part Time</option>
-                  <option value="Contract">Contract</option>
-                  <option value="Internship">Internship</option>
+                  <option value="FULL_TIME">Full Time</option>
+                  <option value="PART_TIME">Part Time</option>
+                  <option value="CONTRACT">Contract</option>
+                  <option value="INTERNSHIP">Intern</option>
                 </select>
               </div>
             </section>
