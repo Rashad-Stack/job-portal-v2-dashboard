@@ -24,12 +24,18 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const response = await axios.post(
+      const { data } = await axios.post(
         "http://localhost:3000/api/v1/user/create",
         {
           name,
           email,
           password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          withCredentials: true,
         }
       );
 

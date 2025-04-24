@@ -17,7 +17,16 @@ export default function Moderators() {
     try {
       setLoading(true);
       setError("");
-      const { data } = await axios.get("http://localhost:3000/api/v1/user/all");
+      const { data } = await axios.get(
+        "http://localhost:3000/api/v1/user/all",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          withCredentials: true,
+        }
+      );
+
       setModerators(data.data || []);
     } catch (err) {
       console.error("Failed to fetch moderators:", err.message);
@@ -40,7 +49,13 @@ export default function Moderators() {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/v1/user/delete/${id}`);
+        await axios.delete(`http://localhost:3000/api/v1/user/delete/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          withCredentials: true,
+        });
+
         setModerators((prev) => prev.filter((mod) => mod.id !== id));
         Swal.fire("Deleted!", "Moderator has been removed.", "success");
       } catch (err) {
