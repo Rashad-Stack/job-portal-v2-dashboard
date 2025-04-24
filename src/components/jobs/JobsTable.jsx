@@ -1,21 +1,15 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  FaMapMarkerAlt,
-  FaBriefcase,
-  FaClock,
-  FaGraduationCap,
-  FaDollarSign,
-  FaUsers,
-} from "react-icons/fa";
+import { FaMapMarkerAlt, FaBriefcase, FaClock, FaUsers } from "react-icons/fa";
+import { FaBangladeshiTakaSign } from "react-icons/fa6";
 
 const formatSalary = (job) => {
   if (job.salaryType === "negotiable") {
     return "Negotiable";
   } else if (job.salaryType === "range") {
-    return `$${job.salaryRange.min.toLocaleString()} - $${job.salaryRange.max.toLocaleString()}`;
+    return `৳${job.salaryRange.min.toLocaleString()} - ৳${job.salaryRange.max.toLocaleString()}`;
   } else if (job.salaryType === "fixed") {
-    return `$${job.fixedSalary.toLocaleString()}`;
+    return `৳${job.fixedSalary.toLocaleString()}`;
   }
   return "Not specified";
 };
@@ -48,14 +42,14 @@ export default function JobsTable({ job, index, handleDelete }) {
               </div>
               <div className="flex items-center gap-2">
                 <FaBriefcase className="text-indigo-500" />
-                <span>{job.jobType}</span>
+                <span>{job.jobType?.replace("_", " ")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <FaClock className="text-indigo-500" />
                 <span>{job.experience}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FaDollarSign className="text-indigo-500" />
+                <FaBangladeshiTakaSign className="text-indigo-500" />
                 <span>
                   {job.salaryMin}-{job.salaryMax}
                 </span>
