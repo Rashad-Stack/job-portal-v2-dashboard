@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import Button from './Button';
+import { useState } from "react";
+import Button from "./Button";
 
 const ProfileEdit = ({ profile, onSave, onCancel }) => {
   const [formData, setFormData] = useState(profile);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === 'avatar') {
+    if (name === "avatar") {
       setFormData({ ...formData, [name]: files[0] });
     } else {
       setFormData({ ...formData, [name]: value });
@@ -71,7 +71,7 @@ const ProfileEdit = ({ profile, onSave, onCancel }) => {
           />
         </div>
         <div className="flex space-x-4">
-          <Button type="submit" className="bg-green-600">
+          <Button type="submit" className="text-indigo-500">
             Save
           </Button>
           <Button type="button" onClick={onCancel} className="bg-[#E5383B]">

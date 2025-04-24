@@ -10,7 +10,7 @@ const JobCreate = () => {
     title: "",
     companyName: "",
     vacancy: "",
-    salaryType: "negotiable", // Default to negotiable
+    salaryType: "NEGOTIABLE", // Default to negotiable
     salaryRange: {
       min: "",
       max: "",

@@ -30,6 +30,7 @@ export const getAllJobs = async () => {
 export const getJobById = async (id) => {
   try {
     const response = await fetch(`${API_BASE_URL}/${id}`);
+    console.log(response);
     if (!response.ok) {
       throw new Error("Failed to fetch job");
     }
@@ -59,9 +60,9 @@ export const createJob = async (jobData) => {
         ? new Date(jobData.deadline).toISOString()
         : null,
       // Convert arrays to strings as per schema
-      responsibilities: Array.isArray(jobData.responsibilities)
-        ? jobData.responsibilities.join("\n")
-        : jobData.responsibilities,
+      // responsibilities: Array.isArray(jobData.responsibilities)
+      //   ? jobData.responsibilities.join("\n")
+      //   : jobData.responsibilities,
       skills: Array.isArray(jobData.skills)
         ? jobData.skills.join("\n")
         : jobData.skills,
