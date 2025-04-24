@@ -192,7 +192,7 @@ const JobCreate = () => {
       }
 
       await createJob(formData);
-      navigate("/dashboard/jobs");
+      navigate("/jobs/read");
     } catch (error) {
       console.error("Error creating job:", error);
       if (error.message.includes("Authentication token not found")) {
