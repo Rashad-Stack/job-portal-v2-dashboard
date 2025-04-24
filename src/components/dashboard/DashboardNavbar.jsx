@@ -7,7 +7,7 @@ import { jwtDecode } from "jwt-decode";
 
 function DashboardNavbar({ toggleSidebar }) {
   const [isProfileOpen, setProfileOpen] = useState(false);
-  const [userInfo, setUserInfo] = useState(null); // initialize as null
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");

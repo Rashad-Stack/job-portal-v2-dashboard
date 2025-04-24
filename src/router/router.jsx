@@ -9,6 +9,7 @@ import JobCreate from "../pages/Jobs/JobCreate";
 import AllJobs from "../pages/Jobs/AllJobs";
 import JobEdit from "../pages/Jobs/JobEdit";
 import JobView from "../pages/Jobs/JobView";
+import Moderators from "../pages/Auth/Moderators/Moderators";
 
 const router = createBrowserRouter([
   {
@@ -28,7 +29,7 @@ const router = createBrowserRouter([
         element: <Profile />,
       },
       {
-        path: "/settings/change-password",
+        path: "/system/change-password",
         element: <ChangePassword />,
       },
       {
@@ -46,6 +47,14 @@ const router = createBrowserRouter([
       {
         path: "/jobs/view/:id",
         element: <JobView />,
+      },
+      {
+        path: "/jobs/view/:id",
+        element: <JobView />,
+      },
+      {
+        path: "/setting/manage_moderator",
+        element: <Moderators />,
       },
     ],
   },

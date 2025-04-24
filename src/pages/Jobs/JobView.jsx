@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getJobById } from "../../api/jobs";
+import axios from "axios"; // Don't forget this import
 import {
   FaMapMarkerAlt,
   FaBriefcase,
@@ -31,10 +31,15 @@ export default function JobView() {
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        const data = await getJobById(id);
-        setJob(data);
-      } catch (error) {
-        setError("Failed to fetch job details");
+        setLoading(true);
+        setError("");
+        const { data } = await axios.get(
+          `http://localhost:3000/api/v1/job/${id}`
+        );
+        setJob(data.data);
+      } catch (err) {
+        console.error("Failed to fetch job:", err.message);
+        setError("Failed to fetch job. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -43,17 +48,9 @@ export default function JobView() {
     fetchJob();
   }, [id]);
 
-  if (loading) {
-    return <div className="text-center p-4">Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center p-4 text-red-600">{error}</div>;
-  }
-
-  if (!job) {
-    return <div className="text-center p-4">Job not found</div>;
-  }
+  if (loading) return <div className="text-center p-4">Loading...</div>;
+  if (error) return <div className="text-center p-4 text-red-600">{error}</div>;
+  if (!job) return <div className="text-center p-4">Job not found</div>;
 
   return (
     <div className="min-h-screen bg-gray-50/60 py-8 px-4">
@@ -71,73 +68,60 @@ export default function JobView() {
           <div className="p-6 space-y-8">
             {/* Quick Info */}
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div className="flex items-center gap-2 text-gray-600">
-                <FaMapMarkerAlt className="text-indigo-500" />
-                <span>{job.location}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <FaBriefcase className="text-indigo-500" />
-                <span>{job.jobType.replace("_", " ")}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <FaClock className="text-indigo-500" />
-                <span>{job.experience}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <FaDollarSign className="text-indigo-500" />
-                <span>{formatSalary(job)}</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <FaUsers className="text-indigo-500" />
-                <span>
-                  {job.vacancy} {job.vacancy > 1 ? "Positions" : "Position"}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-600">
-                <FaCalendarAlt className="text-indigo-500" />
-                <span>
-                  Deadline: {new Date(job.deadline).toLocaleDateString()}
-                </span>
-              </div>
+              <InfoItem icon={<FaMapMarkerAlt />} label={job.location} />
+              <InfoItem icon={<FaBriefcase />} label={job.jobType} />
+              <InfoItem icon={<FaClock />} label={job.experience} />
+              <InfoItem icon={<FaDollarSign />} label={formatSalary(job)} />
+              <InfoItem
+                icon={<FaUsers />}
+                label={`${job.vacancy} ${
+                  job.vacancy > 1 ? "Positions" : "Position"
+                }`}
+              />
+              <InfoItem
+                icon={<FaCalendarAlt />}
+                label={`Deadline: ${new Date(
+                  job.deadline
+                ).toLocaleDateString()}`}
+              />
             </div>
 
             {/* Skills */}
-            <section>
-              <h2 className="text-xl font-semibold text-gray-800 mb-3">
-                Required Skills
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {job.skills.split(",").map((skill, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-sm"
-                  >
-                    {skill.trim()}
-                  </span>
-                ))}
-              </div>
-            </section>
+            {Array.isArray(job.skills) && job.skills.length > 0 && (
+              <Section title="Required Skills">
+                <div className="flex flex-wrap gap-2">
+                  {job.skills.map((skill, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-sm"
+                    >
+                      {skill.trim()}
+                    </span>
+                  ))}
+                </div>
+              </Section>
+            )}
 
             {/* Responsibilities */}
-            <section>
-              <h2 className="text-xl font-semibold text-gray-800 mb-3">
-                Responsibilities & Context
-              </h2>
-              <div className="space-y-2">
-                {job.responsibilities.map((responsibility, index) => (
-                  <div key={index} className="flex items-start gap-2">
-                    <div className="w-2 h-2 rounded-full bg-indigo-500 mt-2"></div>
-                    <p className="text-gray-600 flex-1">{responsibility}</p>
+            {Array.isArray(job.responsibilities) &&
+              job.responsibilities.length > 0 && (
+                <section>
+                  <h2 className="text-xl font-semibold text-gray-800 mb-3">
+                    Responsibilities & Context
+                  </h2>
+                  <div className="space-y-2">
+                    {job.responsibilities.map((responsibility, index) => (
+                      <div key={index} className="flex items-start gap-2">
+                        <div className="w-2 h-2 rounded-full bg-indigo-500 mt-2"></div>
+                        <p className="text-gray-600 flex-1">{responsibility}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </section>
+                </section>
+              )}
 
             {/* Requirements */}
-            <section>
-              <h2 className="text-xl font-semibold text-gray-800 mb-3">
-                Requirements
-              </h2>
+            <Section title="Requirements">
               <div className="space-y-4 text-gray-600">
                 <div>
                   <h3 className="font-medium text-gray-700">Education:</h3>
@@ -156,51 +140,59 @@ export default function JobView() {
                   </div>
                 )}
               </div>
-            </section>
+            </Section>
 
             {/* Benefits */}
-            <section>
-              <h2 className="text-xl font-semibold text-gray-800 mb-3">
-                Compensation & Benefits
-              </h2>
-              <div className="space-y-2 text-gray-600">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                  <span>Salary: {formatSalary(job)}</span>
-                </div>
+            <Section title="Compensation & Benefits">
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                  Salary: {formatSalary(job)}
+                </li>
                 {job.lunch && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                    <span>Lunch Provided</span>
-                  </div>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                    Lunch Provided
+                  </li>
                 )}
                 {job.salaryReview && (
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                    <span>Yearly Salary Review</span>
-                  </div>
+                  <li className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+                    Yearly Salary Review
+                  </li>
                 )}
                 {job.otherBenefits && (
-                  <div className="mt-2">
+                  <li className="mt-2">
                     <h3 className="font-medium text-gray-700 mb-1">
                       Other Benefits:
                     </h3>
                     <p>{job.otherBenefits}</p>
-                  </div>
+                  </li>
                 )}
-              </div>
-            </section>
+              </ul>
+            </Section>
 
             {/* Company Info */}
-            <section>
-              <h2 className="text-xl font-semibold text-gray-800 mb-3">
-                About the Company
-              </h2>
+            <Section title="About the Company">
               <p className="text-gray-600">{job.companyInfo}</p>
-            </section>
+            </Section>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
+const Section = ({ title, children }) => (
+  <section>
+    <h2 className="text-xl font-semibold text-gray-800 mb-3">{title}</h2>
+    {children}
+  </section>
+);
+
+const InfoItem = ({ icon, label }) => (
+  <div className="flex items-center gap-2 text-gray-600">
+    <span className="text-indigo-500">{icon}</span>
+    <span>{label}</span>
+  </div>
+);
