@@ -1,18 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaMapMarkerAlt, FaBriefcase, FaClock, FaUsers } from "react-icons/fa";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
-
-const formatSalary = (job) => {
-  if (job.salaryType === "negotiable") {
-    return "Negotiable";
-  } else if (job.salaryType === "range") {
-    return `৳${job.salaryRange.min.toLocaleString()} - ৳${job.salaryRange.max.toLocaleString()}`;
-  } else if (job.salaryType === "fixed") {
-    return `৳${job.fixedSalary.toLocaleString()}`;
-  }
-  return "Not specified";
-};
+import { GiClick } from "react-icons/gi";
 
 const formatDate = (date) => {
   return date ? new Date(date).toLocaleDateString() : "N/A";
@@ -26,6 +16,15 @@ export default function JobsTable({ job, index, handleDelete }) {
     console.log("Updated job:", updatedJob);
   };
 
+  const [appliedBy, setAppliedBy] = useState("");
+
+  useEffect(() => {
+    if (job.appliedBy === true) {
+      setAppliedBy("Internal");
+    } else {
+      setAppliedBy("External");
+    }
+  }, [job.appliedBy]);
   return (
     <div className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
       <div className="flex flex-col md:flex-row md:items-center justify-between">
@@ -46,34 +45,22 @@ export default function JobsTable({ job, index, handleDelete }) {
               </div>
               <div className="flex items-center gap-2">
                 <FaClock className="text-indigo-500" />
-                <span>{job.experience}</span>
+                <span>{job.category}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FaBangladeshiTakaSign className="text-indigo-500" />
-                <span>
-                  {job.salaryMin}-{job.salaryMax}
-                </span>
+                <GiClick className="text-indigo-500" />
+
+                <span>{appliedBy}</span>
               </div>
               <div className="flex items-center gap-2">
                 <FaUsers className="text-indigo-500" />
                 <span>
-                  {job.vacancy} {job.vacancy > 1 ? "Positions" : "Position"}
+                  {job.numberOfHiring}{" "}
+                  {job.numberOfHiring > 1 ? "Positions" : "Position"}
                 </span>
               </div>
             </div>
           </div>
-          {job.skills && (
-            <div className="flex flex-wrap gap-2">
-              {job.skills.split(",").map((skill, index) => (
-                <span
-                  key={index}
-                  className="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-sm"
-                >
-                  {skill.trim()}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3">

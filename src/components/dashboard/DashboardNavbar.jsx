@@ -21,7 +21,7 @@ function DashboardNavbar({ toggleSidebar }) {
     }
   }, []);
   const capitalizeFirstLetter = (name) => {
-    if (!name) return ""; // Return an empty string if the name is falsy
+    if (name) return;
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
   };
   const LogOut = () => {

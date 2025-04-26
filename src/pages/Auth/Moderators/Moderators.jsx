@@ -9,15 +9,20 @@ export default function Moderators() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetchModerators();
-  }, []);
-
   const fetchModerators = async () => {
     try {
       setLoading(true);
       setError("");
-      const { data } = await axios.get("http://localhost:3000/api/v1/user/all");
+      const { data } = await axios.get(
+        "http://localhost:3000/api/v1/user/all",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          withCredentials: true,
+        }
+      );
+
       setModerators(data.data || []);
     } catch (err) {
       console.error("Failed to fetch moderators:", err.message);
@@ -26,7 +31,9 @@ export default function Moderators() {
       setLoading(false);
     }
   };
-
+  useEffect(() => {
+    fetchModerators();
+  }, []);
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
@@ -40,7 +47,13 @@ export default function Moderators() {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/v1/user/delete/${id}`);
+        await axios.delete(`http://localhost:3000/api/v1/user/delete/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          withCredentials: true,
+        });
+
         setModerators((prev) => prev.filter((mod) => mod.id !== id));
         Swal.fire("Deleted!", "Moderator has been removed.", "success");
       } catch (err) {
@@ -66,7 +79,7 @@ export default function Moderators() {
 
       <div className="space-y-6">
         {moderators
-          .filter((mod) => mod.role === "Modarator")
+          .filter((mod) => mod.role === "MODARATOR")
           .map((mod) => (
             <div
               key={mod.id}
@@ -97,7 +110,11 @@ export default function Moderators() {
                         <path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2h-1V1m-1 11h-5v5h5v-5z" />
                       </svg>
                       <span>
-                        {new Date(mod.created_at).toLocaleDateString()}
+                        {new Date(mod.createdAt).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
                       </span>
                     </div>
                   </div>
