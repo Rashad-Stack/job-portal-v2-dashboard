@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createJob } from "../../api/jobs";
 import { isAuthenticated } from "../../api/auth";
+import { SiGoogleforms } from "react-icons/si";
 
 const JobCreate = () => {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ const JobCreate = () => {
     numberOfHiring: "", // <-- fixed
     appliedBy: false,
     location: "",
+    googleForm: "",
     jobType: "FULL_TIME",
     jobCategory: "MERN",
     jobLevel: "MID_LEVEL",
@@ -67,6 +69,9 @@ const JobCreate = () => {
         "shift",
         "deadline",
       ];
+      if (formData.appliedBy === false) {
+        requiredFields.push("googleForm");
+      }
 
       const emptyFields = requiredFields.filter((field) => {
         const value = formData[field];
@@ -190,12 +195,19 @@ const JobCreate = () => {
 
                     {/* Show button if External is selected */}
                     {formData.appliedBy === false && (
-                      <button
-                        type="button"
-                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-                      >
-                        External Action
-                      </button>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Google Form URL
+                        </label>
+                        <input
+                          type="text"
+                          name="googleForm"
+                          value={formData.googleForm}
+                          onChange={handleChange}
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          placeholder="Enter Google Form URL"
+                        />
+                      </div>
                     )}
                   </div>
                 </div>
