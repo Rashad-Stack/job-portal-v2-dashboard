@@ -30,7 +30,6 @@ export const getAllJobs = async () => {
 export const getJobById = async (id) => {
   try {
     const response = await fetch(`${API_BASE_URL}/${id}`);
-    console.log(response);
     if (!response.ok) {
       throw new Error("Failed to fetch job");
     }
@@ -47,8 +46,43 @@ export const createJob = async (jobData) => {
     // Transform data to match schema requirements
     const transformedData = {
       ...jobData,
+      deadline: jobData.deadline
+        ? new Date(jobData.deadline).toISOString()
+        : null,
+      // Optional: If backend still expects responsibilities field, send empty array
+      responsibilities: jobData.responsibilities || [],
+    };
+
+    const response = await fetch(`${API_BASE_URL}/create`, {
+      method: "POST",
+      headers: {
+        ...getAuthHeaders(),
+        "Content-Type": "application/json", // ✅ Important: tell backend it's JSON
+      },
+      credentials: "include",
+      body: JSON.stringify(transformedData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Backend error message:", errorData);
+      throw new Error(errorData.message || "Failed to create job");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating job (catch block):", error);
+    throw error;
+  }
+};
+
+// Update job
+export const updateJob = async (id, jobData) => {
+  try {
+    const transformedData = {
+      ...jobData,
       vacancy: parseInt(jobData.vacancy) || 1,
-      salaryType: jobData.salaryType.toUpperCase(),
+      salaryType: jobData.salaryType?.toUpperCase(),
       salaryMin: jobData.salaryRange?.min
         ? parseFloat(jobData.salaryRange.min)
         : null,
@@ -59,17 +93,18 @@ export const createJob = async (jobData) => {
       deadline: jobData.deadline
         ? new Date(jobData.deadline).toISOString()
         : null,
-      // Convert arrays to strings as per schema
-      // responsibilities: Array.isArray(jobData.responsibilities)
-      //   ? jobData.responsibilities.join("\n")
-      //   : jobData.responsibilities,
+      // ✅ Backend expects this as an array of strings
+      responsibilities: Array.isArray(jobData.responsibilities)
+        ? jobData.responsibilities
+        : jobData.responsibilities?.split("\n"),
+      // ✅ Backend expects this as a single string (not array)
       skills: Array.isArray(jobData.skills)
         ? jobData.skills.join("\n")
         : jobData.skills,
     };
 
-    const response = await fetch(`${API_BASE_URL}/create`, {
-      method: "POST",
+    const response = await fetch(`${API_BASE_URL}/update/${id}`, {
+      method: "PUT",
       headers: getAuthHeaders(),
       credentials: "include",
       body: JSON.stringify(transformedData),
@@ -77,28 +112,9 @@ export const createJob = async (jobData) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to create job");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error creating job:", error);
-    throw error;
-  }
-};
-
-// Update job
-export const updateJob = async (id, jobData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/update/${id}`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-      credentials: "include",
-      body: JSON.stringify(jobData),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
       throw new Error(errorData.message || "Failed to update job");
     }
+
     return await response.json();
   } catch (error) {
     console.error("Error updating job:", error);
