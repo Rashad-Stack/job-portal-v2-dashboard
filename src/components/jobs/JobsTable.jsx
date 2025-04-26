@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { FaMapMarkerAlt, FaBriefcase, FaClock, FaUsers } from "react-icons/fa";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import { GiClick } from "react-icons/gi";
+import { BiCategoryAlt } from "react-icons/bi";
 
 const formatDate = (date) => {
   return date ? new Date(date).toLocaleDateString() : "N/A";
@@ -22,7 +23,7 @@ export default function JobsTable({ job, index, handleDelete }) {
     if (job.appliedBy === true) {
       setAppliedBy("Internal");
     } else {
-      setAppliedBy("External");
+      setAppliedBy("Google Form Link");
     }
   }, [job.appliedBy]);
   return (
@@ -44,13 +45,22 @@ export default function JobsTable({ job, index, handleDelete }) {
                 <span>{job.jobType?.replace("_", " ")}</span>
               </div>
               <div className="flex items-center gap-2">
-                <FaClock className="text-indigo-500" />
+                <BiCategoryAlt className="text-indigo-500" />
+
                 <span>{job.category}</span>
               </div>
               <div className="flex items-center gap-2">
                 <GiClick className="text-indigo-500" />
 
-                <span>{appliedBy}</span>
+                <span>
+                  <a
+                    href={job.googleForm}
+                    title={job.googleForm}
+                    target="_blank"
+                  >
+                    {appliedBy}
+                  </a>
+                </span>
               </div>
               <div className="flex items-center gap-2">
                 <FaUsers className="text-indigo-500" />
