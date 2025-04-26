@@ -14,7 +14,6 @@ export default function JobView() {
         setLoading(true);
         setError("");
         const { data } = await getJobById(id);
-        console.log("Job API response:", data);
         setJob(data);
       } catch (err) {
         console.error("Failed to fetch job:", err.message);
@@ -36,32 +35,17 @@ export default function JobView() {
   const {
     title,
     companyName,
-    vacancy,
+    numberOfHiring,
     location,
-    salaryType,
-    salaryMin,
-    salaryMax,
-    fixedSalary,
     jobType,
-    experience,
-    education,
-    additionalRequirements,
-    responsibilities,
-    skills,
-    lunch,
-    salaryReview,
-    otherBenefits,
-    companyInfo,
+    jobCategory,
+    jobLevel,
+    category,
+    jobNature,
+    shift,
     deadline,
+    appliedBy,
   } = job;
-
-  const getSalaryText = () => {
-    if (salaryType === "NEGOTIABLE") return "Negotiable";
-    if (salaryType === "FIXED") return `${fixedSalary} BDT (Fixed)`;
-    if (salaryType === "RANGE")
-      return `${salaryMin} - ${salaryMax} BDT (Monthly)`;
-    return "Not specified";
-  };
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-8 bg-white shadow-lg rounded-2xl space-y-8">
@@ -72,92 +56,39 @@ export default function JobView() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
         <p>
-          <span className="font-medium">Vacancy:</span> {vacancy}
+          <span className="font-medium">Vacancy:</span> {numberOfHiring}
         </p>
         <p>
           <span className="font-medium">Job Type:</span>{" "}
           {jobType?.replace("_", " ")}
         </p>
         <p>
+          <span className="font-medium">Job Category:</span>{" "}
+          {category?.replace("_", " ")}
+        </p>
+        <p>
+          <span className="font-medium">Job Level:</span>{" "}
+          {jobLevel?.replace("_", " ")}
+        </p>
+        <p>
+          <span className="font-medium">Job Nature:</span>{" "}
+          {jobNature?.replace("_", " ")}
+        </p>
+        <p>
+          <span className="font-medium">Applied By:</span>{" "}
+          {appliedBy ? "Internal" : "External"}
+        </p>
+        <p>
+          <span className="font-medium">Shift:</span> {shift?.replace("_", " ")}
+        </p>
+        <p>
           <span className="font-medium">Location:</span> {location}
-        </p>
-
-        <p>
-          <span className="font-medium">Experience:</span> {experience}
-        </p>
-        <p>
-          <span className="font-medium">Education:</span> {education}
         </p>
         <p>
           <span className="font-medium">Deadline:</span>{" "}
           {new Date(deadline).toLocaleDateString()}
         </p>
       </div>
-
-      {skills && (
-        <div>
-          <h2 className="text-xl font-semibold text-indigo-500 mb-2">
-            Required Skills
-          </h2>
-          <p className="text-gray-700">{skills}</p>
-        </div>
-      )}
-
-      {additionalRequirements && (
-        <div>
-          <h2 className="text-xl font-semibold text-indigo-500 mb-2">
-            Additional Requirements
-          </h2>
-          <p className="text-gray-700">{additionalRequirements}</p>
-        </div>
-      )}
-
-      {responsibilities?.length > 0 && (
-        <div>
-          <h2 className="text-xl font-semibold text-indigo-500 mb-2">
-            Responsibilities
-          </h2>
-          <ul className="list-disc pl-5 space-y-1 text-gray-700">
-            {responsibilities.map((item, i) => (
-              <li key={i}>{item}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <div>
-        <h2 className="text-xl font-semibold text-indigo-500 mb-2">
-          Compensation & Other Benefits
-        </h2>
-
-        <p>
-          <span className="font-medium">Salary:</span> {getSalaryText()}
-        </p>
-
-        {lunch === "true" && (
-          <p>
-            <span className="font-medium">Lunch:</span> Provided
-          </p>
-        )}
-        {salaryReview === "true" && (
-          <p>
-            <span className="font-medium">Salary Review:</span> Yearly
-          </p>
-        )}
-        {otherBenefits && (
-          <p>
-            <span className="font-medium">Other Benefits:</span> {otherBenefits}
-          </p>
-        )}
-      </div>
-      {companyInfo && (
-        <div>
-          <h2 className="text-xl font-semibold text-indigo-500 mb-2">
-            About the Company
-          </h2>
-          <p className="text-gray-700">{companyInfo}</p>
-        </div>
-      )}
     </div>
   );
 }

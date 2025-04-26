@@ -17,7 +17,7 @@ export default function SettingsNavbar({ toggleSidebar }) {
       try {
         const decoded = jwtDecode(token);
         setUserInfo(decoded);
-        if (decoded.role === "Admin") {
+        if (decoded.role === "ADMIN") {
           setShowSignUp(true);
         }
       } catch (error) {
