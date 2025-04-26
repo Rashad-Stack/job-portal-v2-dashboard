@@ -13,6 +13,7 @@
     "@fontsource/manrope": "^5.1.0",
     "@fontsource/poppins": "^5.1.0",
     "@fontsource/urbanist": "^5.1.0",
+    "@heroicons/react": "^2.2.0",
     "axios": "^1.8.4",
     "flowbite": "^2.5.2",
     "flowbite-react": "^0.10.1",

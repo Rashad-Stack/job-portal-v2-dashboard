@@ -22,6 +22,7 @@ const JobEdit = () => {
     jobNature: "ONSITE",
     shift: "DAY",
     deadline: "",
+    googleForm: "",
   });
 
   useEffect(() => {
@@ -47,6 +48,7 @@ const JobEdit = () => {
           jobNature: jobDetails.jobNature,
           shift: jobDetails.shift,
           deadline: jobDetails.deadline,
+          googleForm: jobDetails.googleForm,
         });
       } catch (err) {
         console.error("Failed to fetch job:", err.message);
@@ -209,12 +211,19 @@ const JobEdit = () => {
 
                     {/* Show button if External is selected */}
                     {formData.appliedBy === false && (
-                      <button
-                        type="button"
-                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
-                      >
-                        External Action
-                      </button>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Google Form URL
+                        </label>
+                        <input
+                          type="text"
+                          name="googleForm"
+                          value={formData.googleForm}
+                          onChange={handleChange}
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          placeholder="Enter Google Form URL"
+                        />
+                      </div>
                     )}
                   </div>
                 </div>

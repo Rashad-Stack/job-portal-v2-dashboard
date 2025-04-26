@@ -19,7 +19,7 @@ function DashboardLayout() {
 
   return (
     <>
-      <div className=" bg-gray-100 w-full">
+      <div className="w-full">
         <DashboardNavbar toggleSidebar={toggleSidebar} />
         {isSidebarOpen && <DashboardSidebar toggleSidebar={toggleSidebar} />}
         <main>

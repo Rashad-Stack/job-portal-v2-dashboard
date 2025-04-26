@@ -227,7 +227,6 @@ const JobCreate = () => {
                       className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       required
                     >
-                      <option value="">Select Job Nature</option>
                       <option value="ONSITE">On Site</option>
                       <option value="REMOTE">Remote</option>
                     </select>
@@ -245,7 +244,6 @@ const JobCreate = () => {
                       className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       required
                     >
-                      <option value="">Select Job Level</option>
                       <option value="ENTRY_LEVEL">Entry Lavel</option>
                       <option value="MID_LEVEL">Mid Level</option>
                       <option value="ADVANCED_LEVEL">Advanced Level</option>
@@ -265,7 +263,6 @@ const JobCreate = () => {
                       className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       required
                     >
-                      <option value="">Select Job Type</option>
                       <option value="FULL_TIME">Full Time</option>
                       <option value="PART_TIME">Part Time</option>
                       <option value="CONTRACT">Contract</option>
@@ -289,7 +286,6 @@ const JobCreate = () => {
                       className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       required
                     >
-                      <option value="">Select Job Category</option>
                       <option value="MERN">MERN Stack</option>
                       <option value="FRONT_END">Front End</option>
                       <option value="BACK_END">Back End</option>
@@ -312,7 +308,6 @@ const JobCreate = () => {
                       className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                       required
                     >
-                      <option value="">Select Shift</option>
                       <option value="DAY">Day</option>
                       <option value="NIGHT">Night</option>
                       <option value="EVENING">Evening</option>

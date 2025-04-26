@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { getJobById } from "../../api/jobs";
+import { PencilSquareIcon } from "@heroicons/react/24/outline"; // Importing a nice edit icon
 
 export default function JobView() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -47,45 +49,59 @@ export default function JobView() {
     appliedBy,
   } = job;
 
+  const handleEdit = () => {
+    navigate(`/jobs/edit/${id}`);
+  };
+
   return (
-    <div className="max-w-5xl mx-auto px-6 py-8 bg-white shadow-lg rounded-2xl space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
-        <p className="text-lg text-gray-600">{companyName}</p>
+    <div className="max-w-5xl mx-auto px-6 py-8 bg-white shadow-2xl rounded-3xl space-y-8">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-4xl font-extrabold text-gray-900">{title}</h1>
+          <p className="text-lg text-gray-600">{companyName}</p>
+        </div>
+        <button
+          onClick={handleEdit}
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:bg-blue-700 text-white rounded-full shadow-md transition-all duration-300"
+        >
+          <PencilSquareIcon className="h-5 w-5" />
+          <span>Edit</span>
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
         <p>
-          <span className="font-medium">Vacancy:</span> {numberOfHiring}
+          <span className="font-semibold">Vacancy:</span> {numberOfHiring}
         </p>
         <p>
-          <span className="font-medium">Job Type:</span>{" "}
+          <span className="font-semibold">Job Type:</span>{" "}
           {jobType?.replace("_", " ")}
         </p>
         <p>
-          <span className="font-medium">Job Category:</span>{" "}
+          <span className="font-semibold">Job Category:</span>{" "}
           {category?.replace("_", " ")}
         </p>
         <p>
-          <span className="font-medium">Job Level:</span>{" "}
+          <span className="font-semibold">Job Level:</span>{" "}
           {jobLevel?.replace("_", " ")}
         </p>
         <p>
-          <span className="font-medium">Job Nature:</span>{" "}
+          <span className="font-semibold">Job Nature:</span>{" "}
           {jobNature?.replace("_", " ")}
         </p>
         <p>
-          <span className="font-medium">Applied By:</span>{" "}
+          <span className="font-semibold">Applied By:</span>{" "}
           {appliedBy ? "Internal" : "External"}
         </p>
         <p>
-          <span className="font-medium">Shift:</span> {shift?.replace("_", " ")}
+          <span className="font-semibold">Shift:</span>{" "}
+          {shift?.replace("_", " ")}
         </p>
         <p>
-          <span className="font-medium">Location:</span> {location}
+          <span className="font-semibold">Location:</span> {location}
         </p>
         <p>
-          <span className="font-medium">Deadline:</span>{" "}
+          <span className="font-semibold">Deadline:</span>{" "}
           {new Date(deadline).toLocaleDateString()}
         </p>
       </div>
