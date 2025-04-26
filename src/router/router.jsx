@@ -4,11 +4,11 @@ import Home from "../pages/Home/Home";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Register/Register";
 import Profile from "../pages/Profile/Profile";
-import ChangePassword from "../pages/Password/ChangePassword";
 import JobCreate from "../pages/Jobs/JobCreate";
 import AllJobs from "../pages/Jobs/AllJobs";
 import JobEdit from "../pages/Jobs/JobEdit";
 import JobView from "../pages/Jobs/JobView";
+import Users from "../pages/Users/Users";
 import Moderators from "../pages/Auth/Moderators/Moderators";
 
 const router = createBrowserRouter([
@@ -28,10 +28,7 @@ const router = createBrowserRouter([
         path: "/dashboard/profile",
         element: <Profile />,
       },
-      {
-        path: "/system/change-password",
-        element: <ChangePassword />,
-      },
+
       {
         path: "/jobs/create",
         element: <JobCreate />,
@@ -53,9 +50,13 @@ const router = createBrowserRouter([
         element: <JobView />,
       },
       {
-        path: "/setting/manage_moderator",
-        element: <Moderators />,
+        path: "/users",
+        element: <Users />,
       },
+      //   {
+      //     path: "/add-user",
+      //     element: <Moderators />,
+      //   },
     ],
   },
   {
