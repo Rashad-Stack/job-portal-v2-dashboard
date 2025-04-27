@@ -43,16 +43,6 @@ function DashboardSidebar({ toggleSidebar }) {
             </Link>
           </li>
           <li>
-            <Link
-              to="/dashboard/profile"
-              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              onClick={handleOnClick}
-            >
-              <FaRegUser />
-              <span className="ms-3">Profile</span>
-            </Link>
-          </li>
-          <li>
             <button
               className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
               onClick={toggleJobs}
