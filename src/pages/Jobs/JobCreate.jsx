@@ -58,7 +58,6 @@ const JobCreate = () => {
 
       const requiredFields = [
         "title",
-        "companyName",
         "numberOfHiring",
         "location",
         "jobType",
@@ -85,7 +84,13 @@ const JobCreate = () => {
         return;
       }
 
-      await createJob(formData);
+      // ⬇️ If companyName is empty, delete it from formData so that Prisma will use default
+      const dataToSend = { ...formData };
+      if (!dataToSend.companyName || dataToSend.companyName.trim() === "") {
+        delete dataToSend.companyName;
+      }
+
+      await createJob(dataToSend);
       navigate("/jobs/read");
     } catch (error) {
       console.error("Error creating job:", error);
@@ -146,7 +151,6 @@ const JobCreate = () => {
                     value={formData.companyName}
                     onChange={handleChange}
                     className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
-                    required
                     placeholder="Company Name"
                   />
                 </div>

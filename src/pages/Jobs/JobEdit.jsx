@@ -100,6 +100,11 @@ const JobEdit = () => {
         ...prev,
         appliedBy: value === "true",
       }));
+    } else if (name === "companyName") {
+      setFormData((prev) => ({
+        ...prev,
+        companyName: value.trimStart(), // <-- trimming start space when typing
+      }));
     } else if (type === "number") {
       setFormData((prev) => ({
         ...prev,
@@ -112,6 +117,7 @@ const JobEdit = () => {
       }));
     }
   };
+
   if (loading) {
     return <div className="text-center p-4">Loading...</div>;
   }
