@@ -53,13 +53,18 @@ export default function JobsTable({ job, index, handleDelete }) {
                 <GiClick className="text-indigo-500" />
 
                 <span>
-                  <a
-                    href={job.googleForm}
-                    title={job.googleForm}
-                    target="_blank"
-                  >
-                    {appliedBy}
-                  </a>
+                  {appliedBy === "Google Form Link" ? (
+                    <a
+                      href={job.googleForm}
+                      title={job.googleForm}
+                      target="_blank"
+                      rel="noopener noreferrer" // (good practice for security)
+                    >
+                      <u>{appliedBy}</u>
+                    </a>
+                  ) : (
+                    appliedBy
+                  )}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -82,7 +87,7 @@ export default function JobsTable({ job, index, handleDelete }) {
           </Link>
           <Link
             to={`/jobs/edit/${job.id}`}
-            className="inline-flex justify-center items-center px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"
+            className="inline-flex justify-center items-center px-4 py-2 bg-[#00ab0c] text-white font-medium rounded-lg hover:bg-[#237e29] transition-colors"
           >
             <span className="text-white font-medium">Edit</span>
           </Link>

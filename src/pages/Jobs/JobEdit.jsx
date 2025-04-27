@@ -120,7 +120,7 @@ const JobEdit = () => {
     <div className="min-h-screen bg-gray-50/60 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white border bottom-1 border-slate-200 rounded-2xl overflow-hidden">
-          <div className="p-6 bg-gradient-to-r from-indigo-600 to-purple-600">
+          <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#008f0a]">
             <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
               Create New Job Post
             </h1>
@@ -147,7 +147,7 @@ const JobEdit = () => {
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623]"
                   required
                   placeholder="Job Title"
                 />
@@ -162,7 +162,7 @@ const JobEdit = () => {
                     name="companyName"
                     value={formData.companyName}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623]"
                     required
                     placeholder="Company Name"
                   />
@@ -176,7 +176,7 @@ const JobEdit = () => {
                     name="numberOfHiring"
                     value={formData.numberOfHiring}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623]"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -192,7 +192,7 @@ const JobEdit = () => {
                           value="true"
                           checked={formData.appliedBy === true}
                           onChange={handleChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                          className="h-4 w-4 focus:ring-[#00ab0c] focus:border-[#1e6623] border-gray-300"
                         />
                         <span className="ml-2 text-gray-700">Internal</span>
                       </label>
@@ -203,7 +203,7 @@ const JobEdit = () => {
                           value="false"
                           checked={formData.appliedBy === false}
                           onChange={handleChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                          className="h-4 w-4 focus:ring-[#00ab0c] focus:border-[#1e6623] border-gray-300"
                         />
                         <span className="ml-2 text-gray-700">External</span>
                       </label>
@@ -220,7 +220,7 @@ const JobEdit = () => {
                           name="googleForm"
                           value={formData.googleForm}
                           onChange={handleChange}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623]"
                           placeholder="Enter Google Form URL"
                         />
                       </div>
@@ -241,7 +241,7 @@ const JobEdit = () => {
                       name="jobNature"
                       value={formData.jobNature}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623]"
                       required
                     >
                       <option value="">Select Job Nature</option>
@@ -259,7 +259,7 @@ const JobEdit = () => {
                       name="jobLevel"
                       value={formData.jobLevel}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623]"
                       required
                     >
                       <option value="">Select Job Level</option>
@@ -279,7 +279,7 @@ const JobEdit = () => {
                       name="jobType"
                       value={formData.jobType}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623]"
                       required
                     >
                       <option value="">Select Job Type</option>
@@ -303,7 +303,7 @@ const JobEdit = () => {
                       name="category"
                       value={formData.category}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623]"
                       required
                     >
                       <option value="">Select Job Category</option>
@@ -326,7 +326,7 @@ const JobEdit = () => {
                       name="shift"
                       value={formData.shift}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623]"
                       required
                     >
                       <option value="">Select Shift</option>
@@ -348,7 +348,7 @@ const JobEdit = () => {
                           name="location"
                           value={formData.location}
                           onChange={handleChange}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623]"
                           required
                         />
                       </div>
@@ -372,7 +372,7 @@ const JobEdit = () => {
                   name="deadline"
                   value={formData.deadline}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623]"
                 />
               </div>
             </section>
@@ -380,7 +380,7 @@ const JobEdit = () => {
             <div className="pt-6">
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300"
+                className="w-full py-3 px-4 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c] text-white font-medium rounded-lg hover:from-[#549458] hover:to-[#15881c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300"
               >
                 Update Job
               </button>

@@ -53,7 +53,7 @@ const ProfileView = ({ profile, onEdit }) => {
             {/* Fallback for email */}
           </div>
 
-          <Button onClick={onEdit} className="mt-4 bg-[#E5383B] text-lg">
+          <Button onClick={onEdit} className="mt-4 bg-[#00ab0c] text-lg">
             Edit Profile
           </Button>
         </div>

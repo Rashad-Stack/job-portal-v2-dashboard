@@ -58,7 +58,7 @@ const AllJobs = () => {
     <div className="min-h-screen bg-gray-50/60 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-          <div className="p-6 bg-gradient-to-r from-indigo-600 to-purple-600">
+          <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#009e0b]">
             <h1 className="text-2xl md:text-3xl font-bold text-white">
               All Job Posts
             </h1>
