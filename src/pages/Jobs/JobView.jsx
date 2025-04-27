@@ -62,7 +62,7 @@ export default function JobView() {
         </div>
         <button
           onClick={handleEdit}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:bg-blue-700 text-white rounded-full shadow-md transition-all duration-300"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c] hover:bg-blue-700 text-white rounded-full shadow-md transition-all duration-300"
         >
           <PencilSquareIcon className="h-5 w-5" />
           <span>Edit</span>

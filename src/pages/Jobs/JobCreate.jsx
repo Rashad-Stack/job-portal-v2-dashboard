@@ -103,7 +103,7 @@ const JobCreate = () => {
     <div className="min-h-screen bg-gray-50/60 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white border bottom-1 border-slate-200 rounded-2xl overflow-hidden">
-          <div className="p-6 bg-gradient-to-r from-indigo-600 to-purple-600">
+          <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c]">
             <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
               Create New Job Post
             </h1>
@@ -130,7 +130,7 @@ const JobCreate = () => {
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                   required
                   placeholder="Job Title"
                 />
@@ -145,7 +145,7 @@ const JobCreate = () => {
                     name="companyName"
                     value={formData.companyName}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                     required
                     placeholder="Company Name"
                   />
@@ -159,7 +159,7 @@ const JobCreate = () => {
                     name="numberOfHiring"
                     value={formData.numberOfHiring}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -203,7 +203,7 @@ const JobCreate = () => {
                           name="googleForm"
                           value={formData.googleForm}
                           onChange={handleChange}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                           placeholder="Enter Google Form URL"
                         />
                       </div>
@@ -224,7 +224,7 @@ const JobCreate = () => {
                       name="jobNature"
                       value={formData.jobNature}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                       required
                     >
                       <option value="ONSITE">On Site</option>
@@ -241,7 +241,7 @@ const JobCreate = () => {
                       name="jobLevel"
                       value={formData.jobLevel}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                       required
                     >
                       <option value="ENTRY_LEVEL">Entry Lavel</option>
@@ -260,7 +260,7 @@ const JobCreate = () => {
                       name="jobType"
                       value={formData.jobType}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                       required
                     >
                       <option value="FULL_TIME">Full Time</option>
@@ -283,7 +283,7 @@ const JobCreate = () => {
                       name="jobCategory"
                       value={formData.jobCategory}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                       required
                     >
                       <option value="MERN">MERN Stack</option>
@@ -305,7 +305,7 @@ const JobCreate = () => {
                       name="shift"
                       value={formData.shift}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                       required
                     >
                       <option value="DAY">Day</option>
@@ -326,7 +326,7 @@ const JobCreate = () => {
                           name="location"
                           value={formData.location}
                           onChange={handleChange}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                           required
                         />
                       </div>
@@ -350,7 +350,7 @@ const JobCreate = () => {
                   name="deadline"
                   value={formData.deadline}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                 />
               </div>
             </section>
@@ -358,7 +358,7 @@ const JobCreate = () => {
             <div className="pt-6">
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300"
+                className="w-full py-3 px-4 bg-gradient-to-r from-[#2d9134] to-[#2d9134] text-white font-medium rounded-lg hover:from-[#2d9134] hover:to-[#126918] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300"
               >
                 Create Job Post
               </button>

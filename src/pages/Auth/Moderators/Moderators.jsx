@@ -86,7 +86,7 @@ export default function Moderators() {
               className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md"
             >
               <div className="flex flex-col sm:flex-row sm:items-center w-full">
-                <div className="flex justify-center items-center h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-[#9FB3DF] text-[#333] text-xl font-bold">
+                <div className="flex justify-center items-center h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-[#00ab0c] text-[#00000] text-4xl font-bold">
                   {capitalizeFirstLetter(mod?.name?.charAt(0))}
                 </div>
 
