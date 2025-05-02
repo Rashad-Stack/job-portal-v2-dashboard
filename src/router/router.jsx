@@ -20,14 +20,10 @@ const router = createBrowserRouter([
         <DashboardLayout />
       </PrivateRoute>
     ),
-    future: {
-      v7_relativeSplatPath: true,
-    },
     children: [
       { path: "/", element: <Home /> },
       { path: "/dashboard", element: <Navigate to="/" replace /> },
       { path: "/dashboard/profile", element: <Profile /> },
-      // { path: "/system/change-password", element: <ChangePassword /> },
       { path: "/jobs/create", element: <JobCreate /> },
       { path: "/jobs/read", element: <AllJobs /> },
       { path: "/jobs/edit/:id", element: <JobEdit /> },
