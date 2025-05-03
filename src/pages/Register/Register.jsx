@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Logo from "../../components/common/Logo";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import axios from "axios";
 
 export default function Register() {
@@ -24,7 +24,7 @@ export default function Register() {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:3000/api/v1/user/create",
+        "http://localhost:3000/api/v2/user/create",
         {
           name,
           email,

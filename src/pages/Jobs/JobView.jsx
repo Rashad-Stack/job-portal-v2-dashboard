@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router";
 import { getJobById } from "../../api/jobs";
 import { PencilSquareIcon } from "@heroicons/react/24/outline"; // Importing a nice edit icon
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 import DashboardNavbar from "../components/dashboard/DashboardNavbar";
 import useDeviceSize from "../hooks/useDeviceSize";
 

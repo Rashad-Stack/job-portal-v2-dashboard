@@ -1,4 +1,5 @@
-import { createBrowserRouter, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, BrowserRouter } from "react-router"; // use 'react-router-dom'
+
 import DashboardLayout from "../layout/DashboardLayout";
 import Home from "../pages/Home/Home";
 import Login from "../pages/Auth/Login";
@@ -12,30 +13,33 @@ import JobView from "../pages/Jobs/JobView";
 import Moderators from "../pages/Auth/Moderators/Moderators";
 import PrivateRoute from "./PrivectRoute.jsx";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: (
-      <PrivateRoute>
-        <DashboardLayout />
-      </PrivateRoute>
-    ),
-    children: [
-      { path: "/", element: <Home /> },
-      { path: "/dashboard", element: <Navigate to="/" replace /> },
-      { path: "/dashboard/profile", element: <Profile /> },
-      { path: "/jobs/create", element: <JobCreate /> },
-      { path: "/jobs/read", element: <AllJobs /> },
-      { path: "/jobs/edit/:id", element: <JobEdit /> },
-      { path: "/jobs/view/:id", element: <JobView /> },
-      { path: "/setting/manage_moderator", element: <Moderators /> },
-      { path: "/moderator/register", element: <Register /> },
-    ],
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-]);
+function Router() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <DashboardLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<Home />} />
+          <Route path="dashboard" element={<Navigate to="/" replace />} />
+          <Route path="dashboard/profile" element={<Profile />} />
+          <Route path="dashboard/change-password" element={<ChangePassword />} />
+          <Route path="jobs/create" element={<JobCreate />} />
+          <Route path="jobs/read" element={<AllJobs />} />
+          <Route path="jobs/edit/:id" element={<JobEdit />} />
+          <Route path="jobs/view/:id" element={<JobView />} />
+          <Route path="setting/manage_moderator" element={<Moderators />} />
+          <Route path="moderator/register" element={<Register />} />
+        </Route>
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
 
-export default router;
+export default Router;

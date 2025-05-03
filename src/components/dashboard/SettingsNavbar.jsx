@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { RiLockPasswordLine, RiSettingsLine } from "react-icons/ri";
 import { AiOutlineForm } from "react-icons/ai";
 import { FaUsersCog } from "react-icons/fa";

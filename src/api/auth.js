@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000/api/v1/user";
+const API_BASE_URL = "http://localhost:3000/api/v2/user";
 
 export const login = async (email, password) => {
   try {
