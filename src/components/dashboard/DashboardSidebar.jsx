@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MdOutlineDashboard } from "react-icons/md";
 import { FaRegUser } from "react-icons/fa";
 import { IoSettingsOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import SettingsNavbar from "./SettingsNavbar";
 import { MdWorkOutline } from "react-icons/md";
 import JobsNavbar from "./JobsNavbar";

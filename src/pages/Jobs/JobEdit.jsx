@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router";
 import { getJobById, updateJob } from "../../api/jobs";
 import axios from "axios";
 
@@ -31,7 +31,7 @@ const JobEdit = () => {
         setLoading(true);
         setError("");
         const { data } = await axios.get(
-          `http://localhost:3000/api/v1/job/${id}`
+          `http://localhost:3000/api/v2/job/${id}`
         );
         const jobDetails = data.data;
         setJob(jobDetails);

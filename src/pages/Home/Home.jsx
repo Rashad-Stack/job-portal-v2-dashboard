@@ -15,7 +15,7 @@ function Home() {
     try {
       setLoading(true);
       setError("");
-      const { data } = await axios.get("http://localhost:3000/api/v1/job/all");
+      const { data } = await axios.get("http://localhost:3000/api/v2/job/all");
       setJobs(data.data || []);
     } catch (err) {
       console.error("Failed to fetch total jobs:", err.message);

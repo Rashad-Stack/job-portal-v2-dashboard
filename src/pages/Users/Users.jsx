@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaTrash, FaPlus, FaRegUser } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -17,7 +17,7 @@ export default function UsersPage() {
     try {
       setLoading(true);
       setError("");
-      const { data } = await axios.get("http://localhost:3000/api/v1/user/all");
+      const { data } = await axios.get("http://localhost:3000/api/v2/user/all");
       setUsers(data.data || []);
     } catch (err) {
       console.error("Failed to fetch users:", err.message);
@@ -40,7 +40,7 @@ export default function UsersPage() {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/v1/user/delete/${id}`);
+        await axios.delete(`http://localhost:3000/api/v2/user/delete/${id}`);
         setUsers((prev) => prev.filter((user) => user.id !== id));
         Swal.fire("Deleted!", "User has been removed.", "success");
       } catch (err) {

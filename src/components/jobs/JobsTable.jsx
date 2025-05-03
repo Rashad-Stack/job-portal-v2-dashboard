@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { FaMapMarkerAlt, FaBriefcase, FaClock, FaUsers } from "react-icons/fa";
 import { FaBangladeshiTakaSign } from "react-icons/fa6";
 import { GiClick } from "react-icons/gi";

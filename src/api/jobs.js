@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000/api/v1/job";
+const API_BASE_URL = "http://localhost:3000/api/v2/job";
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
