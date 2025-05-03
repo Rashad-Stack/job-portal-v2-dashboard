@@ -1,32 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { MdOutlineDashboard } from "react-icons/md";
-import { FaRegUser } from "react-icons/fa";
+import React, { useState } from "react";
+import { MdOutlineDashboard, MdWorkOutline } from "react-icons/md";
 import { IoSettingsOutline } from "react-icons/io5";
 import { Link } from "react-router";
 import SettingsNavbar from "./SettingsNavbar";
-import { MdWorkOutline } from "react-icons/md";
 import JobsNavbar from "./JobsNavbar";
-
+import JobIndexBar from "./JobIndexBar";
+import { CiViewTable } from "react-icons/ci";
 function DashboardSidebar({ toggleSidebar }) {
   const [isSettingsOpen, setSettingsOpen] = useState(false);
   const [isJobsOpen, setJobsOpen] = useState(false);
+  const [isJobIndexOpen, setJobIndexOpen] = useState(false);
 
   const toggleSettings = () => {
     setSettingsOpen(!isSettingsOpen);
     setJobsOpen(false);
+    setJobIndexOpen(false);
   };
 
   const toggleJobs = () => {
     setJobsOpen(!isJobsOpen);
     setSettingsOpen(false);
+    setJobIndexOpen(false);
   };
 
-  function handleOnClick() {
+  const toggleJobIndex = () => {
+    setJobIndexOpen(!isJobIndexOpen);
     setSettingsOpen(false);
-    if (isMobile) {
-      toggleSidebar(false);
-    }
-  }
+    setJobsOpen(false);
+  };
 
   return (
     <aside className="fixed top-0 left-0 z-40 w-64 h-screen pt-20 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -36,12 +37,12 @@ function DashboardSidebar({ toggleSidebar }) {
             <Link
               to="/"
               className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              onClick={handleOnClick}
             >
               <MdOutlineDashboard />
               <span className="ms-3">Dashboard</span>
             </Link>
           </li>
+
           <li>
             <button
               className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
@@ -57,6 +58,18 @@ function DashboardSidebar({ toggleSidebar }) {
               />
             )}
           </li>
+
+          <li>
+            <button
+              onClick={toggleJobIndex}
+              className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+            >
+              <CiViewTable />
+              <span className="ms-3">Job Index</span>
+            </button>
+            {isJobIndexOpen && <JobIndexBar toggleSidebar={toggleSidebar} />}
+          </li>
+
           <li>
             <button
               onClick={toggleSettings}

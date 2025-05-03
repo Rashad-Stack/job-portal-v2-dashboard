@@ -57,6 +57,7 @@ const JobCreate = () => {
       }
 
       const requiredFields = [
+        "companyName",
         "title",
         "numberOfHiring",
         "location",
