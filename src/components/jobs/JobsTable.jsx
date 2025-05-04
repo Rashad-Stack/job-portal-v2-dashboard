@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router";
-import { FaMapMarkerAlt, FaBriefcase, FaClock, FaUsers } from "react-icons/fa";
-import { FaBangladeshiTakaSign } from "react-icons/fa6";
-import { GiClick } from "react-icons/gi";
-import { BiCategoryAlt } from "react-icons/bi";
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router';
+import { FaMapMarkerAlt, FaBriefcase, FaClock, FaUsers } from 'react-icons/fa';
+import { FaBangladeshiTakaSign } from 'react-icons/fa6';
+import { GiClick } from 'react-icons/gi';
+import { BiCategoryAlt } from 'react-icons/bi';
 
 const formatDate = (date) => {
-  return date ? new Date(date).toLocaleDateString() : "N/A";
+  return date ? new Date(date).toLocaleDateString() : 'N/A';
 };
 
 export default function JobsTable({ job, index, handleDelete }) {
@@ -14,27 +14,25 @@ export default function JobsTable({ job, index, handleDelete }) {
 
   const handleSave = (updatedJob) => {
     // TODO: Implement save functionality
-    console.log("Updated job:", updatedJob);
+    console.log('Updated job:', updatedJob);
   };
 
-  const [appliedBy, setAppliedBy] = useState("");
+  const [appliedBy, setAppliedBy] = useState('');
 
   useEffect(() => {
     if (job.appliedBy === true) {
-      setAppliedBy("Internal");
+      setAppliedBy('Internal');
     } else {
-      setAppliedBy("Google Form Link");
+      setAppliedBy('Google Form Link');
     }
   }, [job.appliedBy]);
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-xl border border-gray-100 p-6 hover: transition-shadow">
       <div className="flex flex-col md:flex-row md:items-center justify-between">
         <div className="space-y-4 mb-4 md:mb-0">
           <h2 className="text-xl font-semibold text-gray-800">{job.title}</h2>
           <div className="space-y-2">
-            <p className="text-lg font-medium text-gray-700">
-              {job.companyName}
-            </p>
+            <p className="text-lg font-medium text-gray-700">{job.companyName}</p>
             <div className="flex flex-wrap gap-4 text-gray-600">
               <div className="flex items-center gap-2">
                 <FaMapMarkerAlt className="text-indigo-500" />
@@ -42,7 +40,7 @@ export default function JobsTable({ job, index, handleDelete }) {
               </div>
               <div className="flex items-center gap-2">
                 <FaBriefcase className="text-indigo-500" />
-                <span>{job.jobType?.replace("_", " ")}</span>
+                <span>{job.jobType?.replace('_', ' ')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <BiCategoryAlt className="text-indigo-500" />
@@ -53,7 +51,7 @@ export default function JobsTable({ job, index, handleDelete }) {
                 <GiClick className="text-indigo-500" />
 
                 <span>
-                  {appliedBy === "Google Form Link" ? (
+                  {appliedBy === 'Google Form Link' ? (
                     <a
                       href={job.googleForm}
                       title={job.googleForm}
@@ -70,8 +68,7 @@ export default function JobsTable({ job, index, handleDelete }) {
               <div className="flex items-center gap-2">
                 <FaUsers className="text-indigo-500" />
                 <span>
-                  {job.numberOfHiring}{" "}
-                  {job.numberOfHiring > 1 ? "Positions" : "Position"}
+                  {job.numberOfHiring} {job.numberOfHiring > 1 ? 'Positions' : 'Position'}
                 </span>
               </div>
             </div>
