@@ -1,22 +1,22 @@
-import React, { useEffect, useState } from "react";
-import Logo from "../common/Logo";
-import { Link } from "react-router";
-import { RiMenuAddFill } from "react-icons/ri";
-import { FaUserCircle } from "react-icons/fa";
-import { jwtDecode } from "jwt-decode";
+import React, { useEffect, useState } from 'react';
+import Logo from '../common/Logo';
+import { Link } from 'react-router';
+import { RiMenuAddFill } from 'react-icons/ri';
+import { FaUserCircle } from 'react-icons/fa';
+import { jwtDecode } from 'jwt-decode';
 
 function DashboardNavbar({ toggleSidebar }) {
   const [isProfileOpen, setProfileOpen] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (token) {
       try {
         const decoded = jwtDecode(token); // 👈 correct usage
         setUserInfo(decoded);
       } catch (error) {
-        console.error("Error decoding token:", error);
+        console.error('Error decoding token:', error);
       }
     }
   }, []);
@@ -27,10 +27,10 @@ function DashboardNavbar({ toggleSidebar }) {
   const LogOut = () => {
     localStorage.clear(); // Clears all data in localStorage
     // If you're using cookies for token, clear the cookie as well
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; // Remove cookie
+    document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'; // Remove cookie
 
     // Optional: Redirect to login page (if required)
-    window.location.href = "/login"; // or use react-router to navigate
+    window.location.href = '/login'; // or use react-router to navigate
   };
 
   const handleDropDown = () => {
@@ -58,7 +58,7 @@ function DashboardNavbar({ toggleSidebar }) {
                 <FaUserCircle />
               </button>
               {isProfileOpen && userInfo && (
-                <div className="z-50 absolute top-[40px] right-[0px] my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600">
+                <div className="z-50 absolute top-[40px] right-[0px] my-4 text-base list-none bg-white divide-y divide-gray-100 rounded dark:bg-gray-700 dark:divide-gray-600">
                   <div className="px-4 py-3">
                     <p className="text-sm text-gray-900 dark:text-white">
                       <p>{capitalizeFirstLetter(userInfo?.name)}</p>

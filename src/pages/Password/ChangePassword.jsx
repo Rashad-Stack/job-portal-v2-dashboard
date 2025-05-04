@@ -31,7 +31,7 @@ const ChangePassword = () => {
 
   return (
     <div>
-      <div className="p-10 mt-10 sm:max-w-xl w-full mx-auto bg-white shadow rounded-lg">
+      <div className="p-10 mt-10 sm:max-w-xl w-full mx-auto bg-white rounded-lg">
         <h2 className="sm:text-2xl sm:mt-0 mt-2 mb-4 text-center text-xl font-semibold text-gray-600">
           Change Password
         </h2>
@@ -45,7 +45,7 @@ const ChangePassword = () => {
               id="currentPassword"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md "
               required
             />
           </div>
@@ -58,7 +58,7 @@ const ChangePassword = () => {
               id="newPassword"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md "
               required
             />
           </div>
@@ -71,7 +71,7 @@ const ChangePassword = () => {
               id="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm"
+              className="mt-1 p-2 block w-full border border-gray-300 rounded-md "
               required
             />
           </div>
