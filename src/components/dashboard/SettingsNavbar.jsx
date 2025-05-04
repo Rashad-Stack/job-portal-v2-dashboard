@@ -12,7 +12,7 @@ export default function SettingsNavbar({ toggleSidebar }) {
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("svaAuth");
+    const token = localStorage.getItem("savAuth");
     if (token) {
       try {
         const decoded = jwtDecode(token);
