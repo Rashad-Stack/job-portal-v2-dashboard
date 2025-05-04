@@ -10,7 +10,7 @@ function DashboardNavbar({ toggleSidebar }) {
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('svaAuth');
     if (token) {
       try {
         const decoded = jwtDecode(token); // 👈 correct usage
