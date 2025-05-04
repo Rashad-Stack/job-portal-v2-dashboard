@@ -76,6 +76,7 @@ const JobCreate = () => {
         navigate("/login", { state: { from: "/jobs/create" } });
         return;
       }
+
       const requiredFields = [
         "companyName",
         "title",
@@ -126,9 +127,9 @@ const JobCreate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/60 dark:bg-gray-900 py-8 px-4">
+    <div className="min-h-screen bg-gray-50/60 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-2xl overflow-hidden">
+        <div className="bg-white border bottom-1 border-slate-200 rounded-2xl overflow-hidden">
           <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c]">
             <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
               Create New Job Post
@@ -144,7 +145,7 @@ const JobCreate = () => {
 
             {/* Basic Information */}
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 pb-2 border-b dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
                 Basic Information
               </h2>
               <div>
@@ -156,14 +157,14 @@ const JobCreate = () => {
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134] dark:bg-gray-700 dark:text-white"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                   required
                   placeholder="Job Title"
                 />
               </div>
-              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2   gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Company Name
                   </label>
                   <input
@@ -171,12 +172,12 @@ const JobCreate = () => {
                     name="companyName"
                     value={formData.companyName}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134] dark:bg-gray-700 dark:text-white"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                     placeholder="Company Name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Number of Hiring
                   </label>
                   <input
@@ -184,7 +185,7 @@ const JobCreate = () => {
                     name="numberOfHiring"
                     value={formData.numberOfHiring}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134] dark:bg-gray-700 dark:text-white"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -200,8 +201,9 @@ const JobCreate = () => {
                           value="true"
                           checked={formData.appliedBy === true}
                           onChange={handleChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                         />
+                        <span className="ml-2 text-gray-700">Internal</span>
                         <span className="ml-2 text-gray-700 dark:text-gray-300">
                           Internal
                         </span>
@@ -213,8 +215,9 @@ const JobCreate = () => {
                           value="false"
                           checked={formData.appliedBy === false}
                           onChange={handleChange}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                         />
+                        <span className="ml-2 text-gray-700">External</span>
                         <span className="ml-2 text-gray-700 dark:text-gray-300">
                           External
                         </span>
@@ -224,7 +227,7 @@ const JobCreate = () => {
                     {/* Show button if External is selected */}
                     {formData.appliedBy === false && (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
                           Google Form URL
                         </label>
                         <input
@@ -232,7 +235,7 @@ const JobCreate = () => {
                           name="googleForm"
                           value={formData.googleForm}
                           onChange={handleChange}
-                          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134] dark:bg-gray-700 dark:text-white"
+                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                           placeholder="Enter Google Form URL"
                         />
                       </div>
@@ -242,19 +245,18 @@ const JobCreate = () => {
               </div>
             </section>
 
-            {/* Rest of your form sections with similar dark mode classes */}
             <section className="space-y-4">
-              <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
+              <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3   gap-4">
                 <div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
                       Job Nature
                     </label>
                     <select
                       name="jobNature"
                       value={formData.jobNature}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134] dark:bg-gray-700 dark:text-white"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                       required
                     >
                       <option value="ONSITE">On Site</option>
@@ -265,6 +267,11 @@ const JobCreate = () => {
                 {/* Other select inputs with similar dark mode classes */}
               </div>
             </section>
+            {/* Location */}
+
+            {/* Employment Status */}
+
+            {/* Deadline */}
             <section className="space-y-4">
               <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3   gap-4">
                 <div>
@@ -325,7 +332,7 @@ const JobCreate = () => {
               </div>
             </section>
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 pb-2 border-b dark:border-gray-700">
+              <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
                 Application Deadline
               </h2>
               <div>
@@ -334,7 +341,7 @@ const JobCreate = () => {
                   name="deadline"
                   value={formData.deadline}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134] dark:bg-gray-700 dark:text-white"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                 />
               </div>
             </section>
