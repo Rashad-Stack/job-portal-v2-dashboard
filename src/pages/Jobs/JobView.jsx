@@ -1,36 +1,45 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
-import { getJobById } from '../../api/jobs';
-import { PencilSquareIcon } from '@heroicons/react/24/outline'; // Importing a nice edit icon
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router";
+import { getJobById } from "../../api/jobs";
+import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { getCategoryById } from "../../api/category";
 
 export default function JobView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
+  const [myCategory, setMyCategory] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
+  const [error, setError] = useState("");
   useEffect(() => {
-    const fetchJob = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        setError('');
-        const { data } = await getJobById(id);
-        setJob(data);
+        setError("");
+
+        const { data: jobData } = await getJobById(id);
+        setJob(jobData);
+
+        const { data: categoryData } = await getCategoryById(
+          jobData.categoryId
+        );
+        setMyCategory(categoryData);
       } catch (err) {
-        console.error('Failed to fetch job:', err.message);
-        setError('Failed to fetch job. Please try again later.');
+        console.error("Error fetching job or category:", err.message);
+        setError("Failed to fetch data. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchJob();
+    fetchData();
   }, [id]);
 
-  if (loading) return <div className="text-center p-6 text-gray-500">Loading...</div>;
+  if (loading)
+    return <div className="text-center p-6 text-gray-500">Loading...</div>;
   if (error) return <div className="text-center p-6 text-red-600">{error}</div>;
-  if (!job) return <div className="text-center p-6 text-gray-500">Job not found</div>;
+  if (!job)
+    return <div className="text-center p-6 text-gray-500">Job not found</div>;
 
   const {
     title,
@@ -72,28 +81,34 @@ export default function JobView() {
           <span className="font-semibold">Vacancy:</span> {numberOfHiring}
         </p>
         <p>
-          <span className="font-semibold">Job Type:</span> {jobType?.replace('_', ' ')}
+          <span className="font-semibold">Job Type:</span>{" "}
+          {jobType?.replace("_", " ")}
         </p>
         <p>
-          <span className="font-semibold">Job Category:</span> {category?.replace('_', ' ')}
+          <span className="font-semibold">Job Category:</span> {myCategory.name}
         </p>
         <p>
-          <span className="font-semibold">Job Level:</span> {jobLevel?.replace('_', ' ')}
+          <span className="font-semibold">Job Level:</span>{" "}
+          {jobLevel?.replace("_", " ")}
         </p>
         <p>
-          <span className="font-semibold">Job Nature:</span> {jobNature?.replace('_', ' ')}
+          <span className="font-semibold">Job Nature:</span>{" "}
+          {jobNature?.replace("_", " ")}
         </p>
         <p>
-          <span className="font-semibold">Applied By:</span> {appliedBy ? 'Internal' : 'External'}
+          <span className="font-semibold">Applied By:</span>{" "}
+          {appliedBy ? "Internal" : "External"}
         </p>
         <p>
-          <span className="font-semibold">Shift:</span> {shift?.replace('_', ' ')}
+          <span className="font-semibold">Shift:</span>{" "}
+          {shift?.replace("_", " ")}
         </p>
         <p>
           <span className="font-semibold">Location:</span> {location}
         </p>
         <p>
-          <span className="font-semibold">Deadline:</span> {new Date(deadline).toLocaleDateString()}
+          <span className="font-semibold">Deadline:</span>{" "}
+          {new Date(deadline).toLocaleDateString()}
         </p>
       </div>
     </div>

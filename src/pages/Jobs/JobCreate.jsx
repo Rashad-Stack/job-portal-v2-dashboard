@@ -1,20 +1,12 @@
-<<<<<<< HEAD
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { createJob } from "../../api/jobs";
 import { isAuthenticated } from "../../api/auth";
 import axios from "axios";
-=======
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
-import { createJob } from '../../api/jobs';
-import { isAuthenticated } from '../../api/auth';
->>>>>>> 224552b261acda392745700a47306a037d7faa1c
 
 const JobCreate = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-<<<<<<< HEAD
     title: "",
     companyName: "",
     numberOfHiring: "",
@@ -27,24 +19,9 @@ const JobCreate = () => {
     jobNature: "ONSITE",
     shift: "DAY",
     deadline: "",
-=======
-    title: '',
-    companyName: '',
-    numberOfHiring: '', // <-- fixed
-    appliedBy: false,
-    location: '',
-    googleForm: '',
-    jobType: 'FULL_TIME',
-    jobCategory: 'MERN',
-    jobLevel: 'MID_LEVEL',
-    category: 'MERN', // <-- fixed spelling
-    jobNature: 'ONSITE',
-    shift: 'DAY',
-    deadline: '',
->>>>>>> 224552b261acda392745700a47306a037d7faa1c
   });
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState([]);
 
@@ -71,15 +48,15 @@ const JobCreate = () => {
   const handleChange = (e) => {
     const { name, value, type } = e.target;
 
-    if (name === 'appliedBy') {
+    if (name === "appliedBy") {
       setFormData((prev) => ({
         ...prev,
-        appliedBy: value === 'true',
+        appliedBy: value === "true",
       }));
-    } else if (type === 'number') {
+    } else if (type === "number") {
       setFormData((prev) => ({
         ...prev,
-        [name]: value === '' ? '' : Number(value),
+        [name]: value === "" ? "" : Number(value),
       }));
     } else {
       setFormData((prev) => ({
@@ -91,12 +68,12 @@ const JobCreate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
       if (!isAuthenticated()) {
-        navigate('/login', { state: { from: '/jobs/create' } });
+        navigate("/login", { state: { from: "/jobs/create" } });
         return;
       }
       const requiredFields = [
@@ -112,34 +89,36 @@ const JobCreate = () => {
         "deadline",
       ];
       if (formData.appliedBy === false) {
-        requiredFields.push('googleForm');
+        requiredFields.push("googleForm");
       }
 
       const emptyFields = requiredFields.filter((field) => {
         const value = formData[field];
-        return !value || (typeof value === 'string' && value.trim() === '');
+        return !value || (typeof value === "string" && value.trim() === "");
       });
 
       if (emptyFields.length > 0) {
-        setError(`Please fill out the following fields: ${emptyFields.join(', ')}`);
+        setError(
+          `Please fill out the following fields: ${emptyFields.join(", ")}`
+        );
         setLoading(false);
         return;
       }
 
       // ⬇️ If companyName is empty, delete it from formData so that Prisma will use default
       const dataToSend = { ...formData };
-      if (!dataToSend.companyName || dataToSend.companyName.trim() === '') {
+      if (!dataToSend.companyName || dataToSend.companyName.trim() === "") {
         delete dataToSend.companyName;
       }
 
       await createJob(dataToSend);
-      navigate('/jobs/read');
+      navigate("/jobs/read");
     } catch (error) {
-      console.error('Error creating job:', error);
-      if (error.message.includes('Authentication token not found')) {
-        navigate('/login', { state: { from: '/jobs/create' } });
+      console.error("Error creating job:", error);
+      if (error.message.includes("Authentication token not found")) {
+        navigate("/login", { state: { from: "/jobs/create" } });
       } else {
-        setError(error.message || 'Failed to create job');
+        setError(error.message || "Failed to create job");
       }
     } finally {
       setLoading(false);
@@ -223,7 +202,9 @@ const JobCreate = () => {
                           onChange={handleChange}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                         />
-                        <span className="ml-2 text-gray-700 dark:text-gray-300">Internal</span>
+                        <span className="ml-2 text-gray-700 dark:text-gray-300">
+                          Internal
+                        </span>
                       </label>
                       <label className="flex items-center">
                         <input
@@ -234,7 +215,9 @@ const JobCreate = () => {
                           onChange={handleChange}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                         />
-                        <span className="ml-2 text-gray-700 dark:text-gray-300">External</span>
+                        <span className="ml-2 text-gray-700 dark:text-gray-300">
+                          External
+                        </span>
                       </label>
                     </div>
 
@@ -282,7 +265,6 @@ const JobCreate = () => {
                 {/* Other select inputs with similar dark mode classes */}
               </div>
             </section>
-<<<<<<< HEAD
             <section className="space-y-4">
               <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3   gap-4">
                 <div>
@@ -342,10 +324,6 @@ const JobCreate = () => {
                 </div>
               </div>
             </section>
-=======
-
-            {/* Deadline section */}
->>>>>>> 224552b261acda392745700a47306a037d7faa1c
             <section className="space-y-4">
               <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 pb-2 border-b dark:border-gray-700">
                 Application Deadline
