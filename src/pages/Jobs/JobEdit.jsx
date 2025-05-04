@@ -1,36 +1,38 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
-import { getJobById, updateJob } from '../../api/jobs';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router";
+import { getJobById, updateJob } from "../../api/jobs";
+import axios from "axios";
 
 const JobEdit = () => {
   const { id } = useParams();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    title: '',
-    companyName: '',
-    numberOfHiring: '', // <-- fixed
+    title: "",
+    companyName: "",
+    numberOfHiring: "", // <-- fixed
     appliedBy: false,
-    location: '',
-    jobType: 'FULL_TIME',
-    jobLevel: 'MID_LEVEL',
-    category: 'MERN', // <-- fixed spelling
-    jobNature: 'ONSITE',
-    shift: 'DAY',
-    deadline: '',
-    googleForm: '',
+    location: "",
+    jobType: "FULL_TIME",
+    jobLevel: "MID_LEVEL",
+    category: "MERN", // <-- fixed spelling
+    jobNature: "ONSITE",
+    shift: "DAY",
+    deadline: "",
+    googleForm: "",
   });
 
   useEffect(() => {
     const fetchJob = async () => {
       try {
         setLoading(true);
-        setError('');
-        const { data } = await axios.get(`http://localhost:3000/api/v2/job/${id}`);
+        setError("");
+        const { data } = await axios.get(
+          `http://localhost:3000/api/v2/job/${id}`
+        );
         const jobDetails = data.data;
         setJob(jobDetails);
 
@@ -49,8 +51,8 @@ const JobEdit = () => {
           googleForm: jobDetails.googleForm,
         });
       } catch (err) {
-        console.error('Failed to fetch job:', err.message);
-        setError('Failed to fetch job. Please try again later.');
+        console.error("Failed to fetch job:", err.message);
+        setError("Failed to fetch job. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -63,7 +65,7 @@ const JobEdit = () => {
     try {
       console.log(formData);
     } catch (error) {
-      console.error('Admin update failed:', error);
+      console.error("Admin update failed:", error);
     }
   };
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,15 +79,15 @@ const JobEdit = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError('');
+    setError("");
 
     const cleanedFormData = sanitizeData();
 
     try {
       await updateJob(id, cleanedFormData);
-      navigate('/jobs/read');
+      navigate("/jobs/read");
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update job');
+      setError(err.response?.data?.message || "Failed to update job");
     } finally {
       setIsSubmitting(false);
     }
@@ -93,20 +95,20 @@ const JobEdit = () => {
   const handleChange = (e) => {
     const { name, value, type } = e.target;
 
-    if (name === 'appliedBy') {
+    if (name === "appliedBy") {
       setFormData((prev) => ({
         ...prev,
-        appliedBy: value === 'true',
+        appliedBy: value === "true",
       }));
-    } else if (name === 'companyName') {
+    } else if (name === "companyName") {
       setFormData((prev) => ({
         ...prev,
         companyName: value.trimStart(), // <-- trimming start space when typing
       }));
-    } else if (type === 'number') {
+    } else if (type === "number") {
       setFormData((prev) => ({
         ...prev,
-        [name]: value === '' ? '' : Number(value),
+        [name]: value === "" ? "" : Number(value),
       }));
     } else {
       setFormData((prev) => ({
@@ -197,7 +199,9 @@ const JobEdit = () => {
                           onChange={handleChange}
                           className="h-4 w-4 focus:ring-[#00ab0c] focus:border-[#1e6623] border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                         />
-                        <span className="ml-2 text-gray-700 dark:text-gray-300">Internal</span>
+                        <span className="ml-2 text-gray-700 dark:text-gray-300">
+                          Internal
+                        </span>
                       </label>
                       <label className="flex items-center">
                         <input
@@ -208,7 +212,9 @@ const JobEdit = () => {
                           onChange={handleChange}
                           className="h-4 w-4 focus:ring-[#00ab0c] focus:border-[#1e6623] border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                         />
-                        <span className="ml-2 text-gray-700 dark:text-gray-300">External</span>
+                        <span className="ml-2 text-gray-700 dark:text-gray-300">
+                          External
+                        </span>
                       </label>
                     </div>
 

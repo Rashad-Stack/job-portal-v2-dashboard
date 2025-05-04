@@ -1,5 +1,4 @@
 const API_BASE_URL = "http://localhost:3000/api/v2/category";
-
 const getAuthHeaders = () => {
   const token = localStorage.getItem("svaAuth");
   if (!token) {
@@ -10,7 +9,6 @@ const getAuthHeaders = () => {
     Authorization: `Bearer ${token}`,
   };
 };
-
 // Get all jobs
 export const getAllCategories = async () => {
   try {
@@ -28,7 +26,6 @@ export const getAllCategories = async () => {
     throw error;
   }
 };
-
 // Get job by ID
 export const getCategoryById = async (id) => {
   try {
@@ -42,7 +39,6 @@ export const getCategoryById = async (id) => {
     throw error;
   }
 };
-
 // Create new job
 export const createCategory = async (categoryData) => {
   try {
@@ -73,7 +69,6 @@ export const createCategory = async (categoryData) => {
     throw error;
   }
 };
-
 // Update job
 export const updateCategory = async (id, categoryData) => {
   try {
@@ -99,7 +94,6 @@ export const updateCategory = async (id, categoryData) => {
     throw error;
   }
 };
-
 // Delete job
 export const deleteCategory = async (id) => {
   try {
