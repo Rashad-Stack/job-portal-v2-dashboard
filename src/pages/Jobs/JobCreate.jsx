@@ -127,9 +127,9 @@ const JobCreate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/60 py-8 px-4">
+    <div className="min-h-screen bg-gray-50/60 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white border bottom-1 border-slate-200 rounded-2xl overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-2xl overflow-hidden">
           <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c]">
             <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
               Create New Job Post
@@ -138,18 +138,18 @@ const JobCreate = () => {
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {error && (
-              <div className="p-4 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300">
+              <div className="p-4 bg-red-50 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200">
                 {error}
               </div>
             )}
 
             {/* Basic Information */}
             <section className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 pb-2 border-b dark:border-gray-700">
                 Basic Information
               </h2>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                   Job Title*
                 </label>
                 <input
@@ -157,14 +157,14 @@ const JobCreate = () => {
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
+                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                   required
                   placeholder="Job Title"
                 />
               </div>
-              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2   gap-4">
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                     Company Name
                   </label>
                   <input
@@ -172,12 +172,12 @@ const JobCreate = () => {
                     name="companyName"
                     value={formData.companyName}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                     placeholder="Company Name"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                     Number of Hiring
                   </label>
                   <input
@@ -185,11 +185,11 @@ const JobCreate = () => {
                     name="numberOfHiring"
                     value={formData.numberOfHiring}
                     onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Applied By
                   </label>
                   <div className="space-y-4">
@@ -203,8 +203,7 @@ const JobCreate = () => {
                           onChange={handleChange}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                         />
-                        <span className="ml-2 text-gray-700">Internal</span>
-                        <span className="ml-2 text-gray-700 dark:text-gray-300">
+                        <span className="ml-2 text-gray-700 dark:text-gray-200">
                           Internal
                         </span>
                       </label>
@@ -217,17 +216,15 @@ const JobCreate = () => {
                           onChange={handleChange}
                           className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
                         />
-                        <span className="ml-2 text-gray-700">External</span>
-                        <span className="ml-2 text-gray-700 dark:text-gray-300">
+                        <span className="ml-2 text-gray-700 dark:text-gray-200">
                           External
                         </span>
                       </label>
                     </div>
 
-                    {/* Show button if External is selected */}
                     {formData.appliedBy === false && (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                           Google Form URL
                         </label>
                         <input
@@ -235,7 +232,7 @@ const JobCreate = () => {
                           name="googleForm"
                           value={formData.googleForm}
                           onChange={handleChange}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
+                          className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                           placeholder="Enter Google Form URL"
                         />
                       </div>
@@ -246,93 +243,126 @@ const JobCreate = () => {
             </section>
 
             <section className="space-y-4">
-              <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3   gap-4">
+              <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
+                {/* Job Nature */}
                 <div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Job Nature
-                    </label>
-                    <select
-                      name="jobNature"
-                      value={formData.jobNature}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
-                      required
-                    >
-                      <option value="ONSITE">On Site</option>
-                      <option value="REMOTE">Remote</option>
-                    </select>
-                  </div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                    Job Nature
+                  </label>
+                  <select
+                    name="jobNature"
+                    value={formData.jobNature}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
+                    required
+                  >
+                    <option value="ONSITE">On Site</option>
+                    <option value="REMOTE">Remote</option>
+                  </select>
                 </div>
-                {/* Other select inputs with similar dark mode classes */}
+
+                {/* Job Level */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                    Job Level
+                  </label>
+                  <select
+                    name="jobLevel"
+                    value={formData.jobLevel}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
+                    required
+                  >
+                    <option value="ENTRY_LEVEL">Entry Level</option>
+                    <option value="MID_LEVEL">Mid Level</option>
+                    <option value="ADVANCED_LEVEL">Advanced Level</option>
+                    <option value="INTERNSHIP">Intern</option>
+                  </select>
+                </div>
+
+                {/* Job Type */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                    Job Type
+                  </label>
+                  <select
+                    name="jobType"
+                    value={formData.jobType}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
+                    required
+                  >
+                    <option value="FULL_TIME">Full Time</option>
+                    <option value="PART_TIME">Part Time</option>
+                    <option value="CONTRACT">Contract</option>
+                    <option value="INTERNSHIP">Intern</option>
+                  </select>
+                </div>
               </div>
             </section>
-            {/* Location */}
 
-            {/* Employment Status */}
+            <section className="space-y-4">
+              <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
+                {/* Job Category */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                    Job Category
+                  </label>
+                  <select
+                    name="jobCategory"
+                    value={formData.jobCategory}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
+                    required
+                  >
+                    <option value="MERN">MERN Stack</option>
+                    <option value="FRONT_END">Front End</option>
+                    <option value="BACK_END">Back End</option>
+                    <option value="UI_UX">UI & UX</option>
+                    <option value="FULL_STACK">Full Stack</option>
+                    <option value="LARAVEL">PHP Laravel</option>
+                    <option value="DJANGO">Python Django</option>
+                  </select>
+                </div>
+
+                {/* Shift */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                    Shift
+                  </label>
+                  <select
+                    name="shift"
+                    value={formData.shift}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
+                    required
+                  >
+                    <option value="DAY">Day</option>
+                    <option value="NIGHT">Night</option>
+                    <option value="EVENING">Evening</option>
+                  </select>
+                </div>
+
+                {/* Location */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                    Location*
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleChange}
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
+                    required
+                  />
+                </div>
+              </div>
+            </section>
 
             {/* Deadline */}
             <section className="space-y-4">
-              <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3   gap-4">
-                <div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Job Category
-                    </label>
-                    <select
-                      name="categoryId"
-                      value={formData.categoryId}
-                      onChange={handleChange}
-                    >
-                      {category.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Shift
-                    </label>
-                    <select
-                      name="shift"
-                      value={formData.shift}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
-                      required
-                    >
-                      <option value="DAY">Day</option>
-                      <option value="NIGHT">Night</option>
-                      <option value="EVENING">Evening</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <section className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Location*
-                        </label>
-                        <input
-                          type="text"
-                          name="location"
-                          value={formData.location}
-                          onChange={handleChange}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
-                          required
-                        />
-                      </div>
-                    </section>
-                  </div>
-                </div>
-              </div>
-            </section>
-            <section className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
+              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 pb-2 border-b dark:border-gray-700">
                 Application Deadline
               </h2>
               <div>
@@ -341,11 +371,12 @@ const JobCreate = () => {
                   name="deadline"
                   value={formData.deadline}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
+                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                 />
               </div>
             </section>
 
+            {/* Submit */}
             <div className="pt-6">
               <button
                 type="submit"
