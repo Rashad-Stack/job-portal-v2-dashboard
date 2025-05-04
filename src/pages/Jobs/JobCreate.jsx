@@ -1,33 +1,12 @@
-<<<<<<< HEAD
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
-import { createJob } from "../../api/jobs";
-import { isAuthenticated } from "../../api/auth";
-import axios from "axios";
-=======
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import { createJob } from '../../api/jobs';
 import { isAuthenticated } from '../../api/auth';
->>>>>>> 224552b261acda392745700a47306a037d7faa1c
+import axios from 'axios';
 
 const JobCreate = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-<<<<<<< HEAD
-    title: "",
-    companyName: "",
-    numberOfHiring: "",
-    appliedBy: false,
-    location: "",
-    googleForm: "",
-    jobType: "FULL_TIME",
-    categoryId: "",
-    jobLevel: "MID_LEVEL",
-    jobNature: "ONSITE",
-    shift: "DAY",
-    deadline: "",
-=======
     title: '',
     companyName: '',
     numberOfHiring: '', // <-- fixed
@@ -41,7 +20,6 @@ const JobCreate = () => {
     jobNature: 'ONSITE',
     shift: 'DAY',
     deadline: '',
->>>>>>> 224552b261acda392745700a47306a037d7faa1c
   });
 
   const [error, setError] = useState('');
@@ -55,14 +33,12 @@ const JobCreate = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      setError("");
-      const { data } = await axios.get(
-        "http://localhost:3000/api/v2/category/all"
-      );
+      setError('');
+      const { data } = await axios.get('http://localhost:3000/api/v2/category/all');
       setCategory(data.data || []);
     } catch (err) {
-      console.error("Failed to fetch Categories:", err.message);
-      setError("Failed to fetch Categories. Please try again later.");
+      console.error('Failed to fetch Categories:', err.message);
+      setError('Failed to fetch Categories. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -100,16 +76,16 @@ const JobCreate = () => {
         return;
       }
       const requiredFields = [
-        "companyName",
-        "title",
-        "numberOfHiring",
-        "location",
-        "jobType",
-        "jobLevel",
-        "categoryId", // ✅ Correct field name
-        "jobNature",
-        "shift",
-        "deadline",
+        'companyName',
+        'title',
+        'numberOfHiring',
+        'location',
+        'jobType',
+        'jobLevel',
+        'categoryId', // ✅ Correct field name
+        'jobNature',
+        'shift',
+        'deadline',
       ];
       if (formData.appliedBy === false) {
         requiredFields.push('googleForm');
@@ -282,70 +258,8 @@ const JobCreate = () => {
                 {/* Other select inputs with similar dark mode classes */}
               </div>
             </section>
-<<<<<<< HEAD
-            <section className="space-y-4">
-              <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3   gap-4">
-                <div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Job Category
-                    </label>
-                    <select
-                      name="categoryId"
-                      value={formData.categoryId}
-                      onChange={handleChange}
-                    >
-                      {category.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Shift
-                    </label>
-                    <select
-                      name="shift"
-                      value={formData.shift}
-                      onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
-                      required
-                    >
-                      <option value="DAY">Day</option>
-                      <option value="NIGHT">Night</option>
-                      <option value="EVENING">Evening</option>
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <section className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Location*
-                        </label>
-                        <input
-                          type="text"
-                          name="location"
-                          value={formData.location}
-                          onChange={handleChange}
-                          className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
-                          required
-                        />
-                      </div>
-                    </section>
-                  </div>
-                </div>
-              </div>
-            </section>
-=======
 
             {/* Deadline section */}
->>>>>>> 224552b261acda392745700a47306a037d7faa1c
             <section className="space-y-4">
               <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 pb-2 border-b dark:border-gray-700">
                 Application Deadline
