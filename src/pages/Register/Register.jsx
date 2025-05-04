@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import Logo from "../../components/common/Logo";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useState } from 'react';
+import Logo from '../../components/common/Logo';
+import { Link, useNavigate } from 'react-router';
+import axios from 'axios';
 
 export default function Register() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError('');
 
     if (!name || !email || !password) {
-      alert("Please fill in all required fields and accept the terms.");
+      alert('Please fill in all required fields and accept the terms.');
       return;
     }
 
@@ -24,7 +24,7 @@ export default function Register() {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:3000/api/v1/user/create",
+        'http://localhost:3000/api/v2/user/create',
         {
           name,
           email,
@@ -32,16 +32,16 @@ export default function Register() {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
           withCredentials: true,
         }
       );
 
-      navigate("/setting/manage_moderator");
+      navigate('/setting/manage_moderator');
     } catch (err) {
-      console.error("Signup error:", err);
-      setError("Error signing up. Please try again.");
+      console.error('Signup error:', err);
+      setError('Error signing up. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,7 @@ export default function Register() {
         >
           <Logo />
         </Link>
-        <div className="w-full bg-white rounded-lg shadow dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+        <div className="w-full bg-white rounded-lg dark:border sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
           <div className="p-6 space-y-4 sm:p-8">
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Create a Moderator
@@ -123,7 +123,7 @@ export default function Register() {
                 disabled={loading}
                 className="w-full text-white bg-[#E5383B] font-medium rounded-[8px] text-sm px-5 py-2.5 text-center"
               >
-                {loading ? "Creating..." : "Create"}
+                {loading ? 'Creating...' : 'Create'}
               </button>
             </form>
           </div>

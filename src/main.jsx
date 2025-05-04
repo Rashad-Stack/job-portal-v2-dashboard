@@ -1,7 +1,7 @@
-import { StrictMode } from 'react';
+import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { RouterProvider } from 'react-router-dom';
-import router from './router/router.jsx';
+import Router from "./router/router"; 
+
 import './index.css';
 import '@fontsource/poppins';
 import '@fontsource/urbanist';
@@ -9,6 +9,6 @@ import '@fontsource/manrope';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
+    <Router /> 
+  </StrictMode>
 );

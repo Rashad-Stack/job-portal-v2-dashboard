@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { RiLockPasswordLine, RiSettingsLine } from "react-icons/ri";
-import { AiOutlineForm } from "react-icons/ai";
-import { FaUsersCog } from "react-icons/fa";
-import useDeviceSize from "../../hooks/useDeviceSize";
-import { jwtDecode } from "jwt-decode";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router';
+import { RiLockPasswordLine, RiSettingsLine } from 'react-icons/ri';
+import { AiOutlineForm } from 'react-icons/ai';
+import { FaUsersCog } from 'react-icons/fa';
+import useDeviceSize from '../../hooks/useDeviceSize';
+import { jwtDecode } from 'jwt-decode';
 
 export default function SettingsNavbar({ toggleSidebar }) {
   const isMobile = useDeviceSize();
@@ -12,16 +12,16 @@ export default function SettingsNavbar({ toggleSidebar }) {
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('savAuth');
     if (token) {
       try {
         const decoded = jwtDecode(token);
         setUserInfo(decoded);
-        if (decoded.role === "ADMIN") {
+        if (decoded.role === 'ADMIN') {
           setShowSignUp(true);
         }
       } catch (error) {
-        console.error("Error decoding token:", error);
+        console.error('Error decoding token:', error);
       }
     }
   }, []);

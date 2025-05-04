@@ -4,7 +4,7 @@ import {
   Route,
   Navigate,
   useLocation,
-} from "react-router-dom";
+} from "react-router";
 import { useState, useEffect } from "react";
 import Login from "./pages/Auth/Login";
 import Dashboard from "./pages/Dashboard";
