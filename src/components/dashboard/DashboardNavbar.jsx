@@ -13,7 +13,7 @@ function DashboardNavbar({ toggleSidebar }) {
     const token = localStorage.getItem("svaAuth");
     if (token) {
       try {
-        const decoded = jwtDecode(token); // 👈 correct usage
+        const decoded = jwtDecode(token); 
         setUserInfo(decoded);
       } catch (error) {
         console.error("Error decoding token:", error);
