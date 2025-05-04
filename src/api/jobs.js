@@ -2,7 +2,7 @@ const API_BASE_URL = "http://localhost:3000/api/v2/job";
 
 // Helper function to get auth headers
 const getAuthHeaders = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("svaAuth");
   if (!token) {
     throw new Error("Authentication token not found. Please log in again.");
   }

@@ -28,18 +28,13 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Basic validation
       if (!formData.email || !formData.password) {
         throw new Error("Please enter both email and password");
       }
 
       const response = await login(formData.email, formData.password);
       setSuccess(response.message);
-
-      // Get the redirect path from location state or default to dashboard
       const from = location.state?.from?.pathname || "/dashboard";
-
-      // Add a small delay before navigation to show the success message
       setTimeout(() => {
         navigate(from, { replace: true });
       }, 1000);

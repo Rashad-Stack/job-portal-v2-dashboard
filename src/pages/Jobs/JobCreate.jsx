@@ -1,21 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { createJob } from "../../api/jobs";
 import { isAuthenticated } from "../../api/auth";
+import axios from "axios";
 
 const JobCreate = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     companyName: "",
-    numberOfHiring: "", // <-- fixed
+    numberOfHiring: "",
     appliedBy: false,
     location: "",
     googleForm: "",
     jobType: "FULL_TIME",
-    jobCategory: "MERN",
+    categoryId: "",
     jobLevel: "MID_LEVEL",
-    category: "MERN", // <-- fixed spelling
     jobNature: "ONSITE",
     shift: "DAY",
     deadline: "",
@@ -23,6 +23,27 @@ const JobCreate = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState([]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const { data } = await axios.get(
+        "http://localhost:3000/api/v2/category/all"
+      );
+      setCategory(data.data || []);
+    } catch (err) {
+      console.error("Failed to fetch Categories:", err.message);
+      setError("Failed to fetch Categories. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -55,7 +76,6 @@ const JobCreate = () => {
         navigate("/login", { state: { from: "/jobs/create" } });
         return;
       }
-
       const requiredFields = [
         "companyName",
         "title",
@@ -63,7 +83,7 @@ const JobCreate = () => {
         "location",
         "jobType",
         "jobLevel",
-        "category",
+        "categoryId", // ✅ Correct field name
         "jobNature",
         "shift",
         "deadline",
@@ -285,19 +305,15 @@ const JobCreate = () => {
                       Job Category
                     </label>
                     <select
-                      name="jobCategory"
-                      value={formData.jobCategory}
+                      name="categoryId"
+                      value={formData.categoryId}
                       onChange={handleChange}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
-                      required
                     >
-                      <option value="MERN">MERN Stack</option>
-                      <option value="FRONT_END">Front End</option>
-                      <option value="BACK_END">Back End</option>
-                      <option value="UI_UX">UI & UX</option>
-                      <option value="FULL_STACK">Full Stack</option>
-                      <option value="LARAVEL">Php Laravel </option>
-                      <option value="DJANGO">Python Django</option>
+                      {category.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
@@ -340,11 +356,6 @@ const JobCreate = () => {
                 </div>
               </div>
             </section>
-            {/* Location */}
-
-            {/* Employment Status */}
-
-            {/* Deadline */}
             <section className="space-y-4">
               <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
                 Application Deadline

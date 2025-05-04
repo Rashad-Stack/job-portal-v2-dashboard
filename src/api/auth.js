@@ -7,7 +7,7 @@ export const login = async (email, password) => {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials: "include", // Important for cookies
+      credentials: "include",
       body: JSON.stringify({ email, password }),
     });
 
@@ -18,16 +18,14 @@ export const login = async (email, password) => {
 
     const data = await response.json();
 
-    // Store the token in localStorage
     if (data.token) {
-      localStorage.setItem("token", data.token);
-      // Also store the decoded token data for quick access
+      localStorage.setItem("svaAuth", data.token);
       const tokenData = JSON.parse(atob(data.token.split(".")[1]));
       localStorage.setItem(
         "userData",
         JSON.stringify({
           id: tokenData.id,
-          role: tokenData.role, // Add role to user data
+          role: tokenData.role,
         })
       );
     }
@@ -54,17 +52,16 @@ export const logout = async () => {
     console.error("Logout error:", error);
   } finally {
     // Clear local storage regardless of server response
-    localStorage.removeItem("token");
+    localStorage.removeItem("svaAuth");
     localStorage.removeItem("userData");
   }
 };
 
 export const isAuthenticated = () => {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("svaAuth");
   if (!token) return false;
 
   try {
-    // Check if token is expired
     const tokenData = JSON.parse(atob(token.split(".")[1]));
     const expirationTime = tokenData.exp * 1000; // Convert to milliseconds
     return Date.now() < expirationTime;
