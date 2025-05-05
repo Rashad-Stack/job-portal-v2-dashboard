@@ -18,7 +18,7 @@ const JobEdit = () => {
     location: "",
     jobType: "FULL_TIME",
     jobLevel: "MID_LEVEL",
-    category: "MERN",
+    category: "MERN", // <-- fixed spelling
     jobNature: "ONSITE",
     shift: "DAY",
     deadline: "",

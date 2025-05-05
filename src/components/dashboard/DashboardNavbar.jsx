@@ -13,7 +13,7 @@ function DashboardNavbar({ toggleSidebar }) {
     const token = localStorage.getItem("svaAuth");
     if (token) {
       try {
-        const decoded = jwtDecode(token);
+        const decoded = jwtDecode(token); 
         setUserInfo(decoded);
       } catch (error) {
         console.error("Error decoding token:", error);
@@ -30,7 +30,7 @@ function DashboardNavbar({ toggleSidebar }) {
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"; // Remove cookie
 
     // Optional: Redirect to login page (if required)
-    window.location.href = "/login";
+    window.location.href = "/login"; // or use react-router to navigate
   };
 
   const handleDropDown = () => {
