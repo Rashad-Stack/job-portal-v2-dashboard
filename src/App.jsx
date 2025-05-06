@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-import Router from './router/router';
-import './App.css';
-
-function App() {
-  return <Router />;
-}
-
-export default App;
-=======
 import {
   BrowserRouter as Router,
   Routes,
@@ -86,4 +76,3 @@ function App() {
 }
 
 export default App;
->>>>>>> 9c9bcb7381188a4f71b4f93d8351d62aba394816
