@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import Button from "../../components/button/Button";
-import { createCategory, getAllCategories } from "../../api/category";
+import {
+  createCategory,
+  deleteCategory,
+  getAllCategories,
+} from "../../api/category";
 
 export default function Category() {
   const [isEditing, setIsEditing] = useState(false);
@@ -78,7 +82,7 @@ export default function Category() {
     });
   };
 
-  function handleDelete() {
+  function handleDelete(id) {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -89,11 +93,17 @@ export default function Category() {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your file has been deleted.",
-          icon: "success",
-        });
+        deleteCategory(id)
+          .then(() => {
+            Swal.fire("Deleted!", "The category has been deleted.", "success");
+          })
+          .catch((error) => {
+            Swal.fire(
+              "Error!",
+              "There was a problem deleting the category.",
+              "error"
+            );
+          });
       }
     });
   }
@@ -163,7 +173,7 @@ export default function Category() {
                   />
                   <Button
                     label="Delete"
-                    onClick={handleDelete}
+                    onClick={() => handleDelete(category.id)}
                     variant="danger"
                   />
                 </>

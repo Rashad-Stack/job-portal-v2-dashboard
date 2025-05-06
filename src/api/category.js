@@ -42,7 +42,6 @@ export const getCategoryById = async (id) => {
 // Create new job
 export const createCategory = async (categoryData) => {
   try {
-    // Transform data to match schema requirements
     const transformedData = {
       ...categoryData,
     };
@@ -51,7 +50,7 @@ export const createCategory = async (categoryData) => {
       method: "POST",
       headers: {
         ...getAuthHeaders(),
-        "Content-Type": "application/json", // ✅ Important: tell backend it's JSON
+        "Content-Type": "application/json",
       },
       credentials: "include",
       body: JSON.stringify(transformedData),
@@ -97,18 +96,24 @@ export const updateCategory = async (id, categoryData) => {
 // Delete job
 export const deleteCategory = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/delete/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/delete`, {
       method: "DELETE",
-      headers: getAuthHeaders(),
+      headers: {
+        ...getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
       credentials: "include",
+      body: JSON.stringify({ id }),
     });
+
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to delete Category");
+      throw new Error(errorData.message || "Failed to delete category");
     }
+
     return await response.json();
   } catch (error) {
-    console.error("Error deleting job:", error);
+    console.error("Error deleting category:", error);
     throw error;
   }
 };
