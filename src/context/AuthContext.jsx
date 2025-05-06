@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { login as loginAPI, logout as logoutAPI } from '../api/auth.js';
+import { createContext, useContext, useState, useEffect } from "react";
+import { login as loginAPI, logout as logoutAPI } from "../api/auth.js";
 
 const AuthContext = createContext();
 
@@ -17,6 +17,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const isAuthenticated = () => {
+    console.log(user);
     return !!user;
   };
 

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { createJob } from "../../api/jobs";
-import { isAuthenticated } from "../../api/auth";
 import axios from "axios";
 import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
@@ -75,11 +74,6 @@ const JobCreate = () => {
     setLoading(true);
 
     try {
-      if (!isAuthenticated()) {
-        navigate("/login", { state: { from: "/jobs/create" } });
-        return;
-      }
-
       const requiredFields = [
         "companyName",
         "title",
@@ -108,8 +102,6 @@ const JobCreate = () => {
         setLoading(false);
         return;
       }
-
-      // ⬇️ If companyName is empty, delete it from formData so that Prisma will use default
       const dataToSend = { ...formData };
       if (!dataToSend.companyName || dataToSend.companyName.trim() === "") {
         delete dataToSend.companyName;

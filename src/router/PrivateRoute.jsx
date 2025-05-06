@@ -3,11 +3,13 @@ import { useAuth } from "../context/AuthContext";
 
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
-  console.log("---------------", user);
   const location = useLocation();
 
+  if (user === undefined) {
+    return <div>Loading...</div>;
+  }
+
   if (user === null) {
-    // Not authenticated, redirect to login
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

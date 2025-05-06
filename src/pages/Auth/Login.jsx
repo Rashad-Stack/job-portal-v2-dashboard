@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
-import { login } from "../../api/auth";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [formData, setFormData] = useState({
@@ -26,6 +27,7 @@ const Login = () => {
     setError("");
     setSuccess("");
     setLoading(true);
+    console.log(formData);
 
     try {
       if (!formData.email || !formData.password) {
@@ -33,7 +35,8 @@ const Login = () => {
       }
 
       const response = await login(formData.email, formData.password);
-      setSuccess(response.message);
+      // setSuccess(response.message);
+      console.log(response);
       const from = location.state?.from?.pathname || "/dashboard";
       setTimeout(() => {
         navigate(from, { replace: true });
