@@ -1,81 +1,98 @@
-import React, { useState } from 'react';
-import Swal from 'sweetalert2';
-import Button from '../../components/button/Button';
+import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import Button from "../../components/button/Button";
+import { createCategory, getAllCategories } from "../../api/category";
 
 export default function Category() {
   const [isEditing, setIsEditing] = useState(false);
-  const [categoryName, setCategoryName] = useState('hello'); // default value
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
-  function handleEdit() {
-    setIsEditing(true); // switch to edit mode
-  }
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        const { data } = await getAllCategories();
+        setCategories(data);
+      } catch (err) {
+        console.error("Failed to fetch job:", err.message);
+        setError("Failed to fetch job. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  function handleInputChange(e) {
-    setCategoryName(e.target.value); // update name as user types
-  }
-
-  function handleSave() {
-    setIsEditing(false); // exit edit mode after saving
-    // Optionally send an API request to save this
-    Swal.fire({
-      icon: 'success',
-      title: 'Category name updated!',
-    });
+    fetchCategories();
+  }, []);
+  function handleEdit(category) {
+    setIsEditing(true);
+    setSelectedCategory(category);
   }
 
   function handleCancelEdit() {
-    setIsEditing(false); // cancel editing
+    setIsEditing(false);
+    setSelectedCategory(null);
   }
-  function handleAdd() {
+
+  function handleSave() {
+    setIsEditing(false);
+    // You should call an API here to update the category
     Swal.fire({
-      title: 'Please Enter Category Name',
-      input: 'text',
+      icon: "success",
+      title: "Category name updated!",
+    });
+  }
+
+  const handleAdd = () => {
+    Swal.fire({
+      title: "Please Enter Category Name",
+      input: "text",
       inputAttributes: {
-        autocapitalize: 'off',
+        autocapitalize: "off",
       },
       showCancelButton: true,
-      confirmButtonText: 'Submit',
-      confirmButtonColor: '#28a745',
-      cancelButtonColor: '#d33',
+      confirmButtonText: "Submit",
+      confirmButtonColor: "#28a745",
+      cancelButtonColor: "#d33",
       showLoaderOnConfirm: true,
-      preConfirm: async (login) => {
+      preConfirm: async (name) => {
         try {
-          const githubUrl = `https://api.github.com/users/${login}`;
-          const response = await fetch(githubUrl);
-          if (!response.ok) {
-            return Swal.showValidationMessage(`${JSON.stringify(await response.json())}`);
-          }
-          return response.json();
+          const { data } = await createCategory({ name });
+          return data;
         } catch (error) {
-          Swal.showValidationMessage(`Request failed: ${error}`);
+          const message =
+            error.response?.data?.message || "Something went wrong";
+          Swal.showValidationMessage(`Request failed: ${message}`);
         }
       },
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: `${result.value.login} Category Added Successfully`,
-          confirmButtonColor: '#3085d6', // Optional: color of this button
+          title: `Category "${result.value.name}" added successfully!`,
+          icon: "success",
+          confirmButtonColor: "#3085d6",
         });
       }
     });
-  }
+  };
 
   function handleDelete() {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: 'Deleted!',
-          text: 'Your file has been deleted.',
-          icon: 'success',
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
         });
       }
     });
@@ -88,51 +105,72 @@ export default function Category() {
         </h1>
 
         <div className="flex justify-end my-6 w-full">
-          <Button label="Add New" onClick={handleAdd} variant="success" className="font-normal" />
+          <Button
+            label="Add New"
+            onClick={handleAdd}
+            variant="success"
+            className="font-normal"
+          />
         </div>
 
-        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 mt-8 rounded-lg  border border-gray-200 dark:border-gray-700">
-          <div className="w-full">
+        {categories.map((category) => (
+          <div
+            key={category.id}
+            className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 mt-4 rounded-lg border border-gray-200 dark:border-gray-700"
+          >
             <div className="flex flex-col sm:ml-6 mt-3 sm:mt-0">
-              {isEditing ? (
+              {isEditing && selectedCategory?.id === category.id ? (
                 <input
                   type="text"
-                  value={categoryName}
-                  onChange={handleInputChange}
+                  value={selectedCategory.name}
+                  onChange={(e) =>
+                    setSelectedCategory({
+                      ...selectedCategory,
+                      name: e.target.value,
+                    })
+                  }
                   className="w-full border-none outline-none bg-gray-100 dark:bg-gray-700 rounded px-3 py-1 text-lg text-gray-800 dark:text-white focus:ring-2 focus:ring-[#00ab0c]"
                 />
               ) : (
                 <span className="text-lg font-semibold text-gray-800 dark:text-white">
-                  {categoryName}
+                  {category.name}
                 </span>
               )}
             </div>
-          </div>
 
-          <div className="flex gap-2">
-            {!isEditing ? (
-              <>
-                <Button label="Edit" onClick={handleEdit} variant="primary" />
-                <Button label="Delete" onClick={handleDelete} variant="danger" />
-              </>
-            ) : (
-              <>
-                <Button
-                  label="Save"
-                  onClick={handleSave}
-                  className="font-normal"
-                  variant="success"
-                />
-                <Button
-                  label="Cancel"
-                  onClick={handleCancelEdit}
-                  variant="secondary"
-                  className="font-normal bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-                />
-              </>
-            )}
+            <div className="flex gap-2">
+              {isEditing && selectedCategory?.id === category.id ? (
+                <>
+                  <Button
+                    label="Save"
+                    onClick={handleSave}
+                    className="font-normal"
+                    variant="success"
+                  />
+                  <Button
+                    label="Cancel"
+                    onClick={handleCancelEdit}
+                    variant="secondary"
+                    className="font-normal bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+                  />
+                </>
+              ) : (
+                <>
+                  <Button
+                    label="Edit"
+                    onClick={() => handleEdit(category)}
+                    variant="primary"
+                  />
+                  <Button
+                    label="Delete"
+                    onClick={handleDelete}
+                    variant="danger"
+                  />
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

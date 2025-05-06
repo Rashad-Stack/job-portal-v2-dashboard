@@ -81,23 +81,7 @@ export const updateJob = async (id, jobData) => {
   try {
     const transformedData = {
       ...jobData,
-      vacancy: parseInt(jobData.vacancy) || 1,
-      salaryType: jobData.salaryType?.toUpperCase(),
-      salaryMin: jobData.salaryRange?.min
-        ? parseFloat(jobData.salaryRange.min)
-        : null,
-      salaryMax: jobData.salaryRange?.max
-        ? parseFloat(jobData.salaryRange.max)
-        : null,
-      fixedSalary: jobData.fixedSalary ? parseFloat(jobData.fixedSalary) : null,
-      deadline: jobData.deadline
-        ? new Date(jobData.deadline).toISOString()
-        : null,
-      // ✅ Backend expects this as an array of strings
-      responsibilities: Array.isArray(jobData.responsibilities)
-        ? jobData.responsibilities
-        : jobData.responsibilities?.split("\n"),
-      // ✅ Backend expects this as a single string (not array)
+      numberOfHiring: parseInt(jobData.numberOfHiring) || 1,
       skills: Array.isArray(jobData.skills)
         ? jobData.skills.join("\n")
         : jobData.skills,

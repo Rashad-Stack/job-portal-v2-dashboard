@@ -1,24 +1,25 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router';
-import { getJobById, updateJob } from '../../api/jobs';
-import { RxCross2 } from 'react-icons/rx';
-import IndexTableInputField from '../../components/jobIndex/IndexTableInputField';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router";
+import { getJobById, updateJob } from "../../api/jobs";
+import { RxCross2 } from "react-icons/rx";
+import IndexTableInputField from "../../components/jobIndex/IndexTableInputField";
+import InputField from "../../components/input/InputField";
 
 const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
   const [formData, setFormData] = useState(
     jobIndex || {
-      title: '',
-      jobPost: '',
-      sheetLink: '',
-      adminAccess: '',
-      candidateFormLink: '',
-      status: '',
-      category: '',
-      createdBy: '',
+      title: "",
+      jobPost: "",
+      sheetLink: "",
+      adminAccess: "",
+      candidateFormLink: "",
+      status: "",
+      category: "",
+      createdBy: "",
     }
   );
   const { id } = useParams();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,7 +35,7 @@ const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
   const sanitizeData = () => {
     const cleaned = { ...formData };
     Object.keys(cleaned).forEach((key) => {
-      if (typeof cleaned[key] === 'string') {
+      if (typeof cleaned[key] === "string") {
         cleaned[key] = cleaned[key].trim();
       }
     });
@@ -44,16 +45,16 @@ const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setError('');
+    setError("");
 
     const cleanedFormData = sanitizeData();
 
     try {
       await updateJob(id, cleanedFormData);
       setShowModal(false); // Close modal after success
-      navigate('/jobs/read');
+      navigate("/jobs/read");
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to update job');
+      setError(err.response?.data?.message || "Failed to update job");
     } finally {
       setIsSubmitting(false);
     }
@@ -63,7 +64,9 @@ const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
     <div className="w-full mx-auto">
       <div className="bg-white dark:bg-gray-800 rounded-lg  border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#008f0a] relative">
-          <h1 className="text-2xl md:text-3xl font-bold text-white text-center">{title.heading}</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
+            {title.heading}
+          </h1>
           <button
             onClick={() => setShowModal(false)}
             className="text-white hover:text-gray-200 cursor-pointer absolute right-6 top-7 transition-colors"
@@ -84,29 +87,74 @@ const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
               Basic Information
             </h2>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Title*
-              </label>
-              <input
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
+              <InputField
+                label="Title*"
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623] dark:bg-gray-700 dark:text-white"
+                required
+                placeholder="Job Title"
+              />
+              <InputField
+                label="Job Post*"
+                type="text"
+                name="jobPost"
+                value={formData.jobPost}
+                onChange={handleChange}
                 required
                 placeholder="Job Title"
               />
             </div>
 
             <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
-              <IndexTableInputField
-                label="Job Post"
-                name="jobPost"
-                value={formData.jobPost}
+              <InputField
+                label="Sheet Link"
+                name="sheetLink"
+                value={formData.sheetLink}
+                type="text"
                 onChange={handleChange}
               />
-              {/* Other IndexTableInputField components with same props */}
+              <InputField
+                label="Admin Access"
+                name="adminAccess"
+                value={formData.adminAccess}
+                type="text"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
+              <InputField
+                label="candidate Form Link"
+                name="candidateFormLink"
+                value={formData.candidateFormLink}
+                type="text"
+                onChange={handleChange}
+              />
+              <InputField
+                label="Status"
+                name="status"
+                value={formData.status}
+                type="text"
+                onChange={handleChange}
+              />
+            </div>
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
+              <InputField
+                label="Category"
+                name="category"
+                value={formData.category}
+                type="text"
+                onChange={handleChange}
+              />
+              <InputField
+                label="Created By"
+                name="createdBy"
+                value={formData.createdBy}
+                type="text"
+                onChange={handleChange}
+              />
             </div>
           </section>
 
