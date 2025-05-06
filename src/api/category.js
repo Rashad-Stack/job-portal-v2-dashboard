@@ -1,6 +1,4 @@
-const API_BASE_URL = "http://localhost:3000/api/v2/job";
-
-// Helper function to get auth headers
+const API_BASE_URL = "http://localhost:3000/api/v2/category";
 const getAuthHeaders = () => {
   const token = localStorage.getItem("svaAuth");
   if (!token) {
@@ -11,53 +9,48 @@ const getAuthHeaders = () => {
     Authorization: `Bearer ${token}`,
   };
 };
-
 // Get all jobs
-export const getAllJobs = async () => {
+export const getAllCategories = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/all`);
+    const response = await fetch(`${API_BASE_URL}/all`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+      credentials: "include",
+    });
     if (!response.ok) {
-      throw new Error("Failed to fetch jobs");
+      throw new Error("Failed to fetch categories");
     }
     return await response.json();
   } catch (error) {
-    console.error("Error fetching jobs:", error);
+    console.error("Error fetching categories:", error);
     throw error;
   }
 };
-
 // Get job by ID
-export const getJobById = async (id) => {
+export const getCategoryById = async (id) => {
   try {
     const response = await fetch(`${API_BASE_URL}/${id}`);
     if (!response.ok) {
-      throw new Error("Failed to fetch job");
+      throw new Error("Failed to fetch Category");
     }
     return await response.json();
   } catch (error) {
-    console.error("Error fetching job:", error);
+    console.error("Error fetching Category:", error);
     throw error;
   }
 };
-
 // Create new job
-export const createJob = async (jobData) => {
+export const createCategory = async (categoryData) => {
   try {
-    // Transform data to match schema requirements
     const transformedData = {
-      ...jobData,
-      deadline: jobData.deadline
-        ? new Date(jobData.deadline).toISOString()
-        : null,
-      // Optional: If backend still expects responsibilities field, send empty array
-      responsibilities: jobData.responsibilities || [],
+      ...categoryData,
     };
 
     const response = await fetch(`${API_BASE_URL}/create`, {
       method: "POST",
       headers: {
         ...getAuthHeaders(),
-        "Content-Type": "application/json", // ✅ Important: tell backend it's JSON
+        "Content-Type": "application/json",
       },
       credentials: "include",
       body: JSON.stringify(transformedData),
@@ -75,16 +68,11 @@ export const createJob = async (jobData) => {
     throw error;
   }
 };
-
 // Update job
-export const updateJob = async (id, jobData) => {
+export const updateCategory = async (id, categoryData) => {
   try {
     const transformedData = {
-      ...jobData,
-      numberOfHiring: parseInt(jobData.numberOfHiring) || 1,
-      skills: Array.isArray(jobData.skills)
-        ? jobData.skills.join("\n")
-        : jobData.skills,
+      ...categoryData,
     };
 
     const response = await fetch(`${API_BASE_URL}/update/${id}`, {
@@ -96,31 +84,36 @@ export const updateJob = async (id, jobData) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update job");
+      throw new Error(errorData.message || "Failed to Category job");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error updating job:", error);
+    console.error("Error updating Category:", error);
     throw error;
   }
 };
-
 // Delete job
-export const deleteJob = async (id) => {
+export const deleteCategory = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/delete/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/delete`, {
       method: "DELETE",
-      headers: getAuthHeaders(),
+      headers: {
+        ...getAuthHeaders(),
+        "Content-Type": "application/json",
+      },
       credentials: "include",
+      body: JSON.stringify({ id }),
     });
+
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to delete job");
+      throw new Error(errorData.message || "Failed to delete category");
     }
+
     return await response.json();
   } catch (error) {
-    console.error("Error deleting job:", error);
+    console.error("Error deleting category:", error);
     throw error;
   }
 };
