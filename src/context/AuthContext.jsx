@@ -1,10 +1,30 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import { login as loginAPI, logout as logoutAPI } from "../api/auth.js";
+import { createContext, useContext, useState, useEffect } from 'react';
+import { jwtDecode } from 'jwt-decode';
+import { login as loginAPI } from '../api/auth.js';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    // 🔄 Load token from localStorage on app load
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUser({
+          id: decoded.id,
+          name: decoded.name,
+          email: decoded.email,
+          role: decoded.role,
+        });
+      } catch (err) {
+        console.error('Invalid token', err);
+        localStorage.removeItem('token');
+      }
+    }
+  }, []);
 
   const login = async (email, password) => {
     const userData = await loginAPI(email, password);
@@ -12,14 +32,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
+    localStorage.removeItem('token');
     await logoutAPI();
     setUser(null);
   };
 
-  const isAuthenticated = () => {
-    console.log(user);
-    return !!user;
-  };
+  const isAuthenticated = () => !!user;
 
   return (
     <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>

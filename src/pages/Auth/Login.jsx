@@ -35,6 +35,7 @@ const Login = () => {
       }
 
       const response = await login(formData.email, formData.password);
+      setSuccess(response);
       console.log(response);
       const from = location.state?.from?.pathname || "/dashboard";
       setTimeout(() => {
@@ -42,7 +43,10 @@ const Login = () => {
       }, 1000);
     } catch (error) {
       console.error("Login error:", error);
-      setError(error.message || "Login failed. Please try again.");
+      const message =
+        error?.message ||
+        (typeof error === "string" ? error : "Login failed. Please try again.");
+      setError(message);
     } finally {
       setLoading(false);
     }
