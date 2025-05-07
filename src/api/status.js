@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000/api/v2/category";
+const API_BASE_URL = "http://localhost:3000/api/v2/status";
 const getAuthHeaders = () => {
   const token = localStorage.getItem("svaAuth");
   if (!token) {
@@ -9,8 +9,8 @@ const getAuthHeaders = () => {
     Authorization: `Bearer ${token}`,
   };
 };
-// Get all Category
-export const getAllCategories = async () => {
+// Get all Status
+export const getAllStatus = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/all`, {
       method: "GET",
@@ -18,32 +18,32 @@ export const getAllCategories = async () => {
       credentials: "include",
     });
     if (!response.ok) {
-      throw new Error("Failed to fetch categories");
+      throw new Error("Failed to fetch status");
     }
     return await response.json();
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    console.error("Error fetching status:", error);
     throw error;
   }
 };
-// Get Category by ID
-export const getCategoryById = async (id) => {
+// Get job by Status
+export const getStatusId = async (id) => {
   try {
     const response = await fetch(`${API_BASE_URL}/${id}`);
     if (!response.ok) {
-      throw new Error("Failed to fetch Category");
+      throw new Error("Failed to fetch Status");
     }
     return await response.json();
   } catch (error) {
-    console.error("Error fetching Category:", error);
+    console.error("Error fetching Status:", error);
     throw error;
   }
 };
-// Create new Category
-export const createCategory = async (categoryData) => {
+// Create new Status
+export const createStatus = async (statusData) => {
   try {
     const transformedData = {
-      ...categoryData,
+      ...statusData,
     };
 
     const response = await fetch(`${API_BASE_URL}/create`, {
@@ -68,8 +68,8 @@ export const createCategory = async (categoryData) => {
     throw error;
   }
 };
-// Update Category
-export const updateCategory = async ({ id, name }) => {
+// Update Status
+export const updateStatus = async ({ id, name }) => {
   try {
     const response = await fetch(`${API_BASE_URL}/update`, {
       method: "PUT",
@@ -78,23 +78,23 @@ export const updateCategory = async ({ id, name }) => {
         ...getAuthHeaders(),
       },
       credentials: "include",
-      body: JSON.stringify({ id, name }), // Corrected
+      body: JSON.stringify({ id, name }),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to update category");
+      throw new Error(errorData.message || "Failed to update Status");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error updating category:", error);
+    console.error("Error updating status:", error);
     throw error;
   }
 };
 
-// Delete Category
-export const deleteCategory = async (id) => {
+// Delete Status
+export const deleteStatus = async (id) => {
   try {
     const response = await fetch(`${API_BASE_URL}/delete`, {
       method: "DELETE",
@@ -108,12 +108,12 @@ export const deleteCategory = async (id) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to delete category");
+      throw new Error(errorData.message || "Failed to delete Status");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error deleting category:", error);
+    console.error("Error deleting status:", error);
     throw error;
   }
 };

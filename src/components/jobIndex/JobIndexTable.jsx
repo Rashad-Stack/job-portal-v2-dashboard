@@ -1,29 +1,47 @@
-import React from 'react';
-import Button from '../button/Button';
-import Swal from 'sweetalert2';
+import React from "react";
+import Button from "../button/Button";
+import Swal from "sweetalert2";
+import "./jobIndexTable.css";
+import { deleteJobIndex } from "../../api/jobIndex";
 
-export default function JobIndexTable({ jobIndex, setShowModal, onEdit }) {
-  function handleDelete() {
+export default function JobIndexTable({ jobIndexes, onEdit }) {
+  const flatJobIndexes = Array.isArray(jobIndexes[0])
+    ? jobIndexes.flat()
+    : jobIndexes;
+  function handleDelete(id) {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire('Deleted!', 'Your file has been deleted.', 'success');
+        deleteJobIndex(id)
+          .then(() => {
+            Swal.fire("Deleted!", "The Job Index has been deleted.", "success");
+          })
+          .then(() => {
+            window.location.reload();
+          })
+          .catch((error) => {
+            Swal.fire(
+              "Error!",
+              "There was a problem deleting the Job Index.",
+              "error"
+            );
+          });
       }
     });
   }
 
   return (
     <>
-      <div className="relative overflow-x-auto sm:rounded-lg">
-        <table className="w-full text-sm text-center text-gray-500 dark:text-gray-400 hidden lg:table">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+      <div className="jobIndexTableStyle overflow-x-auto sm:rounded-lg shadow-md bg-white dark:bg-gray-800 dark:text-gray-400">
+        <table className=" text-sm text-left text-gray-500 dark:text-gray-400 hidden lg:table">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
             <tr>
               <th className="px-6 py-3">Title</th>
               <th className="px-6 py-3">Job Post</th>
@@ -36,61 +54,103 @@ export default function JobIndexTable({ jobIndex, setShowModal, onEdit }) {
             </tr>
           </thead>
           <tbody>
-            <tr className="bg-white dark:bg-gray-900 border-b dark:border-gray-700">
-              <th className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                {jobIndex.title}
-              </th>
-              <td className="px-6 py-4">{jobIndex.jobPost}</td>
-              <td className="px-6 py-4">{jobIndex.sheetLink}</td>
-              <td className="px-6 py-4">{jobIndex.candidateFormLink}</td>
-              <td className="px-6 py-4">{jobIndex.status}</td>
-              <td className="px-6 py-4">{jobIndex.category}</td>
-              <td className="px-6 py-4">{jobIndex.createdBy}</td>
-              <td className="px-6 py-4 flex">
-                <Button
-                  label="Edit"
-                  variant="primary"
-                  className="mx-2"
-                  onClick={() => onEdit(jobIndex)}
-                />
-                <Button label="Delete" onClick={handleDelete} variant="danger" />
-              </td>
-            </tr>
+            {flatJobIndexes.reverse().map((job, index) => (
+              <tr
+                key={job.id || index}
+                className="bg-white dark:bg-gray-900 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition duration-200"
+              >
+                <td className="px-6 py-4">{job.title}</td>
+                <td className="px-6 py-4">{job.jobPost}</td>
+                <td className="px-6 py-4">{job.sheetLink}</td>
+                <td className="px-6 py-4">{job.candidateFormLink}</td>
+                <td className="px-6 py-4">
+                  {job.status && job.status.name ? job.status.name : job.status}
+                </td>
+                <td className="px-6 py-4">
+                  {job.category && job.category.name
+                    ? job.category.name
+                    : job.category}
+                </td>
+                <td className="px-6 py-4">
+                  {job.creator && job.creator.name
+                    ? job.creator.name
+                    : job.creator}
+                </td>
+                <td className="px-6 py-4 flex gap-2">
+                  <Button
+                    label="Edit"
+                    variant="primary"
+                    onClick={() => onEdit(job)}
+                    className="py-1 px-4 rounded-lg shadow-sm"
+                  />
+                  <Button
+                    label="Delete"
+                    variant="danger"
+                    onClick={() => handleDelete(job.id)}
+                    className="py-1 px-4 rounded-lg shadow-sm"
+                  />
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
+      </div>
 
-        {/* Mobile View */}
-        <div className="lg:hidden space-y-4 text-sm text-gray-700 dark:text-gray-400">
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg">
+      {/* Mobile View */}
+      <div className="lg:hidden space-y-4 text-sm text-gray-700 dark:text-gray-400">
+        {flatJobIndexes.map((job, index) => (
+          <div
+            key={job.id || index}
+            className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md"
+          >
             <p>
-              <span className="font-semibold">Title:</span> {jobIndex.title}
+              <span className="font-semibold">Title:</span> {job.title}
             </p>
             <p>
-              <span className="font-semibold">Job Post:</span> {jobIndex.jobPost}
+              <span className="font-semibold">Job Post:</span> {job.jobPost}
             </p>
             <p>
-              <span className="font-semibold">Sheet Link:</span> {jobIndex.sheetLink}
+              <span className="font-semibold">Sheet Link:</span> {job.sheetLink}
             </p>
             <p>
-              <span className="font-semibold">Candidate Form Link:</span>{' '}
-              {jobIndex.candidateFormLink}
+              <span className="font-semibold">Candidate Form Link:</span>{" "}
+              {job.candidateFormLink}
             </p>
             <p>
-              <span className="font-semibold">Status:</span> {jobIndex.status}
+              <span className="font-semibold">Status:</span>
+              {job.status && job.status.name ? job.status.name : job.status}
             </p>
             <p>
-              <span className="font-semibold">Category:</span> {jobIndex.category}
+              <span className="font-semibold">Category:</span>{" "}
+              {job.category && job.category.name
+                ? job.category.name
+                : job.category}
             </p>
             <p>
-              <span className="font-semibold">Created By:</span> {jobIndex.createdBy}
+              <span className="font-semibold">Created By:</span>{" "}
+              {job.creator && job.creator.name ? job.creator.name : job.creator}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <Button label="View" variant="outline" />
-              <Button label="Edit" variant="primary" onClick={() => setShowModal(true)} />
-              <Button label="Delete" onClick={handleDelete} variant="danger" />
+              <Button
+                label="View"
+                variant="outline"
+                className="py-1 px-4 rounded-lg"
+              />
+              <Button
+                label="Edit"
+                variant="primary"
+                onClick={() => onEdit(job)}
+                className="py-1 px-4 rounded-lg"
+              />
+              <Button
+                label="Delete"
+                variant="danger"
+                onClick={() => handleDelete(job.id)}
+                className="py-1 px-4 rounded-lg"
+              />
             </div>
           </div>
-        </div>
+        ))}
       </div>
     </>
   );

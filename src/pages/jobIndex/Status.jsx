@@ -1,148 +1,225 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import Button from '../../components/button/Button';
+import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
+import Button from "../../components/button/Button";
+import {
+  createStatus,
+  deleteStatus,
+  getAllStatus,
+  updateStatus,
+} from "../../api/status";
 
 export default function Status() {
   const [isEditing, setIsEditing] = useState(false);
-  const [statusName, setStatusName] = useState('Active');
+  const [status, setStatus] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
-  function handleEdit() {
+  useEffect(() => {
+    const fetchStatuss = async () => {
+      try {
+        setLoading(true);
+        const { data } = await getAllStatus();
+        setStatus(data);
+      } catch (err) {
+        console.error("Failed to fetch Status:", err.message);
+        setError("Failed to fetch Status. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStatuss();
+  }, []);
+  function handleEdit(status) {
     setIsEditing(true);
-  }
-
-  function handleInputChange(e) {
-    setStatusName(e.target.value);
-  }
-
-  function handleSave() {
-    setIsEditing(false);
-    Swal.fire({
-      icon: 'success',
-      title: 'Category name updated!',
-    });
+    setSelectedStatus(status);
   }
 
   function handleCancelEdit() {
     setIsEditing(false);
+    selectedStatus(null);
   }
-  function handleAdd() {
+
+  async function handleSave() {
+    if (!selectedStatus || !selectedStatus.name.trim()) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Status name cannot be empty.",
+      });
+      return;
+    }
+    setIsEditing(false);
+    const id = selectedStatus.id;
+    const name = selectedStatus.name;
+
+    try {
+      const updatedData = await updateStatus({
+        id,
+        name,
+      });
+      setStatus((prevStatus) =>
+        prevStatus.map((status) =>
+          status.id === selectedStatus.id ? updatedData : status
+        )
+      );
+
+      Swal.fire({
+        icon: "success",
+        title: "Status updated successfully!",
+      });
+
+      setSelectedStatus(null);
+    } catch (error) {
+      const message = error.message || "Something went wrong";
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `Request failed: ${message}`,
+      });
+    }
+  }
+
+  const handleAdd = () => {
     Swal.fire({
-      title: 'Please Enter Status Name',
-      input: 'text',
+      title: "Please Enter Status Name",
+      input: "text",
       inputAttributes: {
-        autocapitalize: 'off',
+        autocapitalize: "off",
       },
       showCancelButton: true,
-      confirmButtonText: 'Submit',
-      confirmButtonColor: '#28a745',
-      cancelButtonColor: '#d33',
+      confirmButtonText: "Submit",
+      confirmButtonColor: "#28a745",
+      cancelButtonColor: "#d33",
       showLoaderOnConfirm: true,
-      preConfirm: async (login) => {
+      preConfirm: async (name) => {
         try {
-          const githubUrl = `https://api.github.com/users/${login}`;
-          const response = await fetch(githubUrl);
-          if (!response.ok) {
-            return Swal.showValidationMessage(`${JSON.stringify(await response.json())}`);
-          }
-          return response.json();
+          const { data } = await createStatus({ name });
+          return data;
         } catch (error) {
-          Swal.showValidationMessage(`Request failed: ${error}`);
+          const message =
+            error.response?.data?.message || "Something went wrong";
+          Swal.showValidationMessage(`Request failed: ${message}`);
         }
       },
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
         Swal.fire({
-          title: `${result.value.login} Category Added Successfully`,
-          confirmButtonColor: '#3085d6',
+          title: `Status "${result.value.name}" added successfully!`,
+          icon: "success",
+          confirmButtonColor: "#3085d6",
         });
       }
+      window.location.reload();
     });
-  }
+  };
 
-  function handleDelete() {
+  function handleDelete(id) {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You won't be able to revert this!",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: 'Deleted!',
-          text: 'Your file has been deleted.',
-          icon: 'success',
-        });
+        deleteStatus(id)
+          .then(() => {
+            Swal.fire("Deleted!", "The Status has been deleted.", "success");
+          })
+          .then(() => {
+            window.location.reload();
+          })
+          .catch((error) => {
+            Swal.fire(
+              "Error!",
+              "There was a problem deleting the Status.",
+              "error"
+            );
+          });
       }
     });
   }
   return (
-    <div className="min-h-screen bg-gray-50/60 dark:bg-gray-900 p-4 md:p-8">
+    <div className="min-h-screen bg-gray-50/60 dark:bg-gray-900 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-center text-2xl font-semibold text-gray-800 dark:text-gray-100 pt-4">
-          Status
+          All Status
         </h1>
 
         <div className="flex justify-end my-6 w-full">
-          <Button label="Add New" onClick={handleAdd} variant="success" className="font-normal" />
+          <Button
+            label="Add New"
+            onClick={handleAdd}
+            variant="success"
+            className="font-normal"
+          />
         </div>
 
-        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg  border border-gray-200 dark:border-gray-700">
-          <div className="w-full">
-            <div className="flex flex-col sm:ml-1 mt-3 sm:mt-0">
-              {isEditing ? (
+        {status.map((item) => (
+          <div
+            key={item.id}
+            className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 mt-4 rounded-lg border border-gray-200 dark:border-gray-700"
+          >
+            <div className="flex flex-col sm:ml-6 mt-3 sm:mt-0">
+              {isEditing && selectedStatus?.id === item.id ? (
                 <input
                   type="text"
-                  value={statusName}
-                  onChange={handleInputChange}
+                  value={selectedStatus.name}
+                  onChange={(e) =>
+                    setSelectedStatus({
+                      ...selectedStatus,
+                      name: e.target.value,
+                    })
+                  }
                   className="w-full border-none outline-none bg-gray-100 dark:bg-gray-700 rounded px-3 py-1 text-lg text-gray-800 dark:text-white focus:ring-2 focus:ring-[#00ab0c]"
                 />
               ) : (
-                <span className="text-lg font-semibold text-gray-800 dark:text-white">
-                  {statusName}
+                <span className="text-lg text-left font-semibold text-gray-800 dark:text-white">
+                  {item.name.charAt(0).toUpperCase() + item.name.slice(1)}
                 </span>
               )}
             </div>
-          </div>
 
-          <div className="flex gap-2">
-            {!isEditing ? (
-              <>
-                <Button
-                  label="Edit"
-                  onClick={handleEdit}
-                  variant="primary"
-                  className="font-normal"
-                />
-                <Button
-                  label="Delete"
-                  onClick={handleDelete}
-                  variant="danger"
-                  className="font-normal"
-                />
-              </>
-            ) : (
-              <>
-                <Button
-                  label="Save"
-                  onClick={handleSave}
-                  className="font-normal"
-                  variant="success"
-                />
-                <Button
-                  label="Cancel"
-                  onClick={handleCancelEdit}
-                  variant="secondary"
-                  className="font-normal bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
-                />
-              </>
-            )}
+            <div className="flex gap-2">
+              {isEditing && selectedStatus?.id === item.id ? (
+                <>
+                  <Button
+                    label="Save"
+                    onClick={() =>
+                      handleSave(selectedStatus.id, selectedStatus.name)
+                    }
+                    className="font-normal"
+                    variant="success"
+                  />
+
+                  <Button
+                    label="Cancel"
+                    onClick={handleCancelEdit}
+                    variant="secondary"
+                    className="font-normal bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600"
+                  />
+                </>
+              ) : (
+                <>
+                  <Button
+                    label="Edit"
+                    onClick={() => handleEdit(item)}
+                    variant="primary"
+                  />
+                  <Button
+                    label="Delete"
+                    onClick={() => handleDelete(item.id)}
+                    variant="danger"
+                  />
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );
