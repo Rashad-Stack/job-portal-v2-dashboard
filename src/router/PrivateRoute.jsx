@@ -1,16 +1,28 @@
-import { Navigate, useLocation } from 'react-router';
-import { useAuth } from '../context/AuthContext';
+import React from 'react';
+import { Navigate } from 'react-router';
+import { jwtDecode } from 'jwt-decode';
 
 const PrivateRoute = ({ children }) => {
-  const { user } = useAuth();
-  const location = useLocation();
+  const token = localStorage.getItem('svaAuth');
 
-  if (user === null) {
-    // Not authenticated, redirect to login
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!token) {
+    return <Navigate to="/login" replace />;
   }
 
-  return children;
+  try {
+    const decoded = jwtDecode(token);
+    const isExpired = decoded.exp * 1000 < Date.now();
+
+    if (isExpired) {
+      localStorage.removeItem('svaAuth');
+      return <Navigate to="/login" replace />;
+    }
+
+    return children;
+  } catch (err) {
+    console.error('Invalid token:', err);
+    return <Navigate to="/login" replace />;
+  }
 };
 
 export default PrivateRoute;

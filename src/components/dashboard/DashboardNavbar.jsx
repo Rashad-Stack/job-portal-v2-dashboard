@@ -13,7 +13,7 @@ function DashboardNavbar({ toggleSidebar }) {
     const token = localStorage.getItem("svaAuth");
     if (token) {
       try {
-        const decoded = jwtDecode(token); 
+        const decoded = jwtDecode(token);
         setUserInfo(decoded);
       } catch (error) {
         console.error("Error decoding token:", error);
@@ -38,7 +38,7 @@ function DashboardNavbar({ toggleSidebar }) {
   };
 
   return (
-    <nav className="fixed top-0 z-50 w-full sm:px-4 bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+    <nav className="fixed top-0 left-0 z-50 w-full sm:px-4 bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
       <div className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-start rtl:justify-end">
@@ -58,10 +58,10 @@ function DashboardNavbar({ toggleSidebar }) {
                 <FaUserCircle />
               </button>
               {isProfileOpen && userInfo && (
-                <div className="z-50 absolute top-[40px] right-[0px] my-4 text-base list-none bg-white divide-y divide-gray-100 rounded dark:bg-gray-700 dark:divide-gray-600">
+                <div className="z-50 absolute top-[40px] right-[0px] my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600">
                   <div className="px-4 py-3">
                     <p className="text-sm text-gray-900 dark:text-white">
-                      <p>{capitalizeFirstLetter(userInfo?.name)}</p>
+                      <span>{capitalizeFirstLetter(userInfo?.name)}</span>
                     </p>
                     <p className="text-sm font-medium text-gray-900 truncate dark:text-gray-300">
                       {userInfo.email}

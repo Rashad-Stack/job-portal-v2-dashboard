@@ -4,8 +4,46 @@ import { getJobById, updateJob } from "../../api/jobs";
 import { RxCross2 } from "react-icons/rx";
 import IndexTableInputField from "../../components/jobIndex/IndexTableInputField";
 import InputField from "../../components/input/InputField";
+import { getAllCategories } from "../../api/category";
+import SelectInput from "../../components/input/SelectInput";
+import { getAllStatus } from "../../api/status";
+import { createJobIndex, updateJobIndex } from "../../api/jobIndex";
+import JobIndexButton from "../../components/button/JobIndexButton";
 
 const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
+  const [category, setCategory] = useState([]);
+  const [status, setStatus] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchCategories();
+    fetchStatus();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      const { data } = await getAllCategories();
+      setCategory(data);
+    } catch (err) {
+      console.error("Failed to fetch category:", err.message);
+      setError("Failed to fetch category. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const fetchStatus = async () => {
+    try {
+      setLoading(true);
+      const { data } = await getAllStatus();
+      setStatus(data);
+    } catch (err) {
+      console.error("Failed to fetch status:", err.message);
+      setError("Failed to fetch status. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
   const [formData, setFormData] = useState(
     jobIndex || {
       title: "",
@@ -14,8 +52,9 @@ const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
       adminAccess: "",
       candidateFormLink: "",
       status: "",
+      statusId: "",
       category: "",
-      createdBy: "",
+      categoryId: "",
     }
   );
   const { id } = useParams();
@@ -50,11 +89,17 @@ const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
     const cleanedFormData = sanitizeData();
 
     try {
-      await updateJob(id, cleanedFormData);
-      setShowModal(false); // Close modal after success
-      navigate("/jobs/read");
+      if (jobIndex?.id) {
+        await updateJobIndex(jobIndex.id, cleanedFormData);
+      } else {
+        // Create new Job Index
+        await createJobIndex(cleanedFormData);
+      }
+
+      setShowModal(false);
+      window.location.reload(); // Or you can implement a more optimized state update approach
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to update job");
+      setError(err.response?.data?.message || "Failed to update job index");
     } finally {
       setIsSubmitting(false);
     }
@@ -87,7 +132,7 @@ const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
               Basic Information
             </h2>
 
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-1 md:grid-cols-1 gap-4">
               <InputField
                 label="Title*"
                 type="text"
@@ -97,6 +142,9 @@ const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
                 required
                 placeholder="Job Title"
               />
+            </div>
+
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Job Post*"
                 type="text"
@@ -106,9 +154,6 @@ const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
                 required
                 placeholder="Job Title"
               />
-            </div>
-
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Sheet Link"
                 name="sheetLink"
@@ -116,6 +161,8 @@ const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
                 type="text"
                 onChange={handleChange}
               />
+            </div>
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Admin Access"
                 name="adminAccess"
@@ -123,49 +170,43 @@ const EditJobIndex = ({ setShowModal, jobIndex, title }) => {
                 type="text"
                 onChange={handleChange}
               />
-            </div>
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
-                label="candidate Form Link"
+                label="Candidate Form Link"
                 name="candidateFormLink"
                 value={formData.candidateFormLink}
                 type="text"
                 onChange={handleChange}
               />
-              <InputField
-                label="Status"
-                name="status"
-                value={formData.status}
-                type="text"
-                onChange={handleChange}
-              />
             </div>
             <div className="grid sm:grid-cols-1 md:grid-cols-2 gap-4">
-              <InputField
-                label="Category"
-                name="category"
-                value={formData.category}
-                type="text"
+              <SelectInput
+                name="statusId"
+                label="Status"
+                value={formData.statusId}
                 onChange={handleChange}
+                options={status.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                }))}
               />
-              <InputField
-                label="Created By"
-                name="createdBy"
-                value={formData.createdBy}
-                type="text"
+              <SelectInput
+                name="categoryId"
+                label="Job Category"
+                value={formData.categoryId}
                 onChange={handleChange}
+                options={category.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                }))}
               />
             </div>
           </section>
 
           <div className="pt-6">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full py-3 px-4 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c] text-white font-medium rounded-lg hover:from-[#549458] hover:to-[#15881c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00ab0c] transition-all duration-300"
-            >
-              {isSubmitting ? `${title.actionName}...` : title.actionName}
-            </button>
+            <JobIndexButton
+              isSubmitting={isSubmitting}
+              actionName={jobIndex?.id ? "Update" : "Create"}
+            />
           </div>
         </form>
       </div>

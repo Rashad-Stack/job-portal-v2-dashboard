@@ -5,6 +5,7 @@ import {
   createCategory,
   deleteCategory,
   getAllCategories,
+  updateCategory,
 } from "../../api/category";
 
 export default function Category() {
@@ -39,13 +40,44 @@ export default function Category() {
     setSelectedCategory(null);
   }
 
-  function handleSave() {
+  async function handleSave() {
+    if (!selectedCategory || !selectedCategory.name.trim()) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Category name cannot be empty.",
+      });
+      return;
+    }
     setIsEditing(false);
-    // You should call an API here to update the category
-    Swal.fire({
-      icon: "success",
-      title: "Category name updated!",
-    });
+    const id = selectedCategory.id;
+    const name = selectedCategory.name;
+
+    try {
+      const updatedData = await updateCategory({
+        id,
+        name,
+      });
+      setCategories((prevCategories) =>
+        prevCategories.map((category) =>
+          category.id === selectedCategory.id ? updatedData : category
+        )
+      );
+
+      Swal.fire({
+        icon: "success",
+        title: "Category updated successfully!",
+      });
+
+      setSelectedCategory(null);
+    } catch (error) {
+      const message = error.message || "Something went wrong";
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: `Request failed: ${message}`,
+      });
+    }
   }
 
   const handleAdd = () => {
@@ -79,6 +111,7 @@ export default function Category() {
           confirmButtonColor: "#3085d6",
         });
       }
+      window.location.reload();
     });
   };
 
@@ -96,6 +129,9 @@ export default function Category() {
         deleteCategory(id)
           .then(() => {
             Swal.fire("Deleted!", "The category has been deleted.", "success");
+          })
+          .then(() => {
+            window.location.reload();
           })
           .catch((error) => {
             Swal.fire(
@@ -142,8 +178,9 @@ export default function Category() {
                   className="w-full border-none outline-none bg-gray-100 dark:bg-gray-700 rounded px-3 py-1 text-lg text-gray-800 dark:text-white focus:ring-2 focus:ring-[#00ab0c]"
                 />
               ) : (
-                <span className="text-lg font-semibold text-gray-800 dark:text-white">
-                  {category.name}
+                <span className="text-lg text-left font-semibold text-gray-800 dark:text-white">
+                  {category.name.charAt(0).toUpperCase() +
+                    category.name.slice(1)}
                 </span>
               )}
             </div>
@@ -153,10 +190,13 @@ export default function Category() {
                 <>
                   <Button
                     label="Save"
-                    onClick={handleSave}
+                    onClick={() =>
+                      handleSave(selectedCategory.id, selectedCategory.name)
+                    }
                     className="font-normal"
                     variant="success"
                   />
+
                   <Button
                     label="Cancel"
                     onClick={handleCancelEdit}

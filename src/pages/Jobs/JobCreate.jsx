@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { createJob } from "../../api/jobs";
-import { isAuthenticated } from "../../api/auth";
 import axios from "axios";
 import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
@@ -75,11 +74,6 @@ const JobCreate = () => {
     setLoading(true);
 
     try {
-      if (!isAuthenticated()) {
-        navigate("/login", { state: { from: "/jobs/create" } });
-        return;
-      }
-
       const requiredFields = [
         "companyName",
         "title",
@@ -108,8 +102,6 @@ const JobCreate = () => {
         setLoading(false);
         return;
       }
-
-      // ⬇️ If companyName is empty, delete it from formData so that Prisma will use default
       const dataToSend = { ...formData };
       if (!dataToSend.companyName || dataToSend.companyName.trim() === "") {
         delete dataToSend.companyName;
@@ -130,7 +122,7 @@ const JobCreate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50/60 py-8 px-4">
+    <div className="min-h-screen bg-gray-50/60 py-8 px-4 sm:px-0">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white border bottom-1 border-slate-200 rounded-2xl overflow-hidden">
           <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c]">
@@ -147,7 +139,7 @@ const JobCreate = () => {
             )}
 
             {/* Basic Information */}
-            <section className="space-y-4">
+            <section className="space-y-4 text-left">
               <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
                 Basic Information
               </h2>
