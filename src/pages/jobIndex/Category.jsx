@@ -41,7 +41,6 @@ export default function Category() {
 
   function handleSave() {
     setIsEditing(false);
-    // You should call an API here to update the category
     Swal.fire({
       icon: "success",
       title: "Category name updated!",

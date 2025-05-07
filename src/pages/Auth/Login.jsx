@@ -35,7 +35,6 @@ const Login = () => {
       }
 
       const response = await login(formData.email, formData.password);
-      // setSuccess(response.message);
       console.log(response);
       const from = location.state?.from?.pathname || "/dashboard";
       setTimeout(() => {
