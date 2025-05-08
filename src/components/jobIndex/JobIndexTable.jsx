@@ -97,36 +97,36 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
       </div>
 
       {/* Mobile View */}
-      <div className="lg:hidden space-y-4 text-sm text-gray-700 dark:text-gray-400">
+      <div className="lg:hidden text-left space-y-4 my-4 text-sm text-gray-700 dark:text-gray-400">
         {flatJobIndexes.map((job, index) => (
           <div
             key={job.id || index}
-            className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md"
+            className="bg-white  dark:bg-gray-800 p-4 rounded-lg shadow-md"
           >
-            <p>
+            <p className="my-2">
               <span className="font-semibold">Title:</span> {job.title}
             </p>
-            <p>
+            <p className="my-2">
               <span className="font-semibold">Job Post:</span> {job.jobPost}
             </p>
-            <p>
+            <p className="my-2">
               <span className="font-semibold">Sheet Link:</span> {job.sheetLink}
             </p>
-            <p>
+            <p className="my-2">
               <span className="font-semibold">Candidate Form Link:</span>{" "}
               {job.candidateFormLink}
             </p>
-            <p>
+            <p className="my-2">
               <span className="font-semibold">Status:</span>
               {job.status && job.status.name ? job.status.name : job.status}
             </p>
-            <p>
+            <p className="my-2">
               <span className="font-semibold">Category:</span>{" "}
               {job.category && job.category.name
                 ? job.category.name
                 : job.category}
             </p>
-            <p>
+            <p className="my-2">
               <span className="font-semibold">Created By:</span>{" "}
               {job.creator && job.creator.name ? job.creator.name : job.creator}
             </p>
