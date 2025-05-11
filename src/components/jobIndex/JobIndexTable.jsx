@@ -40,17 +40,21 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
   return (
     <>
       <div className="jobIndexTableStyle overflow-x-auto sm:rounded-lg shadow-md bg-white dark:bg-gray-800 dark:text-gray-400">
-        <table className=" text-sm text-left text-gray-500 dark:text-gray-400 hidden lg:table">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+        <table className=" text-sm text-center text-gray-500 dark:text-gray-400 hidden lg:table">
+          <thead className="text-xs text-gray-700 uppercase border-b border-gray-200 dark:border-gray-700">
             <tr>
-              <th className="px-6 py-3">Title</th>
-              <th className="px-6 py-3">Job Post</th>
-              <th className="px-6 py-3">Sheet Link</th>
-              <th className="px-6 py-3">Candidate Form Link</th>
-              <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Category</th>
-              <th className="px-6 py-3">Created By</th>
-              <th className="px-6 py-3">Action</th>
+              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-800">Title</th>
+              <th className="px-6 py-3 ">Job Post</th>
+              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                Sheet Link
+              </th>
+              <th className="px-6 py-3 ">Candidate Form Link</th>
+              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-800">Status</th>
+              <th className="px-6 py-3 ">Category</th>
+              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
+                Created By
+              </th>
+              <th className="px-6 py-3 ">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -59,24 +63,28 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
                 key={job.id || index}
                 className="bg-white dark:bg-gray-900 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition duration-200"
               >
-                <td className="px-6 py-4">{job.title}</td>
-                <td className="px-6 py-4">{job.jobPost}</td>
-                <td className="px-6 py-4">{job.sheetLink}</td>
-                <td className="px-6 py-4">{job.candidateFormLink}</td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
+                  {job.title}
+                </td>
+                <td className="px-6 py-4 ">{job.jobPost}</td>
+                <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
+                  {job.sheetLink}
+                </td>
+                <td className="px-6 py-4 ">{job.candidateFormLink}</td>
+                <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
                   {job.status && job.status.name ? job.status.name : job.status}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 ">
                   {job.category && job.category.name
                     ? job.category.name
                     : job.category}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
                   {job.creator && job.creator.name
                     ? job.creator.name
                     : job.creator}
                 </td>
-                <td className="px-6 py-4 flex gap-2">
+                <td className="px-6 py-4 flex gap-2 ">
                   <Button
                     label="Edit"
                     variant="primary"

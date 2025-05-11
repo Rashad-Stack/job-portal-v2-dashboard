@@ -13,7 +13,6 @@ const ChangeLog = ({ setShowModal2, title }) => {
         setLoading(true);
         const { data } = await fetchAllChangeLog();
         setChangeLog(data);
-        console.log(data);
       } catch (err) {
         console.error("Failed to fetch change log:", err.message);
         setError("Failed to fetch change log. Please try again later.");
@@ -34,7 +33,7 @@ const ChangeLog = ({ setShowModal2, title }) => {
           </h2>
           <button
             onClick={() => setShowModal2(false)}
-            className="text-white hover:text-gray-200 cursor-pointer absolute right-6 top-7 transition-colors"
+            className="text-white hover:text-gray-200 cursor-pointer absolute right-6 top-6 font-extrabold transition-colors"
           >
             <RxCross2 className="text-2xl" />
           </button>

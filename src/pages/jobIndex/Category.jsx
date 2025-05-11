@@ -144,7 +144,7 @@ export default function Category() {
     });
   }
   return (
-    <div className="min-h-screen bg-gray-50/60 dark:bg-gray-900 py-8 px-4">
+    <div className="min-h-screen  py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-center text-2xl font-semibold text-gray-800 dark:text-gray-100 pt-4">
           All Categories
@@ -159,7 +159,7 @@ export default function Category() {
           />
         </div>
 
-        {categories.map((category) => (
+        {categories.reverse().map((category) => (
           <div
             key={category.id}
             className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 mt-4 rounded-lg border border-gray-200 dark:border-gray-700"

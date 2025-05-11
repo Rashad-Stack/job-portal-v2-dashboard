@@ -55,7 +55,12 @@ function DashboardNavbar({ toggleSidebar }) {
           <div className="flex items-center">
             <div className="flex items-center ms-3 relative">
               <button className="flex text-2xl" onClick={handleDropDown}>
-                <FaUserCircle />
+                <div
+                  className="h-10 w-10 rounded-4xl flex justify-center items-center font-semibold
+                cursor-pointer hover:bg-[#26383a] active:bg-[#274a4e] text-[20px] border-3 border-[#8eecf5] bg-[#354f52] text-white "
+                >
+                  {userInfo?.name.charAt(0).toUpperCase()}
+                </div>
               </button>
               {isProfileOpen && userInfo && (
                 <div className="z-50 absolute top-[40px] right-[0px] my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600">

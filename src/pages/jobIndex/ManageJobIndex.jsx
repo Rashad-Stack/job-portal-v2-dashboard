@@ -4,6 +4,7 @@ import JobIndexTable from "../../components/jobIndex/JobIndexTable";
 import EditJobIndex from "./EditJobIndex";
 import { getAllJobIndex } from "../../api/jobIndex";
 import "../../components/jobIndex/jobIndexTable.css";
+import { jwtDecode } from "jwt-decode";
 import ChangeLog from "./ChangeLog";
 
 export default function JobIndexPage() {
@@ -15,6 +16,8 @@ export default function JobIndexPage() {
   const [jobIndex, setJobIndex] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
   useEffect(() => {
     const fetchJobIndex = async () => {
       try {
@@ -31,24 +34,41 @@ export default function JobIndexPage() {
 
     fetchJobIndex();
   }, []);
+  useEffect(() => {
+    const token = localStorage.getItem("svaAuth");
+
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserInfo(decoded);
+        if (decoded.role === "ADMIN") {
+          setShowSignUp(true);
+        }
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    }
+  }, []);
 
   return (
     <div className="jobIndexTableStyle2 min-h-screen bg-white dark:bg-gray-900 ">
       <div className="max-w-full mx-auto">
         <div className="flex justify-end my-6 w-full">
-          <Button
-            label="Log"
-            variant="outline"
-            className="font-normal mx-6"
-            onClick={() => {
-              setModalTitle2({
-                heading: "All Job Index Log",
-                actionName: "Close",
-              });
-              setEditableJob(null);
-              setShowModal2(true);
-            }}
-          />
+          {showSignUp && (
+            <Button
+              label="Log"
+              variant="outline"
+              className="font-normal mx-6"
+              onClick={() => {
+                setModalTitle2({
+                  heading: "All Job Index Log",
+                  actionName: "Close",
+                });
+                setEditableJob(null);
+                setShowModal2(true);
+              }}
+            />
+          )}
           <Button
             label="Add New"
             variant="success"
@@ -81,8 +101,12 @@ export default function JobIndexPage() {
         </div>
 
         {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-gray-800 rounded-lg  border border-gray-200 dark:border-gray-700 sm:w-[90%] md:w-[80%] lg:w-[50%] h-auto">
+          <div
+            className="fixed inset-0 z-50 lg:flex overflow-auto lg:items-center lg:justify-center
+          md:flex  md:items-center md:justify-center
+          bg-black/30 dark:bg-black/50 backdrop-blur-sm"
+          >
+            <div className="bg-white dark:bg-gray-800 rounded-lg  border border-gray-200 dark:border-gray-700 sm:w-[90%] md:w-[90%] lg:w-[60%]  h-auto">
               <EditJobIndex
                 setShowModal={setShowModal}
                 jobIndex={editableJob}

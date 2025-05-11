@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useAuth } from "../../context/AuthContext";
+import Logo from "../../assets/Logo.png";
 
 const Login = () => {
   const { login } = useAuth();
@@ -27,7 +28,6 @@ const Login = () => {
     setError("");
     setSuccess("");
     setLoading(true);
-    console.log(formData);
 
     try {
       if (!formData.email || !formData.password) {
@@ -36,7 +36,6 @@ const Login = () => {
 
       const response = await login(formData.email, formData.password);
       setSuccess(response);
-      console.log(response);
       const from = location.state?.from?.pathname || "/dashboard";
       setTimeout(() => {
         navigate(from, { replace: true });
@@ -53,14 +52,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Sign in to your account
-        </h2>
-      </div>
+    <div className="min-h-screen  flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md"></div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-6 sm:mx-auto sm:w-full rounded-lg p-4 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] sm:max-w-md">
         <div className="bg-white py-8 px-4 sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
@@ -109,10 +104,13 @@ const Login = () => {
               </div>
             )}
 
-            <div>
+            <div className="">
+              <div className="w-full pb-8 flex justify-center items-center h-auto">
+                <img className="w-[80%] h-[70%]" src={Logo} alt="" />
+              </div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm text-left font-medium text-gray-700"
               >
                 Email address
               </label>
@@ -133,7 +131,7 @@ const Login = () => {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-left text-sm font-medium text-gray-700"
               >
                 Password
               </label>
