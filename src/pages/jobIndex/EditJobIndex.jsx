@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
-import { getJobById, updateJob } from "../../api/jobs";
 import { RxCross2 } from "react-icons/rx";
-import IndexTableInputField from "../../components/jobIndex/IndexTableInputField";
 import InputField from "../../components/input/InputField";
 import { getAllCategories } from "../../api/category";
 import SelectInput from "../../components/input/SelectInput";

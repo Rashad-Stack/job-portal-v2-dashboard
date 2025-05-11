@@ -6,7 +6,6 @@ import useDeviceSize from "../hooks/useDeviceSize";
 
 function DashboardLayout() {
   const isMobile = useDeviceSize();
-  // console.log(isMobile);
   const [isSidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {

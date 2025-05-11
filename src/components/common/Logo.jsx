@@ -5,7 +5,7 @@ export default function Logo() {
     <img
       src={HyStaffingLogo}
       alt="HyStaffingLogo"
-      className="w-[210px] h-[30px]"
+      className=" h-[30px]  w-[190px] sm:w-[180px] md:w-[200px] lg:w-[210px] "
     />
   );
 }
