@@ -144,7 +144,7 @@ export default function Status() {
     });
   }
   return (
-    <div className="min-h-screen bg-gray-50/60 dark:bg-gray-900 py-8 px-4">
+    <div className="min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-center text-2xl font-semibold text-gray-800 dark:text-gray-100 pt-4">
           All Status

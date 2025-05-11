@@ -1,29 +1,32 @@
 .jobIndexTableStyle, .jobIndexTableStyle2, table{
-    width: 1200px !important;
+    width: 1200px ;
 }
 
 @media screen and (max-width: 1500px) {
     .jobIndexTableStyle,.jobIndexTableStyle2, table{
-        width: 1000px !important;
+        width: 1000px ;
     }
   }
   @media screen and (max-width: 1275px) {
     .jobIndexTableStyle,.jobIndexTableStyle2, table{
-        width: 900px !important;
+        width: 900px ;
     }
   }
   @media screen and (max-width: 1175px) {
     .jobIndexTableStyle,.jobIndexTableStyle2, table{
-        width: 750px !important;
+        width: 750px ;
     }
   }
   @media screen and (max-width: 1020px) {
     .jobIndexTableStyle,.jobIndexTableStyle2, table{
-        width: 600px !important;
+        width: 600px ;
     }
   }
   @media screen and (max-width: 950px) {
     .jobIndexTableStyle,.jobIndexTableStyle2, table{
-        width: auto !important;
+        width: auto ;
     }
+  }
+  #ChangeLogTable{
+    width: 100% !important;
   }

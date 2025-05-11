@@ -10,13 +10,6 @@ const formatDate = (date) => {
 };
 
 export default function JobsTable({ job, index, handleDelete }) {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  const handleSave = (updatedJob) => {
-    // TODO: Implement save functionality
-    console.log("Updated job:", updatedJob);
-  };
-
   const [appliedBy, setAppliedBy] = useState("");
 
   useEffect(() => {
