@@ -84,7 +84,7 @@ export default function JobIndexPage() {
           />
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200  dark:border-gray-700 overflow-hidden">
           <JobIndexTable
             jobIndexes={[jobIndex]}
             index={0}
@@ -117,7 +117,7 @@ export default function JobIndexPage() {
         )}
         {showModal2 && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-gray-800 rounded-lg  border border-gray-200 dark:border-gray-700 w-xs-[90%] sm:w-[90%] md:w-[90%] lg:w-[60%] h-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-lg  border border-gray-200 dark:border-gray-700 w-xs-[80%] sm:w-[90%] md:w-[90%] lg:w-[80%] h-auto">
               <ChangeLog setShowModal2={setShowModal2} title={modalTitle2} />
             </div>
           </div>

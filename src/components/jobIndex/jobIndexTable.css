@@ -1,5 +1,7 @@
 .jobIndexTableStyle, .jobIndexTableStyle2, table{
-    width: 1200px ;
+    width: auto ;
+
+
 }
 
 @media screen and (max-width: 1500px) {

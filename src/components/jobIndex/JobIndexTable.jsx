@@ -36,6 +36,11 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
       }
     });
   }
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text).then(() => {
+      Swal.fire("Copied!", "Text copied to clipboard.", "success");
+    });
+  };
 
   return (
     <>
@@ -45,10 +50,12 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
             <tr>
               <th className="px-6 py-3 bg-gray-50 dark:bg-gray-800">Title</th>
               <th className="px-6 py-3 ">Job Post</th>
-              <th className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
+              <th className="px-6 py-3 w-[200px] bg-gray-50 dark:bg-gray-800">
                 Sheet Link
               </th>
-              <th className="px-6 py-3 ">Candidate Form Link</th>
+              <th className="px-6 py-3  bg-gray-50 dark:bg-gray-800 truncate  whitespace-nowrap">
+                Candidate Form Link
+              </th>
               <th className="px-6 py-3 bg-gray-50 dark:bg-gray-800">Status</th>
               <th className="px-6 py-3 ">Category</th>
               <th className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
@@ -66,15 +73,31 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
                 <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
                   {job.title}
                 </td>
-                <td className="px-6 py-4 ">{job.jobPost}</td>
-                <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
+                <td
+                  className="px-6 py-4 truncate cursor-pointer max-w-[200px] overflow-hidden text-ellipsis z-50 hover:text-black hover:font-semibold"
+                  onClick={() => copyToClipboard(job.jobPost)}
+                  title={job.jobPost}
+                >
+                  {job.jobPost}
+                </td>
+                <td
+                  className="px-6 py-4 truncate cursor-pointer max-w-[200px] overflow-hidden text-ellipsis z-50 hover:text-black hover:font-semibold"
+                  onClick={() => copyToClipboard(job.sheetLink)}
+                  title={job.sheetLink}
+                >
                   {job.sheetLink}
                 </td>
-                <td className="px-6 py-4 ">{job.candidateFormLink}</td>
+                <td
+                  className="px-6 py-4 truncate cursor-pointer max-w-[200px] overflow-hidden text-ellipsis z-50 hover:text-black hover:font-semibold"
+                  onClick={() => copyToClipboard(job.candidateFormLink)}
+                  title={job.candidateFormLink}
+                >
+                  {job.candidateFormLink}
+                </td>
                 <td className="px-6 py-4 bg-gray-50 dark:bg-gray-800">
                   {job.status && job.status.name ? job.status.name : job.status}
                 </td>
-                <td className="px-6 py-4 ">
+                <td className="px-6 py-4">
                   {job.category && job.category.name
                     ? job.category.name
                     : job.category}
@@ -84,7 +107,7 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
                     ? job.creator.name
                     : job.creator}
                 </td>
-                <td className="px-6 py-4 flex gap-2 ">
+                <td className="px-6 py-4 flex gap-2">
                   <Button
                     label="Edit"
                     variant="primary"
@@ -117,10 +140,19 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
             <p className="my-2">
               <span className="font-semibold">Job Post:</span> {job.jobPost}
             </p>
-            <p className="my-2">
-              <span className="font-semibold">Sheet Link:</span> {job.sheetLink}
+            <p
+              onClick={() => copyToClipboard(job.sheetLink)}
+              title={job.sheetLink}
+              className="cursor-pointer max-w-[100%]  hover:font-semibold"
+            >
+              Admin Access: {job.sheetLink || "------"}
             </p>
-            <p className="my-2">
+
+            <p
+              onClick={() => copyToClipboard(job.candidateFormLink)}
+              title={job.candidateFormLink}
+              className="cursor-pointer max-w-[100%]  hover:font-semibold"
+            >
               <span className="font-semibold">Candidate Form Link:</span>{" "}
               {job.candidateFormLink}
             </p>
