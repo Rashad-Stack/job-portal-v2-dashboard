@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { MdOutlineDashboard, MdWorkOutline } from 'react-icons/md';
 import { IoSettingsOutline } from 'react-icons/io5';
@@ -14,6 +15,7 @@ function DashboardSidebar({ toggleSidebar }) {
     const [showSignUp, setShowSignUp] = useState(false);
     const [userInfo, setUserInfo] = useState(null);
 
+
     const toggleSettings = () => {
         setSettingsOpen(!isSettingsOpen);
         setJobsOpen(false);
@@ -25,6 +27,7 @@ function DashboardSidebar({ toggleSidebar }) {
         setSettingsOpen(false);
         setJobIndexOpen(false);
     };
+
 
     const toggleJobIndex = () => {
         setJobIndexOpen(!isJobIndexOpen);
@@ -103,6 +106,7 @@ function DashboardSidebar({ toggleSidebar }) {
             </div>
         </aside>
     );
+
 }
 
 export default DashboardSidebar;
