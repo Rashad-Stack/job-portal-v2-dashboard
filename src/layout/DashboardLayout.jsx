@@ -23,7 +23,7 @@ function DashboardLayout() {
         {isSidebarOpen && <DashboardSidebar toggleSidebar={toggleSidebar} />}
         <main>
           <div className="sm:p-0 md:p-1 lg:p-4 flex justify-center items-center dark:bg-gray-900">
-            <div className="lg:ml-0 md:ml-64 sm:ml-64 mt-14 mx-w-[100%]">
+            <div className="lg:ml-46 md:ml-48 sm:ml-64 mt-14 mx-w-[100%] w-[100%]">
               <Outlet />
             </div>
           </div>

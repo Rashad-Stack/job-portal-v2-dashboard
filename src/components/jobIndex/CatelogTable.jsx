@@ -347,21 +347,24 @@ export default function CatalogTable({ changeLogData }) {
                         title={oldData.jobPost}
                         className="cursor-pointer max-w-[100px]  hover:font-semibold"
                       >
-                        Job Post: {oldData.jobPost || "------"}
+                        <span className="font-semibold">Job Post: </span>{" "}
+                        {oldData.jobPost || "------"}
                       </p>
                       <p
                         onClick={() => copyToClipboard(oldData.sheetLink)}
                         title={oldData.sheetLink}
                         className="cursor-pointer max-w-[100%] hover:font-semibold"
                       >
-                        Sheet Link: {oldData.sheetLink || "------"}
+                        <span className="font-semibold">Sheet Link: </span>{" "}
+                        {oldData.sheetLink || "------"}
                       </p>
                       <p
                         onClick={() => copyToClipboard(oldData.adminAccess)}
                         title={oldData.adminAccess}
                         className="cursor-pointer max-w-[100%]  hover:font-semibold"
                       >
-                        Admin Access: {oldData.adminAccess || "------"}
+                        <span className="font-semibold">Admin Access: </span>{" "}
+                        {oldData.adminAccess || "------"}
                       </p>
                       <p
                         onClick={() =>
@@ -370,37 +373,56 @@ export default function CatalogTable({ changeLogData }) {
                         title={oldData.candidateFormLink}
                         className="cursor-pointer max-w-[100%]  hover:font-semibold"
                       >
-                        Candidate Form: {oldData.candidateFormLink || "------"}
+                        {" "}
+                        <span className="font-semibold">
+                          Candidate Form:{" "}
+                        </span>{" "}
+                        {oldData.candidateFormLink || "------"}
                       </p>
-                      <p>Status: {getStatusName(oldData.statusId)}</p>
-                      <p>Category: {getCategoryName(oldData.categoryId)}</p>
+                      <p>
+                        {" "}
+                        <span className="font-semibold">Status: </span>{" "}
+                        {getStatusName(oldData.statusId)}
+                      </p>
+                      <p>
+                        {" "}
+                        <span className="font-semibold">Category: </span>{" "}
+                        {getCategoryName(oldData.categoryId)}
+                      </p>
                     </div>
                   )}
 
                   {hasNewData && (
                     <div className="my-2 px-4">
                       <p className="font-semibold text-green-700">New Data:</p>
-                      <p>Title: {newData.title || "------"}</p>
+                      <p>
+                        {" "}
+                        <span className="font-semibold"> Title: </span>
+                        {newData.title || "------"}
+                      </p>
                       <p
                         onClick={() => copyToClipboard(newData.jobPost)}
                         title={newData.jobPost}
-                        className="cursor-pointer max-w-[100px]  hover:font-semibold"
+                        className="cursor-pointer max-w-[100%]  hover:font-semibold"
                       >
-                        Job Post: {newData.jobPost || "------"}
+                        <span className="font-semibold"> Job Post: </span>{" "}
+                        {newData.jobPost || "------"}
                       </p>
                       <p
                         onClick={() => copyToClipboard(newData.sheetLink)}
                         title={newData.sheetLink}
                         className="cursor-pointer max-w-[100%]  hover:font-semibold"
                       >
-                        Sheet Link: {newData.sheetLink || "------"}
+                        <span className="font-semibold"> Sheet Link: </span>{" "}
+                        {newData.sheetLink || "------"}
                       </p>
                       <p
                         onClick={() => copyToClipboard(newData.adminAccess)}
                         title={newData.adminAccess}
                         className="cursor-pointer max-w-[100%]  hover:font-semibold"
                       >
-                        Admin Access: {newData.adminAccess || "------"}
+                        <span className="font-semibold"> Admin Access: </span>
+                        {newData.adminAccess || "------"}
                       </p>
                       <p
                         onClick={() =>
@@ -409,10 +431,19 @@ export default function CatalogTable({ changeLogData }) {
                         title={newData.candidateFormLink}
                         className="cursor-pointer max-w-[100%]  hover:font-semibold"
                       >
-                        Candidate Form: {newData.candidateFormLink || "------"}
+                        <span className="font-semibold"> Candidate Form: </span>
+                        {newData.candidateFormLink || "------"}
                       </p>
-                      <p>Status: {getStatusName(newData.statusId)}</p>
-                      <p>Category: {getCategoryName(newData.categoryId)}</p>
+                      <p>
+                        {" "}
+                        <span className="font-semibold">Status: </span>
+                        {getStatusName(newData.statusId)}
+                      </p>
+                      <p>
+                        {" "}
+                        <span className="font-semibold">Category: </span>
+                        {getCategoryName(newData.categoryId)}
+                      </p>
                     </div>
                   )}
 

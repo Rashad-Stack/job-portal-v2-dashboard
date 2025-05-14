@@ -53,7 +53,7 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
               <th className="px-6 py-3 w-[200px] bg-gray-50 dark:bg-gray-800">
                 Sheet Link
               </th>
-              <th className="px-6 py-3  bg-gray-50 dark:bg-gray-800 truncate  whitespace-nowrap">
+              <th className="px-6 py-3   truncate  whitespace-nowrap">
                 Candidate Form Link
               </th>
               <th className="px-6 py-3 bg-gray-50 dark:bg-gray-800">Status</th>
@@ -61,7 +61,7 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
               <th className="px-6 py-3 bg-gray-50 dark:bg-gray-800">
                 Created By
               </th>
-              <th className="px-6 py-3 ">Action</th>
+              <th className="px-6 py-3 w-[200px] ">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -81,7 +81,7 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
                   {job.jobPost}
                 </td>
                 <td
-                  className="px-6 py-4 truncate cursor-pointer max-w-[200px] overflow-hidden text-ellipsis z-50 hover:text-black hover:font-semibold"
+                  className="px-6 py-4 truncate cursor-pointer max-w-[200px] bg-gray-50 dark:bg-gray-800 overflow-hidden text-ellipsis z-50 hover:text-black hover:font-semibold"
                   onClick={() => copyToClipboard(job.sheetLink)}
                   title={job.sheetLink}
                 >
@@ -107,7 +107,7 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
                     ? job.creator.name
                     : job.creator}
                 </td>
-                <td className="px-6 py-4 flex gap-2">
+                <td className="px-6 w-[200px] py-4 flex gap-2 justify-around items-center">
                   <Button
                     label="Edit"
                     variant="primary"
@@ -145,7 +145,8 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
               title={job.sheetLink}
               className="cursor-pointer max-w-[100%]  hover:font-semibold"
             >
-              Admin Access: {job.sheetLink || "------"}
+              <span className="font-semibold">Admin Access:</span>
+              {job.sheetLink || "------"}
             </p>
 
             <p
@@ -171,11 +172,6 @@ export default function JobIndexTable({ jobIndexes, onEdit }) {
               {job.creator && job.creator.name ? job.creator.name : job.creator}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <Button
-                label="View"
-                variant="outline"
-                className="py-1 px-4 rounded-lg"
-              />
               <Button
                 label="Edit"
                 variant="primary"
