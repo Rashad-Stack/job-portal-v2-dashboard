@@ -32,15 +32,15 @@ export default function JobsTable({ job, index, handleDelete }) {
             <div className="flex flex-wrap gap-4 text-gray-600 dark:text-gray-400">
               <div className="flex items-center gap-2">
                 <FaMapMarkerAlt className="text-indigo-500 dark:text-indigo-400" />
-                <span>{job.location}</span>
+                <span>{job?.location}</span>
               </div>
               <div className="flex items-center gap-2">
                 <FaBriefcase className="text-indigo-500 dark:text-indigo-400" />
-                <span>{job.jobType?.replace("_", " ")}</span>
+                <span>{job?.jobType?.replace("_", " ")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <BiCategoryAlt className="text-indigo-500 dark:text-indigo-400" />
-                <span>{job.category.name}</span>
+                <span>{job?.category?.name}</span>
               </div>
               <div className="flex items-center gap-2">
                 <GiClick className="text-indigo-500 dark:text-indigo-400" />

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import FieldModal from "../../components/JobsForms/FieldModal";
 import InputField from "../../components/input/InputField";
+import Button from "../../components/button/Button";
 
 export default function CreateForms() {
   const [field, setField] = useState([]);
@@ -95,12 +96,68 @@ export default function CreateForms() {
                         onChange={onChange}
                       />
                       {fieldValues.type === "radio" && (
-                        <InputField
-                          label="Field name *"
-                          name="radio"
-                          required
-                          onChange={onChange}
-                        />
+                        <>
+                          {fieldValues?.options && fieldValues?.options.map((option, index) => (
+                            <div key={index} className="flex items-center gap-2 mt-2">
+                              <InputField
+                                label={`Option ${index + 1} Name *`}
+                                name={`radio-${index}`}
+                                value={option.radio.label}
+                                required
+                                onChange={(e) => {
+                                  const updatedOptions = [
+                                    ...fieldValues.options,
+                                  ];
+                                  updatedOptions[index].radio.label =
+                                    e.target.value;
+                                  updatedOptions[index].radio.value = e.target.value
+                                    .toLowerCase()
+                                    .replace(" ", "_");
+                                  setFieldValues({
+                                    ...fieldValues,
+                                    options: updatedOptions,
+                                  });
+                                }}
+                                divClass="flex-grow"
+                              />
+                              {fieldValues.options.length > 1 && (
+                                <button
+                                  type="button"
+                                  className="text-red-500 hover:text-red-700"
+                                  onClick={() => {
+                                    const updatedOptions = fieldValues.options.filter(
+                                      (_, i) => i !== index
+                                    );
+                                    setFieldValues({
+                                      ...fieldValues,
+                                      options: updatedOptions,
+                                    });
+                                  }}
+                                >
+                                  ✕
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                          <Button
+                            label={"Add more Option"}
+                            className="mt-2"
+                            onClick={() =>
+                              setFieldValues({
+                                ...fieldValues,
+                                options: [
+                                  ...fieldValues.options,
+                                  {
+                                    radio: {
+                                      label: "",
+                                      value: "",
+                                    },
+                                  },
+                                ],
+                              })
+                            }
+                          />
+                        </>
                       )}
                     </div>
                     <div className="space-x-2">
@@ -127,6 +184,7 @@ export default function CreateForms() {
                         <option value="text">Text</option>
                         <option value="number">Number</option>
                         <option value="radio">Radio</option>
+                        <option value="radio">Select</option>
                       </select>
                     </div>
                   </div>
@@ -134,17 +192,41 @@ export default function CreateForms() {
               </div>
 
               <div className="grid grid-cols-12 gap-4">
-                {field.map((item, index) => (
-                  <div style={{ gridColumn: `span ${item.column}` }}>
-                    <InputField
-                      key={index}
-                      field={item}
-                      type={item.type}
-                      label={`${item.title} ${item.required ? "*" : ""}`}
-                      placeholder={`Enter ${item.title}`}
-                    />
-                  </div>
-                ))}
+                {field.map((item, index) => {
+                  return (
+                    <div key={index} style={{ gridColumn: `span ${item.column}` }}>
+                      {item.type === "radio" ? (
+                        <div>
+                          <label className="block font-semibold mb-2">
+                            {item.title} {item.required && "*"}
+                          </label>
+                          <div className="flex gap-4">
+                            {item.options.map((option, optIndex) => (
+                              <div key={optIndex} className="flex items-center gap-2">
+                                <input
+                                  type="radio"
+                                  id={`radio-${index}-${optIndex}`}
+                                  name={`radio-${index}`}
+                                  value={option.radio.value}
+                                />
+                                <label htmlFor={`radio-${index}-${optIndex}`}>
+                                  {option.radio.label}
+                                </label>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <InputField
+                          field={item}
+                          type={item.type}
+                          label={`${item.title} ${item.required ? "*" : ""}`}
+                          placeholder={`Enter ${item.title}`}
+                        />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </section>
           </form>
