@@ -23,6 +23,8 @@ const JobCreate = () => {
     shift: "DAY",
     deadline: "",
     description: "",
+    minSalary: "",
+    maxSalary: "",
   });
 
   const [error, setError] = useState("");
@@ -88,6 +90,8 @@ const JobCreate = () => {
         "shift",
         "deadline",
         "description",
+        "minSalary",
+        "maxSalary",
       ];
       if (formData.appliedBy === false) {
         requiredFields.push("googleForm");
@@ -314,8 +318,14 @@ const JobCreate = () => {
                 </div>
               </div>
             </section>
-            <section className="space-y-4">
+            {/* <section className="space-y-4">
               <div>
+            
+              </div>
+            </section> */}
+
+            <section className="space-y-4">
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-3">
                 <InputField
                   label="Application Deadline"
                   type="date"
@@ -323,8 +333,25 @@ const JobCreate = () => {
                   value={formData.deadline}
                   onChange={handleChange}
                 />
+
+                <InputField
+                  label="Minimum Salary"
+                  type="number"
+                  name="minSalary"
+                  value={formData.minSalary}
+                  onChange={handleChange}
+                />
+
+                <InputField
+                  label="Maximum Salary"
+                  type="number"
+                  name="maxSalary"
+                  value={formData.maxSalary}
+                  onChange={handleChange}
+                />
               </div>
             </section>
+
             <section className="space-y-4">
               <div>
                 <InputLabel labelTitle={{ title: "Job Description" }} />
