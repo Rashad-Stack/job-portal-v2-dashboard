@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
-import { FaMapMarkerAlt, FaBriefcase, FaClock, FaUsers } from "react-icons/fa";
-import { FaBangladeshiTakaSign } from "react-icons/fa6";
-import { GiClick } from "react-icons/gi";
 import { BiCategoryAlt } from "react-icons/bi";
+import { FaBriefcase, FaMapMarkerAlt, FaUsers } from "react-icons/fa";
+import { GiClick } from "react-icons/gi";
+import { Link } from "react-router";
 
 const formatDate = (date) => {
   return date ? new Date(date).toLocaleDateString() : "N/A";
@@ -41,7 +40,7 @@ export default function JobsTable({ job, index, handleDelete }) {
               </div>
               <div className="flex items-center gap-2">
                 <BiCategoryAlt className="text-indigo-500 dark:text-indigo-400" />
-                <span>{job.category}</span>
+                <span>{job.category.name}</span>
               </div>
               <div className="flex items-center gap-2">
                 <GiClick className="text-indigo-500 dark:text-indigo-400" />
@@ -52,8 +51,7 @@ export default function JobsTable({ job, index, handleDelete }) {
                       title={job.googleForm}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-indigo-600 dark:text-indigo-400 hover:underline"
-                    >
+                      className="text-indigo-600 dark:text-indigo-400 hover:underline">
                       {appliedBy}
                     </a>
                   ) : (
@@ -75,20 +73,17 @@ export default function JobsTable({ job, index, handleDelete }) {
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
             to={`/jobs/view/${job.id}`}
-            className="inline-flex justify-center items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800 text-white font-medium rounded-lg transition-colors"
-          >
+            className="inline-flex justify-center items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800 text-white font-medium rounded-lg transition-colors">
             View
           </Link>
           <Link
             to={`/jobs/edit/${job.id}`}
-            className="inline-flex justify-center items-center px-4 py-2 bg-[#00ab0c] hover:bg-[#237e29] dark:bg-[#008f0a] dark:hover:bg-[#007a0a] text-white font-medium rounded-lg transition-colors"
-          >
+            className="inline-flex justify-center items-center px-4 py-2 bg-[#00ab0c] hover:bg-[#237e29] dark:bg-[#008f0a] dark:hover:bg-[#007a0a] text-white font-medium rounded-lg transition-colors">
             Edit
           </Link>
           <button
             onClick={() => handleDelete(job.id)}
-            className="inline-flex justify-center items-center px-4 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 font-medium rounded-lg transition-colors"
-          >
+            className="inline-flex justify-center items-center px-4 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 font-medium rounded-lg transition-colors">
             Delete
           </button>
         </div>

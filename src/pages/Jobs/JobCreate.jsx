@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { createJob } from "../../api/jobs";
-import axios from "axios";
+import TextEditor from "../../components/common/TextEditor";
 import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
 import SelectInput from "../../components/input/SelectInput";
@@ -21,6 +22,7 @@ const JobCreate = () => {
     jobNature: "ONSITE",
     shift: "DAY",
     deadline: "",
+    description: "",
   });
 
   const [error, setError] = useState("");
@@ -85,6 +87,7 @@ const JobCreate = () => {
         "jobNature",
         "shift",
         "deadline",
+        "description",
       ];
       if (formData.appliedBy === false) {
         requiredFields.push("googleForm");
@@ -322,12 +325,22 @@ const JobCreate = () => {
                 />
               </div>
             </section>
+            <section className="space-y-4">
+              <div>
+                <InputLabel labelTitle={{ title: "Job Description" }} />
+                <TextEditor
+                  label="Job Description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                />
+              </div>
+            </section>
 
             <div className="pt-6">
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-gradient-to-r from-[#2d9134] to-[#2d9134] text-white font-medium rounded-lg hover:from-[#2d9134] hover:to-[#126918] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300"
-              >
+                className="w-full py-3 px-4 bg-gradient-to-r from-[#2d9134] to-[#2d9134] text-white font-medium rounded-lg hover:from-[#2d9134] hover:to-[#126918] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300">
                 Create Job Post
               </button>
             </div>
