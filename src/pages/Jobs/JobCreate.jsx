@@ -329,6 +329,7 @@ const JobCreate = () => {
               <div>
                 <InputLabel labelTitle={{ title: "Job Description" }} />
                 <TextEditor
+                  tab="write"
                   label="Job Description"
                   name="description"
                   value={formData.description}

@@ -10,8 +10,8 @@ const converter = new Showdown.Converter({
   tasklists: true,
 });
 
-export default function TextEditor({ name, value, onChange }) {
-  const [selectedTab, setSelectedTab] = React.useState("write");
+export default function TextEditor({ name, value, onChange, tab }) {
+  const [selectedTab, setSelectedTab] = React.useState(tab);
 
   return (
     <div className="container">
