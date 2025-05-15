@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
-import { getJobById, updateJob } from "../../api/jobs";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { getAllCategories } from "../../api/category.js";
+import { getJobById, updateJob } from "../../api/jobs";
+import TextEditor from "../../components/common/TextEditor.jsx";
 import InputField from "../../components/input/InputField.jsx";
 import InputLabel from "../../components/input/InputLabel.jsx";
 import SelectInput from "../../components/input/SelectInput.jsx";
@@ -28,6 +29,7 @@ const JobEdit = () => {
     shift: "DAY",
     deadline: "",
     googleForm: "",
+    description: "",
   });
 
   useEffect(() => {
@@ -322,11 +324,23 @@ const JobEdit = () => {
               </div>
             </section>
 
+            <section className="space-y-4">
+              <div>
+                <InputLabel labelTitle={{ title: "Job Description" }} />
+                <TextEditor
+                  tab="preview"
+                  label="Job Description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                />
+              </div>
+            </section>
+
             <div className="pt-6">
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c] text-white font-medium rounded-lg hover:from-[#008f0a] hover:to-[#007a09] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00ab0c] transition-all duration-300 shadow-sm"
-              >
+                className="w-full py-3 px-4 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c] text-white font-medium rounded-lg hover:from-[#008f0a] hover:to-[#007a09] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00ab0c] transition-all duration-300 shadow-sm">
                 Update Job
               </button>
             </div>
