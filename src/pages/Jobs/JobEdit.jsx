@@ -30,6 +30,8 @@ const JobEdit = () => {
     deadline: "",
     googleForm: "",
     description: "",
+    minSalary: "",
+    maxSalary: "",
   });
 
   useEffect(() => {
@@ -313,12 +315,28 @@ const JobEdit = () => {
             </section>
 
             <section className="space-y-4">
-              <div>
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-3">
                 <InputField
                   label="Application Deadline"
                   type="date"
                   name="deadline"
                   value={formData.deadline}
+                  onChange={handleChange}
+                />
+
+                <InputField
+                  label="Minimum Salary"
+                  type="number"
+                  name="minSalary"
+                  value={formData.minSalary}
+                  onChange={handleChange}
+                />
+
+                <InputField
+                  label="Maximum Salary"
+                  type="number"
+                  name="maxSalary"
+                  value={formData.maxSalary}
                   onChange={handleChange}
                 />
               </div>
