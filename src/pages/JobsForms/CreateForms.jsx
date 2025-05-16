@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FieldModal from "../../components/JobsForms/FieldModal";
 import InputField from "../../components/input/InputField";
 import Button from "../../components/button/Button";
@@ -48,10 +48,23 @@ export default function CreateForms() {
 
   const handleAddField = () => {
     setField([...field, fieldValues]);
-    setFieldValues({ title: "", type: "" });
+    setFieldValues({
+      title: "",
+      required: false,
+      column: 12,
+      type: fieldValues.type,
+      options: [
+        {
+          radio: {
+            label: "",
+            value: "",
+          },
+        },
+      ],
+    });
   };
 
-  console.log(fieldValues);
+  console.log("fieldValues", fieldValues);
 
   return (
     <div className="min-h-screen  py-8 px-4">
@@ -73,11 +86,6 @@ export default function CreateForms() {
                 />
               </div>
             </div>
-            {/* {error && (
-              <div className="p-4 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300">
-                {error}
-              </div>
-            )} */}
 
             {/* Basic Information */}
             <section className="space-y-4 text-left p-6">
@@ -95,50 +103,57 @@ export default function CreateForms() {
                         required
                         onChange={onChange}
                       />
-                      {fieldValues.type === "radio" && (
+                      {(fieldValues.type === "radio" ||
+                        fieldValues.type === "select") && (
                         <>
-                          {fieldValues?.options && fieldValues?.options.map((option, index) => (
-                            <div key={index} className="flex items-center gap-2 mt-2">
-                              <InputField
-                                label={`Option ${index + 1} Name *`}
-                                name={`radio-${index}`}
-                                value={option.radio.label}
-                                required
-                                onChange={(e) => {
-                                  const updatedOptions = [
-                                    ...fieldValues.options,
-                                  ];
-                                  updatedOptions[index].radio.label =
-                                    e.target.value;
-                                  updatedOptions[index].radio.value = e.target.value
-                                    .toLowerCase()
-                                    .replace(" ", "_");
-                                  setFieldValues({
-                                    ...fieldValues,
-                                    options: updatedOptions,
-                                  });
-                                }}
-                                divClass="flex-grow"
-                              />
-                              {fieldValues.options.length > 1 && (
-                                <button
-                                  type="button"
-                                  className="text-red-500 hover:text-red-700"
-                                  onClick={() => {
-                                    const updatedOptions = fieldValues.options.filter(
-                                      (_, i) => i !== index
-                                    );
+                          {fieldValues?.options &&
+                            fieldValues?.options.map((option, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center gap-2 mt-2"
+                              >
+                                <InputField
+                                  label={`Option ${index + 1} Name *`}
+                                  name={`radio-${index}`}
+                                  value={option.radio.label}
+                                  required
+                                  onChange={(e) => {
+                                    const updatedOptions = [
+                                      ...fieldValues.options,
+                                    ];
+                                    updatedOptions[index].radio.label =
+                                      e.target.value;
+                                    updatedOptions[index].radio.value =
+                                      e.target.value
+                                        .toLowerCase()
+                                        .replace(" ", "_");
                                     setFieldValues({
                                       ...fieldValues,
                                       options: updatedOptions,
                                     });
                                   }}
-                                >
-                                  ✕
-                                </button>
-                              )}
-                            </div>
-                          ))}
+                                  divClass="flex-grow"
+                                />
+                                {fieldValues.options.length > 1 && (
+                                  <button
+                                    type="button"
+                                    className="text-red-500 hover:text-red-700"
+                                    onClick={() => {
+                                      const updatedOptions =
+                                        fieldValues.options.filter(
+                                          (_, i) => i !== index
+                                        );
+                                      setFieldValues({
+                                        ...fieldValues,
+                                        options: updatedOptions,
+                                      });
+                                    }}
+                                  >
+                                    ✕
+                                  </button>
+                                )}
+                              </div>
+                            ))}
                           <Button
                             label={"Add more Option"}
                             className="mt-2"
@@ -160,6 +175,7 @@ export default function CreateForms() {
                         </>
                       )}
                     </div>
+                    
                     <div className="space-x-2">
                       <input
                         type="checkbox"
@@ -184,17 +200,22 @@ export default function CreateForms() {
                         <option value="text">Text</option>
                         <option value="number">Number</option>
                         <option value="radio">Radio</option>
-                        <option value="radio">Select</option>
+                        <option value="select">Select</option>
                       </select>
                     </div>
                   </div>
                 </FieldModal>
               </div>
 
+              {/* Rendered Field */}
               <div className="grid grid-cols-12 gap-4">
                 {field.map((item, index) => {
+                  console.log("field item", item);
                   return (
-                    <div key={index} style={{ gridColumn: `span ${item.column}` }}>
+                    <div
+                      key={index}
+                      style={{ gridColumn: `span ${item.column}` }}
+                    >
                       {item.type === "radio" ? (
                         <div>
                           <label className="block font-semibold mb-2">
@@ -202,7 +223,10 @@ export default function CreateForms() {
                           </label>
                           <div className="flex gap-4">
                             {item.options.map((option, optIndex) => (
-                              <div key={optIndex} className="flex items-center gap-2">
+                              <div
+                                key={optIndex}
+                                className="flex items-center gap-2"
+                              >
                                 <input
                                   type="radio"
                                   id={`radio-${index}-${optIndex}`}
@@ -216,6 +240,26 @@ export default function CreateForms() {
                             ))}
                           </div>
                         </div>
+                      ) : item.type === "select" ? (
+                        <div>
+                          <label className="block font-semibold mb-2">
+                            {item.title} {item.required && "*"}
+                          </label>
+                          <select
+                            className="w-full p-2 border border-gray-300 rounded-lg"
+                            name={`select-${index}`}
+                            defaultValue=""
+                          >
+                            <option value="" disabled>
+                              Select {item.title}
+                            </option>
+                            {item.options.map((option, optIndex) => (
+                              <option key={optIndex} value={option.radio.value}>
+                                {option.radio.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       ) : (
                         <InputField
                           field={item}
@@ -228,6 +272,9 @@ export default function CreateForms() {
                   );
                 })}
               </div>
+
+              {/* Save Action */}
+              {field && field.length > 0 && <Button label={"Save This Template"} />}
             </section>
           </form>
         </div>
