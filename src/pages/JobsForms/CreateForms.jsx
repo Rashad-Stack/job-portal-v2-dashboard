@@ -4,6 +4,7 @@ import FieldModal from "../../components/JobsForms/FieldModal";
 import Button from "../../components/button/Button";
 import InputField from "../../components/input/InputField";
 import { getAllCategories } from "../../api/category";
+import { createJobForm } from "../../api/axios/job-form";
 
 export default function CreateForms() {
   const [formTitle, setFormTitle] = useState("");
@@ -106,8 +107,18 @@ export default function CreateForms() {
     });
   };
 
-  const handleSave = (data) => {
+  const handleSave = async (data) => {
     console.log({ formTitle, fields: data.fields });
+    try {
+      const jobFormData = {
+        formTitle,
+        fields: data.fields,
+      };
+      const response = await createJobForm(jobFormData);
+      console.log("Job form created successfully:", response);
+    } catch (error) {
+      console.error("Error creating job form:", error);
+    }
   };
 
   return (
