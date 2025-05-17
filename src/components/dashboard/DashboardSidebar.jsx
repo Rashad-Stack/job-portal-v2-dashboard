@@ -2,6 +2,7 @@ import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { AiOutlineForm } from "react-icons/ai";
 import { CiViewTable } from "react-icons/ci";
+import { FaWpforms } from "react-icons/fa";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdOutlineDashboard, MdWorkOutline } from "react-icons/md";
 import { Link } from "react-router";
@@ -57,6 +58,15 @@ function DashboardSidebar({ toggleSidebar }) {
               className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700 group">
               <MdOutlineDashboard />
               <span className="ms-3">Dashboard</span>
+            </Link>
+          </li>
+
+          <li>
+            <Link
+              to="/jobs/applications"
+              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <FaWpforms />
+              <span className="ms-3">Applications</span>
             </Link>
           </li>
 
