@@ -9,18 +9,19 @@ import { createJobForm } from "../../api/axios/job-form";
 export default function CreateForms() {
   const [formTitle, setFormTitle] = useState("");
   const [categories, setCategories] = useState([]);
-  const { register, control, handleSubmit, watch, setValue, getValues } = useForm({
-    defaultValues: {
-      fields: [],
-      fieldValues: {
-        title: "",
-        required: false,
-        column: 12,
-        type: "text",
-        options: [{ radio: { label: "", value: "" } }],
+  const { register, control, handleSubmit, watch, setValue, getValues } =
+    useForm({
+      defaultValues: {
+        fields: [],
+        fieldValues: {
+          title: "",
+          required: false,
+          column: 12,
+          type: "text",
+          options: [{ radio: { label: "", value: "" } }],
+        },
       },
-    },
-  });
+    });
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -33,7 +34,7 @@ export default function CreateForms() {
     const fetchCategories = async () => {
       try {
         const data = await getAllCategories();
-        console.log("data", data)
+        console.log("data", data);
         setCategories(data);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
@@ -78,7 +79,12 @@ export default function CreateForms() {
     }
 
     if (name === "type") {
-      const key = value === "select" || value === "radio" ? (value === "select" ? "select" : "radio") : null;
+      const key =
+        value === "select" || value === "radio"
+          ? value === "select"
+            ? "select"
+            : "radio"
+          : null;
       setValue("fieldValues", {
         ...fieldValues,
         type: value,
@@ -101,19 +107,28 @@ export default function CreateForms() {
       required: false,
       column: 12,
       type: currentFieldValues.type,
-      options: currentFieldValues.type === "radio" || currentFieldValues.type === "select" 
-        ? [{ [currentFieldValues.type === "select" ? "select" : "radio"]: { label: "", value: "" } }] 
-        : [],
+      options:
+        currentFieldValues.type === "radio" ||
+        currentFieldValues.type === "select"
+          ? [
+              {
+                [currentFieldValues.type === "select" ? "select" : "radio"]: {
+                  label: "",
+                  value: "",
+                },
+              },
+            ]
+          : [],
     });
   };
 
   const handleSave = async (data) => {
-    console.log({ formTitle, fields: data.fields });
     try {
       const jobFormData = {
         formTitle,
         fields: data.fields,
       };
+      console.log("payload", jobFormData);
       const response = await createJobForm(jobFormData);
       console.log("Job form created successfully:", response);
     } catch (error) {
@@ -162,21 +177,33 @@ export default function CreateForms() {
                         name="fieldValues.title"
                         required
                         register={register}
-                        onChange={(e) => onChangeFieldValues("title", e.target.value)}
+                        onChange={(e) =>
+                          onChangeFieldValues("title", e.target.value)
+                        }
                       />
-                      {(fieldValues.type === "radio" || fieldValues.type === "select") && (
+                      {(fieldValues.type === "radio" ||
+                        fieldValues.type === "select") && (
                         <>
                           {fieldValues.options.map((option, index) => {
-                            const key = fieldValues.type === "select" ? "select" : "radio";
+                            const key =
+                              fieldValues.type === "select"
+                                ? "select"
+                                : "radio";
                             return (
-                              <div key={index} className="flex items-center gap-2 mt-2">
+                              <div
+                                key={index}
+                                className="flex items-center gap-2 mt-2"
+                              >
                                 <InputField
                                   label={`Option ${index + 1} Name *`}
                                   name={`radio-${index}`}
                                   value={option[key]?.label}
                                   required
                                   onChange={(e) =>
-                                    onChangeFieldValues(`radio-${index}`, e.target.value)
+                                    onChangeFieldValues(
+                                      `radio-${index}`,
+                                      e.target.value
+                                    )
                                   }
                                   divClass="flex-grow"
                                 />
@@ -185,9 +212,10 @@ export default function CreateForms() {
                                     type="button"
                                     className="text-red-500 hover:text-red-700"
                                     onClick={() => {
-                                      const updatedOptions = fieldValues.options.filter(
-                                        (_, i) => i !== index
-                                      );
+                                      const updatedOptions =
+                                        fieldValues.options.filter(
+                                          (_, i) => i !== index
+                                        );
                                       setValue("fieldValues", {
                                         ...fieldValues,
                                         options: updatedOptions,
@@ -214,7 +242,9 @@ export default function CreateForms() {
                         type="checkbox"
                         {...register("fieldValues.required")}
                         id="required"
-                        onChange={(e) => onChangeFieldValues("required", e.target.checked)}
+                        onChange={(e) =>
+                          onChangeFieldValues("required", e.target.checked)
+                        }
                       />
                       <label htmlFor="required">Required</label>
                     </div>
@@ -223,7 +253,9 @@ export default function CreateForms() {
                       <select
                         {...register("fieldValues.column")}
                         id="column"
-                        onChange={(e) => onChangeFieldValues("column", e.target.value)}
+                        onChange={(e) =>
+                          onChangeFieldValues("column", e.target.value)
+                        }
                       >
                         <option value="12">1</option>
                         <option value="6">2</option>
@@ -236,7 +268,9 @@ export default function CreateForms() {
                       <select
                         {...register("fieldValues.type")}
                         id="type"
-                        onChange={(e) => onChangeFieldValues("type", e.target.value)}
+                        onChange={(e) =>
+                          onChangeFieldValues("type", e.target.value)
+                        }
                       >
                         <option value="text">Text</option>
                         <option value="number">Number</option>
@@ -252,7 +286,10 @@ export default function CreateForms() {
 
               <div className="grid grid-cols-12 gap-4">
                 {fields.map((item, index) => (
-                  <div key={item.id} style={{ gridColumn: `span ${item.column}` }}>
+                  <div
+                    key={item.id}
+                    style={{ gridColumn: `span ${item.column}` }}
+                  >
                     {item.type === "radio" ? (
                       <div>
                         <label className="block font-semibold mb-2">
@@ -260,7 +297,10 @@ export default function CreateForms() {
                         </label>
                         <div className="flex gap-4">
                           {item.options.map((option, optIndex) => (
-                            <div key={optIndex} className="flex items-center gap-2">
+                            <div
+                              key={optIndex}
+                              className="flex items-center gap-2"
+                            >
                               <input
                                 type="radio"
                                 id={`radio-${index}-${optIndex}`}
@@ -288,7 +328,10 @@ export default function CreateForms() {
                             Select {item.title}
                           </option>
                           {item.options.map((option, optIndex) => (
-                            <option key={optIndex} value={option.select?.value || ""}>
+                            <option
+                              key={optIndex}
+                              value={option.select?.value || ""}
+                            >
                               {option.select?.label || ""}
                             </option>
                           ))}
@@ -307,11 +350,12 @@ export default function CreateForms() {
                           <option value="" disabled>
                             Select Job Category
                           </option>
-                          {categories?.data.length  > 0 && categories?.data.map((category) => (
-                            <option key={category.id} value={category.id}>
-                              {category.name}
-                            </option>
-                          ))}
+                          {categories?.data.length > 0 &&
+                            categories?.data.map((category) => (
+                              <option key={category.id} value={category.id}>
+                                {category.name}
+                              </option>
+                            ))}
                         </select>
                       </div>
                     ) : (
@@ -319,14 +363,20 @@ export default function CreateForms() {
                         field={item}
                         type={item.type}
                         label={`${item.title} ${item.required ? "*" : ""}`}
-                        placeholder={item.type === "date" ? `Select ${item.title}` : `Enter ${item.title}`}
+                        placeholder={
+                          item.type === "date"
+                            ? `Select ${item.title}`
+                            : `Enter ${item.title}`
+                        }
                       />
                     )}
                   </div>
                 ))}
               </div>
 
-              {fields.length > 0 && <Button label="Save This Template" type="submit" />}
+              {fields.length > 0 && (
+                <Button label="Save This Template" type="submit" />
+              )}
             </section>
           </form>
         </div>

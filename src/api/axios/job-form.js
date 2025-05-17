@@ -1,6 +1,6 @@
 import axiosInstance from ".";
 
-const API_BASE_URL = "http://localhost:3000/api/v2/job/form/";
+const API_BASE_URL = "http://localhost:3000/api/v2/job/forms/";
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("svaAuth");
@@ -43,13 +43,8 @@ export const getJobFormById = async (id) => {
 // Create new job form
 export const createJobForm = async (jobFormData) => {
   try {
-    // Transform data to match schema requirements
     const transformedData = {
       ...jobFormData,
-      deadline: jobFormData.deadline
-        ? new Date(jobFormData.deadline).toISOString()
-        : null,
-      responsibilities: jobFormData.responsibilities || [],
     };
 
     const response = await axiosInstance.post(`${API_BASE_URL}create`, transformedData, {
