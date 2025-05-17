@@ -5,8 +5,10 @@ import Button from "../../components/button/Button";
 import InputField from "../../components/input/InputField";
 import { getAllCategories } from "../../api/category";
 import { createJobForm } from "../../api/axios/job-form";
+import { useNavigate } from "react-router";
 
 export default function CreateForms() {
+  const navigate = useNavigate();
   const [formTitle, setFormTitle] = useState("");
   const [categories, setCategories] = useState([]);
   const { register, control, handleSubmit, watch, setValue, getValues } =
@@ -102,6 +104,7 @@ export default function CreateForms() {
   const handleAddField = () => {
     const currentFieldValues = getValues("fieldValues");
     append(currentFieldValues);
+    
     setValue("fieldValues", {
       title: "",
       required: false,
@@ -131,6 +134,9 @@ export default function CreateForms() {
       console.log("payload", jobFormData);
       const response = await createJobForm(jobFormData);
       console.log("Job form created successfully:", response);
+      if(response.success && response.data) {
+        navigate("/jobs/forms");
+      }
     } catch (error) {
       console.error("Error creating job form:", error);
     }
