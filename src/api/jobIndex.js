@@ -1,3 +1,5 @@
+import axiosInstance from "./axios";
+
 const API_BASE_URL = "http://localhost:3000/api/v2/job-index";
 
 // Helper function to get auth headers
@@ -15,20 +17,13 @@ const getAuthHeaders = () => {
 // Get all job index
 export const getAllJobIndex = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/all`, {
-      method: "GET",
-      headers: {
-        ...getAuthHeaders(),
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
+    const response = await axiosInstance.get(`/job-index/all`);
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       throw new Error("Failed to fetch job index");
     }
 
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error fetching job index:", error);
     throw error;
@@ -38,11 +33,11 @@ export const getAllJobIndex = async () => {
 // Get job by job index
 export const getJobindexId = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/${id}`);
-    if (!response.ok) {
+    const response = await axiosInstance.get(`/job-index/${id}`);
+    if (response.status !== 200) {
       throw new Error("Failed to fetch job index");
     }
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error fetching job index:", error);
     throw error;
@@ -59,23 +54,18 @@ export const createJobIndex = async (jobIndexData) => {
         : null,
     };
 
-    const response = await fetch(`${API_BASE_URL}/create`, {
-      method: "POST",
-      headers: {
-        ...getAuthHeaders(),
-        "Content-Type": "application/json", // ✅ Important: tell backend it's JSON
-      },
-      credentials: "include",
-      body: JSON.stringify(transformedData),
-    });
+    const response = await axiosInstance.post(
+      `/job-index/create`,
+      transformedData
+    );
 
-    if (!response.ok) {
+    if (response.status !== 201) {
       const errorData = await response.json();
       console.error("Backend error message:", errorData);
       throw new Error(errorData.message || "Failed to create job index");
     }
 
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error creating job index (catch block):", error);
     throw error;
@@ -89,19 +79,17 @@ export const updateJobIndex = async (id, jobIndexData) => {
       ...jobIndexData,
       numberOfHiring: parseInt(jobIndexData.numberOfHiring) || 1,
     };
-    const response = await fetch(`${API_BASE_URL}/update/${id}`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-      credentials: "include",
-      body: JSON.stringify(transformedData),
-    });
+    const response = await axiosInstance.put(
+      `/job-index/update/${id}`,
+      transformedData
+    );
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to update job");
     }
 
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error updating job index:", error);
     throw error;

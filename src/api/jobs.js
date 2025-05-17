@@ -1,25 +1,13 @@
-const API_BASE_URL = "http://localhost:3000/api/v2/job";
-
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("svaAuth");
-  if (!token) {
-    throw new Error("Authentication token not found. Please log in again.");
-  }
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-};
+import axiosInstance from "./axios";
 
 // Get all jobs
 export const getAllJobs = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/all`);
-    if (!response.ok) {
+    const response = await axiosInstance.get(`/job/all`);
+    if (response.status !== 200) {
       throw new Error("Failed to fetch jobs");
     }
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error fetching jobs:", error);
     throw error;
@@ -29,11 +17,11 @@ export const getAllJobs = async () => {
 // Get job by ID
 export const getJobById = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/${id}`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch job");
+    const response = await axiosInstance.get(`/job/${id}`);
+    if (response.status !== 200) {
+      throw new Error("Failed to fetch jobs");
     }
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error fetching job:", error);
     throw error;
@@ -49,27 +37,22 @@ export const createJob = async (jobData) => {
       deadline: jobData.deadline
         ? new Date(jobData.deadline).toISOString()
         : null,
-      // Optional: If backend still expects responsibilities field, send empty array
       responsibilities: jobData.responsibilities || [],
     };
 
-    const response = await fetch(`${API_BASE_URL}/create`, {
-      method: "POST",
-      headers: {
-        ...getAuthHeaders(),
-        "Content-Type": "application/json", // ✅ Important: tell backend it's JSON
-      },
-      credentials: "include",
-      body: JSON.stringify(transformedData),
-    });
+    // Use axiosInstance or axios directly
+    const response = await axiosInstance.post("/job/create", transformedData);
 
-    if (!response.ok) {
-      const errorData = await response.json();
+    console.log("response", response);
+
+    // Axios automatically parses JSON, so response.data contains the parsed response
+    if (response.status !== 201) {
+      const errorData = response.data;
       console.error("Backend error message:", errorData);
       throw new Error(errorData.message || "Failed to create job");
     }
 
-    return await response.json();
+    return response.data; // Return the parsed data directly
   } catch (error) {
     console.error("Error creating job (catch block):", error);
     throw error;
@@ -87,19 +70,17 @@ export const updateJob = async (id, jobData) => {
         : jobData.skills,
     };
 
-    const response = await fetch(`${API_BASE_URL}/update/${id}`, {
-      method: "PUT",
-      headers: getAuthHeaders(),
-      credentials: "include",
-      body: JSON.stringify(transformedData),
-    });
+    const response = await axiosInstance.put(
+      `/job/update/${id}`,
+      transformedData
+    );
 
-    if (!response.ok) {
-      const errorData = await response.json();
+    if (response.status !== 200) {
+      const errorData = response.data;
       throw new Error(errorData.message || "Failed to update job");
     }
 
-    return await response.json();
+    return response.data; // Axios automatically parses JSON
   } catch (error) {
     console.error("Error updating job:", error);
     throw error;
@@ -109,16 +90,12 @@ export const updateJob = async (id, jobData) => {
 // Delete job
 export const deleteJob = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/delete/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-      credentials: "include",
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
+    const response = await axiosInstance.delete(`/job/delete/${id}`);
+    if (response.status !== 200) {
+      const errorData = response.data;
       throw new Error(errorData.message || "Failed to delete job");
     }
-    return await response.json();
+    return response.data; // Axios automatically parses JSON
   } catch (error) {
     console.error("Error deleting job:", error);
     throw error;
