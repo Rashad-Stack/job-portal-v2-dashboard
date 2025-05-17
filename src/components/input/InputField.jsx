@@ -8,10 +8,11 @@ const InputField = ({
   required = false,
   placeholder = "",
   className = "",
+  divClass,
   ...rest
 }) => {
   return (
-    <div>
+    <div className={divClass}>
       <InputLabel labelTitle={{ title: label }} />
       <input
         id={name}
