@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router"; // use 'react-router-dom'
 
 import DashboardLayout from "../layout/DashboardLayout";
+import Applications from "../pages/Applications/Applications.jsx";
 import Login from "../pages/Auth/Login";
 import Moderators from "../pages/Auth/Moderators/Moderators";
 import Home from "../pages/Home/Home";
@@ -31,6 +32,7 @@ export default function Router() {
           }>
           <Route index element={<Home />} />
           <Route path="dashboard" element={<Navigate to="/" replace />} />
+          <Route path="jobs/applications" element={<Applications />} />
           <Route path="dashboard/profile" element={<Profile />} />
           <Route
             path="dashboard/change-password"
