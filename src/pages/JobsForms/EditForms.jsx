@@ -1,17 +1,19 @@
 import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
+import { useParams, useNavigate } from "react-router";
 import FieldModal from "../../components/JobsForms/FieldModal";
 import Button from "../../components/button/Button";
 import InputField from "../../components/input/InputField";
+import { getJobFormById, updateJobForm } from "../../api/axios/job-form";
 import { getAllCategories } from "../../api/category";
-import { createJobForm } from "../../api/axios/job-form";
-import { useNavigate } from "react-router";
 
-export default function CreateForms() {
+export default function EditForms() {
+  const { id } = useParams();
   const navigate = useNavigate();
   const [formTitle, setFormTitle] = useState("");
   const [categories, setCategories] = useState([]);
   const [fieldErrors, setFieldErrors] = useState({});
+
   const { register, control, handleSubmit, watch, setValue, getValues } =
     useForm({
       defaultValues: {
@@ -23,6 +25,8 @@ export default function CreateForms() {
           type: "text",
           options: [{ radio: { label: "", value: "" } }],
         },
+        numberOfHiring: 1,
+        skills: "",
       },
     });
 
@@ -34,20 +38,24 @@ export default function CreateForms() {
   const fieldValues = watch("fieldValues");
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getAllCategories();
-        console.log("data", data);
-        setCategories(data);
+        // Fetch job form data
+        const formData = await getJobFormById(id);
+        setFormTitle(formData.formTitle);
+        setValue("fields", formData.fields);
+
+        // Fetch categories
+        const categoryData = await getAllCategories();
+        setCategories(categoryData);
       } catch (error) {
-        console.error("Failed to fetch categories:", error);
+        console.error("Failed to fetch data:", error);
       }
     };
-    fetchCategories();
-  }, []);
+    fetchData();
+  }, [id, setValue]);
 
   const onChangeFieldValues = (name, value) => {
-    // Clear error for the field being changed if the value is non-empty
     if (value.trim()) {
       setFieldErrors((prevErrors) => {
         const newErrors = { ...prevErrors };
@@ -60,7 +68,7 @@ export default function CreateForms() {
         return newErrors;
       });
     }
-    
+
     if (name === "column") {
       setValue("fieldValues", {
         ...fieldValues,
@@ -120,12 +128,10 @@ export default function CreateForms() {
     const currentFieldValues = getValues("fieldValues");
     const newErrors = {};
 
-    // Validate field title
     if (!currentFieldValues.title.trim()) {
       newErrors.title = "Field name is required";
     }
 
-    // Validate options for radio/select types
     if (currentFieldValues.type === "radio" || currentFieldValues.type === "select") {
       currentFieldValues.options.forEach((option, index) => {
         const key = currentFieldValues.type === "select" ? "select" : "radio";
@@ -170,14 +176,11 @@ export default function CreateForms() {
         formTitle,
         fields: data.fields,
       };
-      console.log("payload", jobFormData);
-      const response = await createJobForm(jobFormData);
-      console.log("Job form created successfully:", response);
-      if(response.success && response.data) {
-        navigate("/jobs/forms");
-      }
+      const response = await updateJobForm(id, jobFormData);
+      console.log("Job form updated successfully:", response);
+      navigate("/jobs/forms");
     } catch (error) {
-      console.error("Error creating job form:", error);
+      console.error("Error updating job form:", error);
     }
   };
 
@@ -189,11 +192,10 @@ export default function CreateForms() {
             onSubmit={handleSubmit(handleSave)}
             className="space-y-6"
             method="post"
-            action="/add-form"
           >
             <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c]">
               <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
-                Create New Job Post form
+                Edit Job Post Form
               </h1>
               <div>
                 <input
@@ -202,6 +204,7 @@ export default function CreateForms() {
                   name="formTitle"
                   required
                   placeholder="Form Title"
+                  value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   className="w-fit p-2 border outline-none border-gray-300 rounded-lg text-white my-3"
                 />
@@ -397,7 +400,7 @@ export default function CreateForms() {
                           <option value="" disabled>
                             Select Job Category
                           </option>
-                          {categories?.data.length > 0 &&
+                          {categories?.data?.length > 0 &&
                             categories?.data.map((category) => (
                               <option key={category.id} value={category.id}>
                                 {category.name}
@@ -422,7 +425,7 @@ export default function CreateForms() {
               </div>
 
               {fields.length > 0 && (
-                <Button label="Save This Template" type="submit" />
+                <Button label="Update Form" type="submit" />
               )}
             </section>
           </form>

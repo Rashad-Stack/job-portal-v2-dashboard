@@ -9,6 +9,7 @@ const InputField = ({
   placeholder = "",
   className = "",
   divClass,
+  error,
   ...rest
 }) => {
   return (
@@ -25,6 +26,7 @@ const InputField = ({
         className={`w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#1e6623] dark:bg-gray-700 dark:text-white ${className}`}
         {...rest}
       />
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 };

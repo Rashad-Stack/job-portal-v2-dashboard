@@ -74,7 +74,9 @@ export default function JobForms() {
 
               <div className="flex gap-2">
                 <Button label="Use" variant="success" />
-                <Button label="Edit" variant="primary" />
+                <Link to={`/jobs/forms/edit/${form.id}`}>
+                  <Button label="Edit" variant="primary" />
+                </Link>
                 <Button
                   label="Delete"
                   variant="danger"

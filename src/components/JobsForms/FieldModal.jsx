@@ -10,8 +10,12 @@ export default function FieldModal({
   const [openModal, setOpenModal] = useState(false);
 
   const handleConfirm = () => {
+    const result = handleAddField();
+    
+    if (result && result.errors) {
+      return;
+    }
     setOpenModal(false);
-    handleAddField();
   };
 
   return (
