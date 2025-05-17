@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FieldModal from "../../components/JobsForms/FieldModal";
-import InputField from "../../components/input/InputField";
 import Button from "../../components/button/Button";
+import InputField from "../../components/input/InputField";
 
 export default function CreateForms() {
   const [field, setField] = useState([]);
+  const [formTitle, setFormTitle] = useState("");
   const [fieldValues, setFieldValues] = useState({
     title: "",
     required: false,
@@ -64,7 +65,9 @@ export default function CreateForms() {
     });
   };
 
-  console.log("fieldValues", fieldValues);
+  const handleSave = () => {
+    console.log({ formTitle, field });
+  };
 
   return (
     <div className="min-h-screen  py-8 px-4">
@@ -82,6 +85,7 @@ export default function CreateForms() {
                   name="formTitle"
                   required={true}
                   placeholder="Form Title"
+                  onChange={(e) => setFormTitle(e.target.value)}
                   className={`w-fit p-2 border outline-none border-gray-300 rounded-lg text-white my-3`}
                 />
               </div>
@@ -110,8 +114,7 @@ export default function CreateForms() {
                             fieldValues?.options.map((option, index) => (
                               <div
                                 key={index}
-                                className="flex items-center gap-2 mt-2"
-                              >
+                                className="flex items-center gap-2 mt-2">
                                 <InputField
                                   label={`Option ${index + 1} Name *`}
                                   name={`radio-${index}`}
@@ -147,8 +150,7 @@ export default function CreateForms() {
                                         ...fieldValues,
                                         options: updatedOptions,
                                       });
-                                    }}
-                                  >
+                                    }}>
                                     ✕
                                   </button>
                                 )}
@@ -175,7 +177,7 @@ export default function CreateForms() {
                         </>
                       )}
                     </div>
-                    
+
                     <div className="space-x-2">
                       <input
                         type="checkbox"
@@ -214,8 +216,7 @@ export default function CreateForms() {
                   return (
                     <div
                       key={index}
-                      style={{ gridColumn: `span ${item.column}` }}
-                    >
+                      style={{ gridColumn: `span ${item.column}` }}>
                       {item.type === "radio" ? (
                         <div>
                           <label className="block font-semibold mb-2">
@@ -225,8 +226,7 @@ export default function CreateForms() {
                             {item.options.map((option, optIndex) => (
                               <div
                                 key={optIndex}
-                                className="flex items-center gap-2"
-                              >
+                                className="flex items-center gap-2">
                                 <input
                                   type="radio"
                                   id={`radio-${index}-${optIndex}`}
@@ -248,8 +248,7 @@ export default function CreateForms() {
                           <select
                             className="w-full p-2 border border-gray-300 rounded-lg"
                             name={`select-${index}`}
-                            defaultValue=""
-                          >
+                            defaultValue="">
                             <option value="" disabled>
                               Select {item.title}
                             </option>
@@ -274,7 +273,9 @@ export default function CreateForms() {
               </div>
 
               {/* Save Action */}
-              {field && field.length > 0 && <Button label={"Save This Template"} />}
+              {field && field.length > 0 && (
+                <Button label={"Save This Template"} onClick={handleSave} />
+              )}
             </section>
           </form>
         </div>
