@@ -39,9 +39,7 @@ const JobCreate = () => {
     try {
       setLoading(true);
       setError("");
-      const { data } = await axios.get(
-        "http://localhost:3000/api/v2/category/all"
-      );
+      const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/category/all`);
       setCategory(data.data || []);
     } catch (err) {
       console.error("Failed to fetch Categories:", err.message);

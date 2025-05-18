@@ -8,7 +8,7 @@ export const fetchAllChangeLog = async () => {
     if (response.status !== 200) {
       throw new Error("Failed to fetch change log");
     }
-    return await response.data;
+    return response.data;
   } catch (error) {
     console.error("Error fetching changelog:", error);
     throw error;

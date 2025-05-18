@@ -93,7 +93,7 @@ export const deleteJobIndex = async (id) => {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to delete job index");
     }
-    return await response.data;
+    return response.data;
   } catch (error) {
     console.error("Error deleting job index:", error);
     throw error;

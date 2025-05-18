@@ -9,7 +9,7 @@ export const getAllStatus = async () => {
     if (response.status !== 200) {
       throw new Error("Failed to fetch status");
     }
-    return await response.data;
+    return response.data;
   } catch (error) {
     console.error("Error fetching status:", error);
     throw error;
@@ -19,10 +19,10 @@ export const getAllStatus = async () => {
 export const getStatusId = async (id) => {
   try {
     const response = await axiosInstance.get(`/status/${id}`);
-    if (response.status !== 0) {
+    if (response.status !== 200) {
       throw new Error("Failed to fetch Status");
     }
-    return await response.data;
+    return response.data;
   } catch (error) {
     console.error("Error fetching Status:", error);
     throw error;
@@ -37,13 +37,13 @@ export const createStatus = async (statusData) => {
 
     const response = await axiosInstance.post(`/status/create`, transformedData);
 
-    if (response.status !== 200) {
+    if (response.status !== 201) {
       const errorData = await response.json();
       console.error("Backend error message:", errorData);
       throw new Error(errorData.message || "Failed to create job");
     }
 
-    return await response.data;
+    return response.data;
   } catch (error) {
     console.error("Error creating job (catch block):", error);
     throw error;
@@ -59,7 +59,7 @@ export const updateStatus = async ({ id, name }) => {
       throw new Error(errorData.message || "Failed to update Status");
     }
 
-    return await response.data;
+    return response.data;
   } catch (error) {
     console.error("Error updating status:", error);
     throw error;
@@ -76,7 +76,7 @@ export const deleteStatus = async (id) => {
       throw new Error(errorData.message || "Failed to delete Status");
     }
 
-    return await response.json();
+    return response.json();
   } catch (error) {
     console.error("Error deleting status:", error);
     throw error;
