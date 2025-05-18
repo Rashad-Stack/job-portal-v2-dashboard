@@ -1,7 +1,5 @@
 import axiosInstance from "./axiosInstance";
 
-const API_BASE_URL = "http://localhost:3000/api/v2/category";
-
 // Get all Categories
 export const getAllCategories = async () => {
   try {
@@ -31,10 +29,18 @@ export const createCategory = async (categoryData) => {
       ...categoryData,
     };
 
+    console.log("transformedData", transformedData);
+
     const response = await axiosInstance.post(
       `/category/create`,
       transformedData
     );
+
+    if (response.status !== 201) {
+      const errorData = response.data;
+      console.error("Backend error message:", errorData);
+      throw new Error(errorData.message || "Failed to create job");
+    }
 
     return response.data;
   } catch (error) {
@@ -57,9 +63,9 @@ export const updateCategory = async ({ id, name }) => {
 
 // Delete Category
 export const deleteCategory = async (id) => {
+  console.log("id", id);
   try {
     const response = await axiosInstance.delete(`/category/delete/${id}`);
-
     return response.data;
   } catch (error) {
     console.error("Error deleting category:", error);
