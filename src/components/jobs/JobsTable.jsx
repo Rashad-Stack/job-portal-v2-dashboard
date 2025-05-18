@@ -18,6 +18,7 @@ export default function JobsTable({ job, index, handleDelete }) {
       setAppliedBy("Google Form Link");
     }
   }, [job.appliedBy]);
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
       <div className="flex flex-col md:flex-row md:items-center justify-between">
