@@ -7,6 +7,16 @@ import InputField from "../../components/input/InputField.jsx";
 import InputLabel from "../../components/input/InputLabel.jsx";
 import SelectInput from "../../components/input/SelectInput.jsx";
 
+const formatInputDate = (date) => {
+  if (!date || date === "1970-11-03T00:00:00.000Z") return "";
+  const parsedDate = new Date(date);
+  if (isNaN(parsedDate.getTime())) return "";
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 const JobEdit = () => {
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
@@ -320,7 +330,7 @@ const JobEdit = () => {
                   label="Application Deadline"
                   type="date"
                   name="deadline"
-                  value={formData.deadline}
+                  value={formatInputDate(formData.deadline)}
                   onChange={handleChange}
                 />
 
@@ -331,7 +341,6 @@ const JobEdit = () => {
                   value={formData.minSalary}
                   onChange={handleChange}
                 />
-
                 <InputField
                   label="Maximum Salary"
                   type="number"

@@ -1,17 +1,53 @@
 import { useEffect, useState } from "react";
 import { getAllApplications } from "../../api/axios/applications";
+import ApplicationCard from "../../components/applications/applicationCard";
 
 export default function Applications() {
   const [applications, setApplications] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async () => {
-      const result = await getAllApplications();
-      setApplications(result);
-    };
+    (async () => {
+      try {
+        const { data } = await getAllApplications();
+        setApplications(data);
+      } catch (err) {
+        console.error("Failed to fetch jobs:", err.message);
+        setError("Failed to fetch applications. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
-  console.log("applications", applications);
+  const handleDelete = async (id) => {
+    try {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      });
+
+      if (result.isConfirmed) {
+        // await deleteJob(id);
+        // setJobs((prevJobs) => prevJobs.filter((job) => job._id !== id));
+
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error("Delete failed:", err.message);
+      setError("Failed to delete the job. Please try again.");
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center p-4">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50/60 dark:bg-gray-900 py-8 px-4">
@@ -24,22 +60,29 @@ export default function Applications() {
           </div>
 
           <div className="p-6">
-            {/* {error && (
-                 <div className="p-4 mb-4 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300">
-                   {error}
-                 </div>
-               )} */}
+            {error && (
+              <div className="p-4 mb-4 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300">
+                {error}
+              </div>
+            )}
 
             <div className="grid gap-6">
-              {/* {jobs.length > 0 ? (
-                   [...jobs]
-                     .reverse()
-                     .map((job, index) => (
-                       <JobsTable key={job.id} job={job} index={index} handleDelete={handleDelete} />
-                     ))
-                 ) : (
-                   <div className="text-gray-500 dark:text-gray-400 text-center">No jobs found...</div>
-                 )} */}
+              {applications.length > 0 ? (
+                [...applications]
+                  .reverse()
+                  .map((application, index) => (
+                    <ApplicationCard
+                      key={application.id}
+                      application={application}
+                      index={index}
+                      handleDelete={handleDelete}
+                    />
+                  ))
+              ) : (
+                <div className="text-gray-500 dark:text-gray-400 text-center">
+                  No jobs found...
+                </div>
+              )}
             </div>
           </div>
         </div>
