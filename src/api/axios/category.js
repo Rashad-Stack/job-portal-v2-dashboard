@@ -1,24 +1,9 @@
 import axiosInstance from "./axiosInstance";
 
-const API_BASE_URL = "http://localhost:3000/api/v2/category";
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("svaAuth");
-  if (!token) {
-    throw new Error("Authentication token not found. Please log in again.");
-  }
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-};
-
 // Get all Categories
 export const getAllCategories = async () => {
   try {
-    const response = await axiosInstance.get(`${API_BASE_URL}/all`, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
-    });
+    const response = await axiosInstance.get(`/category/all`);
     return response.data;
   } catch (error) {
     console.error("Error fetching categories:", error);
@@ -29,7 +14,7 @@ export const getAllCategories = async () => {
 // Get Category by ID
 export const getCategoryById = async (id) => {
   try {
-    const response = await axiosInstance.get(`${API_BASE_URL}/${id}`);
+    const response = await axiosInstance.get(`/category/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching Category:", error);
@@ -44,10 +29,18 @@ export const createCategory = async (categoryData) => {
       ...categoryData,
     };
 
-    const response = await axiosInstance.post(`${API_BASE_URL}/create`, transformedData, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
-    });
+    console.log("transformedData", transformedData);
+
+    const response = await axiosInstance.post(
+      `/category/create`,
+      transformedData
+    );
+
+    if (response.status !== 201) {
+      const errorData = response.data;
+      console.error("Backend error message:", errorData);
+      throw new Error(errorData.message || "Failed to create job");
+    }
 
     return response.data;
   } catch (error) {
@@ -59,10 +52,7 @@ export const createCategory = async (categoryData) => {
 // Update Category
 export const updateCategory = async ({ id, name }) => {
   try {
-    const response = await axiosInstance.put(`${API_BASE_URL}/update`, { id, name }, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
-    });
+    const response = await axiosInstance.put(`/category/update`, { id, name });
 
     return response.data;
   } catch (error) {
@@ -73,13 +63,9 @@ export const updateCategory = async ({ id, name }) => {
 
 // Delete Category
 export const deleteCategory = async (id) => {
+  console.log("id", id);
   try {
-    const response = await axiosInstance.delete(`${API_BASE_URL}/delete`, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
-      data: { id },
-    });
-
+    const response = await axiosInstance.delete(`/category/delete/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting category:", error);
