@@ -19,6 +19,7 @@ import Profile from "../pages/Profile/Profile";
 import Register from "../pages/Register/Register";
 import PrivateRoute from "./PrivateRoute.jsx";
 import EditForms from "../pages/JobsForms/EditForms.jsx";
+import TemplateForm from "../pages/JobsForms/TemplateForm.jsx";
 
 export default function Router() {
   return (
@@ -44,6 +45,7 @@ export default function Router() {
           <Route path="jobs/edit/:id" element={<JobEdit />} />
           <Route path="jobs/view/:id" element={<JobView />} />
           <Route path="/jobs/forms" element={<JobForms />} />
+          <Route path="/jobs/create/template/:id" element={<TemplateForm />} />
           <Route path="/jobs/forms/create" element={<CreateForms />} />
           <Route path="/jobs/forms/edit/:id" element={<EditForms/>} />
           <Route path="setting/manage_moderator" element={<Moderators />} />

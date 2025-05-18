@@ -22,6 +22,10 @@ axiosInstance.interceptors.request.use(
 
 axiosInstance.interceptors.response.use(
   (response) => {
+    if (response.status === 401) {
+      localStorage.removeItem("svaAuth");
+      window.location.replace("/login");
+    }
     return response;
   },
   (error) => {

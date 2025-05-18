@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
-import { getAllCategories } from "../../api/category";
+import { useNavigate, useParams } from "react-router";
 import { createJob } from "../../api/jobs";
 import TextEditor from "../../components/common/TextEditor";
 import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
 import SelectInput from "../../components/input/SelectInput";
 import { getJobFormById } from "../../api/axios/job-form";
+import { getAllCategories } from "../../api/axios/category";
 
-const JobCreate = () => {
+const TemplateForm = () => {
   const navigate = useNavigate();
+  const { id: templateId } = useParams();
+  console.log("template id", templateId);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -31,7 +33,29 @@ const JobCreate = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [templateLoading, setTemplateLoading] = useState(false);
   const [category, setCategory] = useState([]);
+  const [templateData, setTemplateData] = useState({});
+
+  useEffect(() => {
+    const fetchTemplate = async () => {
+      try {
+        setTemplateLoading(true);
+        setError("");
+
+        const { data } = await getJobFormById(templateId);
+        console.log("template data", data);
+        setTemplateData(data);
+      } catch (err) {
+        console.error("Failed to fetch Template:", err.message);
+        setError("Failed to fetch Template. Please try again later.");
+      } finally {
+        setTemplateLoading(false);
+      }
+    };
+
+    fetchTemplate();
+  }, [templateId]);
 
   useEffect(() => {
     fetchCategories();
@@ -41,7 +65,7 @@ const JobCreate = () => {
     try {
       setLoading(true);
       setError("");
-      const { data } = await getAllCategories();
+      const { data } = getAllCategories();
       setCategory(data || []);
     } catch (err) {
       console.error("Failed to fetch Categories:", err.message);
@@ -158,9 +182,10 @@ const JobCreate = () => {
                   placeholder="Enter Job Title"
                 />
               </div>
-              {/* Company Name */}
+
               <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2   gap-4">
                 <div>
+                  {/* Company Name */}
                   <InputField
                     label="Company Name"
                     type="text"
@@ -345,6 +370,7 @@ const JobCreate = () => {
               </div>
             </section>
 
+            {/* Description Markdown */}
             <section className="space-y-4">
               <div>
                 <InputLabel labelTitle={{ title: "Job Description" }} />
@@ -373,4 +399,4 @@ const JobCreate = () => {
   );
 };
 
-export default JobCreate;
+export default TemplateForm;

@@ -1,4 +1,4 @@
-import axiosInstance from "./axiosInstance";
+import axiosInstance from ".";
 
 // Get all Categories
 export const getAllCategories = async () => {
