@@ -76,7 +76,7 @@ export const deleteCategory = async (id) => {
       throw new Error(errorData.message || "Failed to delete category");
     }
 
-    return await response.jdata;
+    return await response.data;
   } catch (error) {
     console.error("Error deleting category:", error);
     throw error;
