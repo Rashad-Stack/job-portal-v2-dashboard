@@ -1,18 +1,7 @@
 import axiosInstance from "./axios";
 
-const API_BASE_URL = "http://localhost:3000/api/v2/job-index";
+// const API_BASE_URL = "http://localhost:3000/api/v2/job-index";
 
-// Helper function to get auth headers
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("svaAuth");
-  if (!token) {
-    throw new Error("Authentication token not found. Please log in again.");
-  }
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-};
 
 // Get all job index
 export const getAllJobIndex = async () => {
@@ -99,16 +88,12 @@ export const updateJobIndex = async (id, jobIndexData) => {
 // Delete job index
 export const deleteJobIndex = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/delete/${id}`, {
-      method: "DELETE",
-      headers: getAuthHeaders(),
-      credentials: "include",
-    });
-    if (!response.ok) {
+    const response = await axiosInstance.delete(`/job-index/delete/${id}`);
+    if (response.status !== 200) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to delete job index");
     }
-    return await response.json();
+    return await response.data;
   } catch (error) {
     console.error("Error deleting job index:", error);
     throw error;
