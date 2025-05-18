@@ -16,6 +16,7 @@ export default function EditForms() {
 
   const { register, control, handleSubmit, watch, setValue, getValues } =
     useForm({
+      mode: "onChange",
       defaultValues: {
         fields: [],
         fieldValues: {
@@ -25,7 +26,7 @@ export default function EditForms() {
           type: "text",
           options: [{ radio: { label: "", value: "" } }],
         },
-      },
+      }
     });
 
   const { fields, append, remove } = useFieldArray({
@@ -34,14 +35,20 @@ export default function EditForms() {
   });
 
   const fieldValues = watch("fieldValues");
+  console.log("field values", fieldValues)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch job form data
         const formData = await getJobFormById(id);
-        console.log("formdata", formData);
         setFormTitle(formData?.data?.formTitle);
+
+        console.log("formdata", formData.data);
+        const structuredData = formData?.data?.fields.map((field) => ({
+          ...field,
+          options: field.options.map((option) => option.radio),
+        }))
         setValue("fields", formData?.data?.fields);
 
         // Fetch categories
@@ -230,12 +237,12 @@ export default function EditForms() {
                         }
                         error={fieldErrors.title}
                       />
-                      {(fieldValues.type === "radio" ||
-                        fieldValues.type === "select") && (
+                      {(fieldValues?.type === "radio" ||
+                        fieldValues?.type === "select") && (
                         <>
-                          {fieldValues.options.map((option, index) => {
+                          {fieldValues?.options.map((option, index) => {
                             const key =
-                              fieldValues.type === "select"
+                              fieldValues?.type === "select"
                                 ? "select"
                                 : "radio";
                             return (
@@ -257,13 +264,13 @@ export default function EditForms() {
                                   divClass="flex-grow"
                                   error={fieldErrors[`option-${index}`]}
                                 />
-                                {fieldValues.options.length > 1 && (
+                                {fieldValues?.options.length > 1 && (
                                   <button
                                     type="button"
                                     className="text-red-500 hover:text-red-700"
                                     onClick={() => {
                                       const updatedOptions =
-                                        fieldValues.options.filter(
+                                        fieldValues?.options.filter(
                                           (_, i) => i !== index
                                         );
                                       setValue("fieldValues", {
@@ -279,7 +286,7 @@ export default function EditForms() {
                             );
                           })}
                           <Button
-                            label="Add more Option"
+                            label="Add Option"
                             className="mt-2"
                             onClick={() =>
                               onChangeFieldValues("addOption", true)
@@ -363,6 +370,7 @@ export default function EditForms() {
                     key={item.id}
                     style={{ gridColumn: `span ${item.column}` }}
                   >
+                  {console.log("field", item)}
                     {item.type === "radio" ? (
                       <div>
                         <label className="block font-semibold mb-2">
@@ -374,14 +382,15 @@ export default function EditForms() {
                               key={optIndex}
                               className="flex items-center gap-2"
                             >
+                              {console.log("option", option)}
                               <input
                                 type="radio"
                                 id={`radio-${index}-${optIndex}`}
                                 name={`fields[${index}].radio`}
-                                value={option.radio?.value || ""}
+                                value={option?.radio?.value || ""}
                               />
                               <label htmlFor={`radio-${index}-${optIndex}`}>
-                                {option.radio?.label || ""}
+                                {option?.radio?.label || ""}
                               </label>
                             </div>
                           ))}
@@ -403,7 +412,7 @@ export default function EditForms() {
                           {item.options.map((option, optIndex) => (
                             <option
                               key={optIndex}
-                              value={option.select?.value || ""}
+                              value={option?.select?.value || ""}
                             >
                               {option.select?.label || ""}
                             </option>
