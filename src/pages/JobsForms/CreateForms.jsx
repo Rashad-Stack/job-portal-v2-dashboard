@@ -276,7 +276,7 @@ export default function CreateForms() {
                             );
                           })}
                           <Button
-                            label="Add more Option"
+                            label="Add Option"
                             className="mt-2"
                             onClick={() =>
                               onChangeFieldValues("addOption", true)

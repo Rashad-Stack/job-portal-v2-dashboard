@@ -164,7 +164,6 @@ const TemplateForm = () => {
                 {error}
               </div>
             )}
-
             {/* Basic Information */}
             <section className="space-y-4 text-left">
               <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
@@ -251,7 +250,7 @@ const TemplateForm = () => {
                 </div>
               </div>
             </section>
-
+            
             <section className="space-y-4">
               <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
                 <SelectInput
@@ -292,22 +291,23 @@ const TemplateForm = () => {
                 />
               </div>
             </section>
+
+            {/* Job Category */}
+            <div>
+              <SelectInput
+                name="categoryId"
+                label="Job Category"
+                value={formData.categoryId}
+                onChange={handleChange}
+                options={category.map((item) => ({
+                  value: item.id,
+                  label: item.name,
+                }))}
+              />
+            </div>
+            
             <section className="space-y-4">
               <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                <div>
-                  <div>
-                    <SelectInput
-                      name="categoryId"
-                      label="Job Category"
-                      value={formData.categoryId}
-                      onChange={handleChange}
-                      options={category.map((item) => ({
-                        value: item.id,
-                        label: item.name,
-                      }))}
-                    />
-                  </div>
-                </div>
                 <div>
                   <div>
                     <SelectInput
@@ -341,7 +341,6 @@ const TemplateForm = () => {
                 </div>
               </div>
             </section>
-
             <section className="space-y-4">
               <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-3">
                 <InputField
@@ -369,7 +368,6 @@ const TemplateForm = () => {
                 />
               </div>
             </section>
-
             {/* Description Markdown */}
             <section className="space-y-4">
               <div>
@@ -383,7 +381,6 @@ const TemplateForm = () => {
                 />
               </div>
             </section>
-
             <div className="pt-6">
               <button
                 type="submit"
