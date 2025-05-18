@@ -1,9 +1,6 @@
-import { useState, useEffect } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
-import { useParams, useNavigate } from "react-router";
-import FieldModal from "../../components/JobsForms/FieldModal";
-import Button from "../../components/button/Button";
-import InputField from "../../components/input/InputField";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router";
 import { getJobFormById, updateJobForm } from "../../api/axios/job-form";
 import { getAllCategories } from "../../api/category";
 
@@ -12,46 +9,72 @@ export default function EditForms() {
   const navigate = useNavigate();
   const [formTitle, setFormTitle] = useState("");
   const [categories, setCategories] = useState([]);
-  const [fieldErrors, setFieldErrors] = useState({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { register, control, handleSubmit, watch, setValue, getValues } =
-    useForm({
-      mode: "onChange",
-      defaultValues: {
-        fields: [],
-        fieldValues: {
-          title: "",
-          required: false,
-          column: 12,
-          type: "text",
-          options: [{ radio: { label: "", value: "" } }],
-        },
-      }
-    });
+  const {
+    register,
+    control,
+    handleSubmit,
+    watch,
+    setValue,
+    getValues,
+    reset,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      fields: [],
+      newField: {
+        title: "",
+        required: false,
+        column: 12,
+        type: "text",
+        options: [{ label: "", value: "" }],
+      },
+    },
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "fields",
   });
 
-  const fieldValues = watch("fieldValues");
-  console.log("field values", fieldValues)
+  const newFieldValues = watch("newField");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch job form data
         const formData = await getJobFormById(id);
         setFormTitle(formData?.data?.formTitle);
 
-        console.log("formdata", formData.data);
-        const structuredData = formData?.data?.fields.map((field) => ({
-          ...field,
-          options: field.options.map((option) => option.radio),
-        }))
-        setValue("fields", formData?.data?.fields);
+        // Structure the fetched fields to match react-hook-form's structure
+        const structuredFields = formData?.data?.fields.map((field) => {
+          if (field.type === "radio" || field.type === "select") {
+            // Assuming options come back as an array of { radio: { label, value } } or { select: { label, value } }
+            const options = field.options.map((option) => {
+              const key = field.type === "select" ? "select" : "radio";
+              return option[key] || { label: "", value: "" }; // Ensure a valid structure
+            });
+            return {
+              ...field,
+              options:
+                options.length > 0 ? options : [{ label: "", value: "" }], // Ensure at least one option for edit modal
+            };
+          }
+          return field;
+        });
 
-        // Fetch categories
+        reset({
+          fields: structuredFields || [],
+          newField: {
+            title: "",
+            required: false,
+            column: 12,
+            type: "text",
+            options: [{ label: "", value: "" }],
+          },
+        });
+
         const categoryData = await getAllCategories();
         setCategories(categoryData);
       } catch (error) {
@@ -59,147 +82,175 @@ export default function EditForms() {
       }
     };
     fetchData();
-  }, [id, setValue]);
-
-  const onChangeFieldValues = (name, value) => {
-    // Clear error for the field being changed if the value is non-empty
-    if (value && typeof value === "string" && value.trim()) {
-      setFieldErrors((prevErrors) => {
-        const newErrors = { ...prevErrors };
-        if (name === "title") {
-          delete newErrors.title;
-        } else if (name.startsWith("radio-")) {
-          const index = parseInt(name.split("-")[1]);
-          delete newErrors[`option-${index}`];
-        }
-        return newErrors;
-      });
-    }
-
-    if (name === "column") {
-      setValue("fieldValues", {
-        ...fieldValues,
-        [name]: Number(value),
-      });
-      return;
-    }
-
-    if (name.startsWith("radio-")) {
-      const index = parseInt(name.split("-")[1]);
-      const updatedOptions = [...fieldValues.options];
-      const key = fieldValues.type === "select" ? "select" : "radio";
-      updatedOptions[index] = {
-        [key]: {
-          label: value,
-          value: value.toLowerCase().replace(/\s+/g, "_"),
-        },
-      };
-      setValue("fieldValues", {
-        ...fieldValues,
-        options: updatedOptions,
-      });
-      return;
-    }
-
-    if (name === "addOption") {
-      const key = fieldValues.type === "select" ? "select" : "radio";
-      const newOption = { [key]: { label: "", value: "" } };
-      setValue("fieldValues", {
-        ...fieldValues,
-        options: [...fieldValues.options, newOption],
-      });
-      return;
-    }
-
-    if (name === "type") {
-      const key =
-        value === "select" ? "select" : value === "radio" ? "radio" : null;
-      setValue("fieldValues", {
-        ...fieldValues,
-        type: value,
-        options: key ? [{ [key]: { label: "", value: "" } }] : [],
-      });
-      return;
-    }
-
-    setValue("fieldValues", {
-      ...fieldValues,
-      [name]: value,
-    });
-  };
+  }, [id, reset]); // Depend on id and reset from react-hook-form
 
   const handleAddField = () => {
-    const currentFieldValues = getValues("fieldValues");
+    const currentNewFieldValues = getValues("newField");
     const newErrors = {};
 
-    if (!currentFieldValues.title.trim()) {
+    if (!currentNewFieldValues.title.trim()) {
       newErrors.title = "Field name is required";
     }
 
     if (
-      currentFieldValues.type === "radio" ||
-      currentFieldValues.type === "select"
+      currentNewFieldValues.type === "radio" ||
+      currentNewFieldValues.type === "select"
     ) {
-      currentFieldValues.options.forEach((option, index) => {
-        const key = currentFieldValues.type === "select" ? "select" : "radio";
-        if (!option[key]?.label.trim()) {
+      currentNewFieldValues.options.forEach((option, index) => {
+        if (!option.label.trim()) {
           newErrors[`option-${index}`] = `Option ${index + 1} name is required`;
         }
       });
     }
 
     if (Object.keys(newErrors).length > 0) {
-      setFieldErrors(newErrors);
-      return { errors: newErrors };
+      // Display errors (you'd need a way to show these in your modal)
+      console.error("Validation errors:", newErrors);
+      return; // Prevent adding the field if there are errors
     }
 
-    setFieldErrors({});
-    append(currentFieldValues);
-
-    setValue("fieldValues", {
-      title: "",
-      required: false,
-      column: 12,
-      type: currentFieldValues.type,
-      options:
-        currentFieldValues.type === "radio" ||
-        currentFieldValues.type === "select"
-          ? [
-              {
-                [currentFieldValues.type === "select" ? "select" : "radio"]: {
-                  label: "",
-                  value: "",
-                },
-              },
-            ]
-          : [],
+    append(currentNewFieldValues);
+    setIsModalOpen(false); // Close modal after adding field
+    reset({
+      ...getValues(), // Keep existing fields
+      newField: {
+        title: "",
+        required: false,
+        column: 12,
+        type: newFieldValues.type, // Keep the last selected type
+        options:
+          newFieldValues.type === "radio" || newFieldValues.type === "select"
+            ? [{ label: "", value: "" }]
+            : [],
+      },
     });
-    return null;
   };
 
   const handleSave = async (data) => {
     try {
+      const formattedFields = data.fields.map((field) => {
+        if (field.type === "radio" || field.type === "select") {
+          // Format options back to the expected API structure
+          const options = field.options.map((option) => ({
+            [field.type]: {
+              label: option.label,
+              value: option.value, // Or derive value from label if needed
+            },
+          }));
+          return { ...field, options };
+        }
+        return field;
+      });
+
       const jobFormData = {
         formTitle,
-        fields: data.fields,
+        fields: formattedFields,
       };
       const response = await updateJobForm(id, jobFormData);
       console.log("Job form updated successfully:", response);
-      navigate("/jobs/forms");
+      if (response.success) {
+        // Assuming success is a property in your response
+        navigate("/jobs/forms");
+      } else {
+        console.error("Update failed:", response);
+        // Handle API errors
+      }
     } catch (error) {
       console.error("Error updating job form:", error);
+      // Handle network or other errors
+    }
+  };
+
+  const renderField = (field, index) => {
+    const commonProps = {
+      key: field.id || index,
+      id: field.name, // Using name as ID, ensure names are unique if needed
+      ...register(`fields.${index}.value`, {
+        // Register the value of the field
+        required: field.required ? `${field.title} is required` : false,
+        valueAsNumber: field.type === "number",
+      }),
+      className:
+        "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500",
+    };
+
+    switch (field.type) {
+      case "text":
+        return (
+          <input
+            type="text"
+            placeholder={`Enter ${field.title}`}
+            {...commonProps}
+          />
+        );
+      case "number":
+        return (
+          <input
+            type="number"
+            placeholder={`Enter ${field.title}`}
+            {...commonProps}
+          />
+        );
+      case "date":
+        return <input type="date" {...commonProps} />;
+      case "radio":
+        return (
+          <div className="flex gap-4">
+            {field.options.map((option, optIndex) => (
+              <div key={optIndex} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  id={`radio-${index}-${optIndex}`}
+                  value={option.value}
+                  {...register(`fields.${index}.value`, {
+                    // Register value on the parent field name
+                    required: field.required
+                      ? `${field.title} is required`
+                      : false,
+                  })}
+                />
+                <label
+                  htmlFor={`radio-${index}-${optIndex}`}
+                  className="text-gray-700 text-sm">
+                  {option.label}
+                </label>
+              </div>
+            ))}
+          </div>
+        );
+      case "select":
+        return (
+          <select {...commonProps}>
+            <option value="">Select {field.title}</option>
+            {field.options.map((option, optIndex) => (
+              <option key={optIndex} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        );
+      case "jobCategory":
+        return (
+          <select {...commonProps}>
+            <option value="">Select Job Category</option>
+            {categories?.data?.length > 0 &&
+              categories?.data.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+          </select>
+        );
+      default:
+        return null;
     }
   };
 
   return (
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white border bottom-1 border-slate-200 rounded-2xl overflow-hidden">
-          <form
-            onSubmit={handleSubmit(handleSave)}
-            className="space-y-6"
-            method="post"
-          >
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+          <form onSubmit={handleSubmit(handleSave)} className="space-y-6">
             <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c]">
               <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
                 Edit Job Post Form
@@ -208,160 +259,188 @@ export default function EditForms() {
                 <input
                   id="formTitle"
                   type="text"
-                  name="formTitle"
                   required
                   placeholder="Form Title"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
-                  className="w-fit p-2 border outline-none border-gray-300 rounded-lg text-white my-3"
+                  className="w-fit p-2 border outline-none border-gray-300 rounded-lg text-gray-800 my-3"
                 />
               </div>
             </div>
 
             <section className="space-y-4 text-left p-6">
-              <div className="border-b flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-800 pb-2">
-                  Basic Information
+              <div className="border-b pb-4 flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-800">
+                  Form Fields
                 </h2>
+                {/* Replace FieldModal with a simple button that toggles a modal state */}
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(true)}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                  Add Field
+                </button>
 
-                <FieldModal title="Add Field" handleAddField={handleAddField}>
-                  <div className="flex gap-4 items-center">
-                    <div>
-                      <InputField
-                        label="Field name *"
-                        name="fieldValues.title"
-                        required
-                        register={register}
-                        onChange={(e) =>
-                          onChangeFieldValues("title", e.target.value)
-                        }
-                        error={fieldErrors.title}
-                      />
-                      {(fieldValues?.type === "radio" ||
-                        fieldValues?.type === "select") && (
-                        <>
-                          {fieldValues?.options.map((option, index) => {
-                            const key =
-                              fieldValues?.type === "select"
-                                ? "select"
-                                : "radio";
-                            return (
+                {/* Simple Modal Implementation */}
+                {isModalOpen && (
+                  <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+                    <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+                      <h3 className="text-lg font-bold mb-4">Add New Field</h3>
+                      <div className="flex flex-col gap-4">
+                        <div>
+                          <label
+                            htmlFor="newFieldTitle"
+                            className="block text-sm font-medium text-gray-700 mb-1">
+                            Field name *
+                          </label>
+                          <input
+                            type="text"
+                            id="newFieldTitle"
+                            {...register("newField.title", {
+                              required: "Field name is required",
+                            })}
+                            className="w-full p-2 border border-gray-300 rounded-md"
+                          />
+                          {errors.newField?.title && (
+                            <p className="text-red-500 text-xs mt-1">
+                              {errors.newField.title.message}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label
+                            htmlFor="newFieldType"
+                            className="block text-sm font-medium text-gray-700 mb-1">
+                            Type
+                          </label>
+                          <select
+                            id="newFieldType"
+                            {...register("newField.type")}
+                            className="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="text">Text</option>
+                            <option value="number">Number</option>
+                            <option value="date">Date</option>
+                            <option value="radio">Radio</option>
+                            <option value="select">Select</option>
+                            <option value="jobCategory">Job Category</option>
+                          </select>
+                        </div>
+
+                        {(newFieldValues.type === "radio" ||
+                          newFieldValues.type === "select") && (
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Options
+                            </label>
+                            {newFieldValues.options.map((option, index) => (
                               <div
                                 key={index}
-                                className="flex items-center gap-2 mt-2"
-                              >
-                                <InputField
-                                  label={`Option ${index + 1} Name *`}
-                                  name={`radio-${index}`}
-                                  value={option[key]?.label}
-                                  required
-                                  onChange={(e) =>
-                                    onChangeFieldValues(
-                                      `radio-${index}`,
-                                      e.target.value
-                                    )
-                                  }
-                                  divClass="flex-grow"
-                                  error={fieldErrors[`option-${index}`]}
+                                className="flex items-center gap-2 mb-2">
+                                <input
+                                  type="text"
+                                  {...register(
+                                    `newField.options.${index}.label`,
+                                    {
+                                      required: `Option ${
+                                        index + 1
+                                      } name is required`,
+                                    }
+                                  )}
+                                  placeholder={`Option ${index + 1}`}
+                                  className="flex-grow p-2 border border-gray-300 rounded-md"
                                 />
-                                {fieldValues?.options.length > 1 && (
+                                {/* You might want to generate value automatically or add an input for it */}
+                                {errors.newField?.options?.[index]?.label && (
+                                  <p className="text-red-500 text-xs mt-1">
+                                    {
+                                      errors.newField.options[index].label
+                                        .message
+                                    }
+                                  </p>
+                                )}
+                                {newFieldValues.options.length > 1 && (
                                   <button
                                     type="button"
-                                    className="text-red-500 hover:text-red-700"
                                     onClick={() => {
                                       const updatedOptions =
-                                        fieldValues?.options.filter(
+                                        newFieldValues.options.filter(
                                           (_, i) => i !== index
                                         );
-                                      setValue("fieldValues", {
-                                        ...fieldValues,
-                                        options: updatedOptions,
-                                      });
+                                      setValue(
+                                        "newField.options",
+                                        updatedOptions
+                                      );
                                     }}
-                                  >
+                                    className="text-red-500 hover:text-red-700 text-lg leading-none">
                                     ✕
                                   </button>
                                 )}
                               </div>
-                            );
-                          })}
-                          <Button
-                            label="Add Option"
-                            className="mt-2"
-                            onClick={() =>
-                              onChangeFieldValues("addOption", true)
-                            }
+                            ))}
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setValue("newField.options", [
+                                  ...newFieldValues.options,
+                                  { label: "", value: "" },
+                                ])
+                              }
+                              className="mt-2 px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 text-sm">
+                              Add Option
+                            </button>
+                          </div>
+                        )}
+
+                        <div>
+                          <label
+                            htmlFor="newFieldColumn"
+                            className="block text-sm font-medium text-gray-700 mb-1">
+                            Column
+                          </label>
+                          <select
+                            id="newFieldColumn"
+                            {...register("newField.column", {
+                              valueAsNumber: true,
+                            })}
+                            className="w-full p-2 border border-gray-300 rounded-md">
+                            <option value={12}>1</option>
+                            <option value={6}>2</option>
+                            <option value={4}>3</option>
+                          </select>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="newFieldRequired"
+                            {...register("newField.required")}
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                           />
-                        </>
-                      )}
-                    </div>
-
-                    {/* template dependency */}
-                    <div className="w-full flex gap-4 items-center">
-                      <div className="space-x-2">
-                        <input
-                          type="checkbox"
-                          {...register("fieldValues.required")}
-                          id="required"
-                          onChange={(e) =>
-                            onChangeFieldValues("required", e.target.checked)
-                          }
-                        />
-                        <label
-                          htmlFor="required"
-                          className="font-semibold text-gray-700 mr-1"
-                        >
-                          Required
-                        </label>
+                          <label
+                            htmlFor="newFieldRequired"
+                            className="text-sm font-medium text-gray-700">
+                            Required
+                          </label>
+                        </div>
                       </div>
-
-                      <div>
-                        <label
-                          htmlFor="column"
-                          className="font-semibold text-gray-700 mr-1"
-                        >
-                          Column
-                        </label>
-                        <select
-                          {...register("fieldValues.column")}
-                          id="column"
-                          onChange={(e) =>
-                            onChangeFieldValues("column", e.target.value)
-                          }
-                          className="px-2 rounded-lg border-[1px] border-gray-300 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 hover:border-gray-400 transition duration-200 ease-in-out bg-white text-gray-800 cursor-pointer"
-                        >
-                          <option value="12">1</option>
-                          <option value="6">2</option>
-                          <option value="4">3</option>
-                        </select>
-                      </div>
-
-                      <div className="">
-                        <label
-                          htmlFor="type"
-                          className="font-semibold text-gray-700 mr-1"
-                        >
-                          Type
-                        </label>
-                        <select
-                          {...register("fieldValues.type")}
-                          id="type"
-                          onChange={(e) =>
-                            onChangeFieldValues("type", e.target.value)
-                          }
-                          className="px-2 rounded-lg border-[1px] border-gray-300 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 hover:border-gray-400 transition duration-200 ease-in-out bg-white text-gray-800 cursor-pointer"
-                        >
-                          <option value="text">Text</option>
-                          <option value="number">Number</option>
-                          <option value="date">Date</option>
-                          <option value="radio">Radio</option>
-                          <option value="select">Select</option>
-                          <option value="jobCategory">Job Category</option>
-                        </select>
+                      <div className="mt-6 flex justify-end gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setIsModalOpen(false)}
+                          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                          Cancel
+                        </button>
+                        <button
+                          type="button" // Changed to button to prevent form submission
+                          onClick={handleAddField}
+                          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                          Add Field
+                        </button>
                       </div>
                     </div>
                   </div>
-                </FieldModal>
+                )}
               </div>
 
               <div className="grid grid-cols-12 gap-4">
@@ -369,95 +448,36 @@ export default function EditForms() {
                   <div
                     key={item.id}
                     style={{ gridColumn: `span ${item.column}` }}
+                    className="p-4 border border-gray-200 rounded-md relative group" // Added relative and group for delete button positioning
                   >
-                  {console.log("field", item)}
-                    {item.type === "radio" ? (
-                      <div>
-                        <label className="block font-semibold mb-2">
-                          {item.title} {item.required && "*"}
-                        </label>
-                        <div className="flex gap-4">
-                          {item.options.map((option, optIndex) => (
-                            <div
-                              key={optIndex}
-                              className="flex items-center gap-2"
-                            >
-                              {console.log("option", option)}
-                              <input
-                                type="radio"
-                                id={`radio-${index}-${optIndex}`}
-                                name={`fields[${index}].radio`}
-                                value={option?.radio?.value || ""}
-                              />
-                              <label htmlFor={`radio-${index}-${optIndex}`}>
-                                {option?.radio?.label || ""}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ) : item.type === "select" ? (
-                      <div>
-                        <label className="block font-semibold mb-2">
-                          {item.title} {item.required && "*"}
-                        </label>
-                        <select
-                          className="w-full p-2 border border-gray-300 rounded-lg"
-                          name={`fields[${index}].select`}
-                          defaultValue=""
-                        >
-                          <option value="" disabled>
-                            Select {item.title}
-                          </option>
-                          {item.options.map((option, optIndex) => (
-                            <option
-                              key={optIndex}
-                              value={option?.select?.value || ""}
-                            >
-                              {option.select?.label || ""}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    ) : item.type === "jobCategory" ? (
-                      <div>
-                        <label className="block font-semibold mb-2">
-                          {item.title} {item.required && "*"}
-                        </label>
-                        <select
-                          className="w-full p-2 border border-gray-300 rounded-lg"
-                          name={`fields[${index}].jobCategory`}
-                          defaultValue=""
-                        >
-                          <option value="" disabled>
-                            Select Job Category
-                          </option>
-                          {categories?.data?.length > 0 &&
-                            categories?.data.map((category) => (
-                              <option key={category.id} value={category.id}>
-                                {category.name}
-                              </option>
-                            ))}
-                        </select>
-                      </div>
-                    ) : (
-                      <InputField
-                        field={item}
-                        type={item.type}
-                        label={`${item.title} ${item.required ? "*" : ""}`}
-                        placeholder={
-                          item.type === "date"
-                            ? `Select ${item.title}`
-                            : `Enter ${item.title}`
-                        }
-                      />
+                    {/* Delete Field Button */}
+                    <button
+                      type="button"
+                      onClick={() => remove(index)}
+                      className="absolute top-2 right-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                      aria-label={`Remove ${item.title} field`}>
+                      ✕
+                    </button>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      {item.title}{" "}
+                      {item.required && <span className="text-red-500">*</span>}
+                    </label>
+                    {renderField(item, index)}
+                    {errors.fields?.[index]?.value && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.fields[index].value.message}
+                      </p>
                     )}
                   </div>
                 ))}
               </div>
 
               {fields.length > 0 && (
-                <Button label="Update Form" type="submit" />
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                  Update Form
+                </button>
               )}
             </section>
           </form>
