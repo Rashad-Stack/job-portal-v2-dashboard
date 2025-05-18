@@ -47,25 +47,8 @@ export default function EditForms() {
         const formData = await getJobFormById(id);
         setFormTitle(formData?.data?.formTitle);
 
-        // Structure the fetched fields to match react-hook-form's structure
-        const structuredFields = formData?.data?.fields.map((field) => {
-          if (field.type === "radio" || field.type === "select") {
-            // Assuming options come back as an array of { radio: { label, value } } or { select: { label, value } }
-            const options = field.options.map((option) => {
-              const key = field.type === "select" ? "select" : "radio";
-              return option[key] || { label: "", value: "" }; // Ensure a valid structure
-            });
-            return {
-              ...field,
-              options:
-                options.length > 0 ? options : [{ label: "", value: "" }], // Ensure at least one option for edit modal
-            };
-          }
-          return field;
-        });
-
         reset({
-          fields: structuredFields || [],
+          fields: formData?.data?.fields || [],
           newField: {
             title: "",
             required: false,
@@ -129,17 +112,7 @@ export default function EditForms() {
   const handleSave = async (data) => {
     try {
       const formattedFields = data.fields.map((field) => {
-        if (field.type === "radio" || field.type === "select") {
-          // Format options back to the expected API structure
-          const options = field.options.map((option) => ({
-            [field.type]: {
-              label: option.label,
-              value: option.value, // Or derive value from label if needed
-            },
-          }));
-          return { ...field, options };
-        }
-        return field;
+        return { ...field, options: field.options || [] }; // Ensure options is always an array
       });
 
       const jobFormData = {
