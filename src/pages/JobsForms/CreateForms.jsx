@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { createJobForm } from "../../api/axios/job-form"; // Assuming this is a valid API call
-import { getAllCategories } from "../../api/category"; // Assuming this is a valid API call
+import { createJobForm } from "../../api/axios/job-form"; 
+import { getAllCategories } from "../../api/category"; 
+import {  toast } from 'sonner'
 
 // Assuming these are basic button and input field components you might have elsewhere,
 // or they will be replaced by native elements with Tailwind classes.
@@ -324,7 +325,11 @@ export default function CreateForms() {
                 </h2>
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => {
+                    const formTitle = getValues("formTitle");
+                    if(!formTitle) return toast.warning("Please set form title first");
+                    setIsModalOpen(true);
+                  }}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
                   Add Field
                 </button>
