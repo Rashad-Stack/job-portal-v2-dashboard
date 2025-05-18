@@ -1,9 +1,18 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router";
-import { getJobById } from "../../api/jobs";
 import { PencilSquareIcon } from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { getCategoryById } from "../../api/category";
+import { getJobById } from "../../api/jobs";
 
+const formatInputDate = (date) => {
+  if (!date || date === "1970-11-03T00:00:00.000Z") return "";
+  const parsedDate = new Date(date);
+  if (isNaN(parsedDate.getTime())) return "";
+  const year = parsedDate.getFullYear();
+  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+  const day = String(parsedDate.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
 export default function JobView() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -93,8 +102,7 @@ export default function JobView() {
         </div>
         <button
           onClick={handleEdit}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c] hover:opacity-90 text-white rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
-        >
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c] hover:opacity-90 text-white rounded-full shadow-lg transition-all duration-300 transform hover:scale-105">
           <PencilSquareIcon className="h-5 w-5" />
           <span>Edit</span>
         </button>
@@ -139,7 +147,7 @@ export default function JobView() {
         </p>
         <p className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
           <span className="font-semibold text-gray-800">Deadline:</span>{" "}
-          {deadline ? new Date(deadline).toLocaleDateString() : "N/A"}
+          {deadline ? formatInputDate(deadline) : "N/A"}
         </p>
       </div>
     </div>
