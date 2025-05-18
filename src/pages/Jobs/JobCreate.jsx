@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { getAllCategories } from "../../api/category";
 import { createJob } from "../../api/jobs";
 import TextEditor from "../../components/common/TextEditor";
 import InputField from "../../components/input/InputField";
@@ -39,8 +39,8 @@ const JobCreate = () => {
     try {
       setLoading(true);
       setError("");
-      const { data } = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/category/all`);
-      setCategory(data.data || []);
+      const { data } = await getAllCategories();
+      setCategory(data || []);
     } catch (err) {
       console.error("Failed to fetch Categories:", err.message);
       setError("Failed to fetch Categories. Please try again later.");
