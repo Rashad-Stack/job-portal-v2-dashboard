@@ -40,7 +40,7 @@ export default function EditForms() {
       try {
         // Fetch job form data
         const formData = await getJobFormById(id);
-        console.log("formdata", formData)
+        console.log("formdata", formData);
         setFormTitle(formData?.data?.formTitle);
         setValue("fields", formData?.data?.fields);
 
@@ -55,7 +55,8 @@ export default function EditForms() {
   }, [id, setValue]);
 
   const onChangeFieldValues = (name, value) => {
-    if (value.trim()) {
+    // Clear error for the field being changed if the value is non-empty
+    if (value && typeof value === "string" && value.trim()) {
       setFieldErrors((prevErrors) => {
         const newErrors = { ...prevErrors };
         if (name === "title") {
@@ -95,20 +96,17 @@ export default function EditForms() {
 
     if (name === "addOption") {
       const key = fieldValues.type === "select" ? "select" : "radio";
+      const newOption = { [key]: { label: "", value: "" } };
       setValue("fieldValues", {
         ...fieldValues,
-        options: [...fieldValues.options, { [key]: { label: "", value: "" } }],
+        options: [...fieldValues.options, newOption],
       });
       return;
     }
 
     if (name === "type") {
       const key =
-        value === "select" || value === "radio"
-          ? value === "select"
-            ? "select"
-            : "radio"
-          : null;
+        value === "select" ? "select" : value === "radio" ? "radio" : null;
       setValue("fieldValues", {
         ...fieldValues,
         type: value,
@@ -131,7 +129,10 @@ export default function EditForms() {
       newErrors.title = "Field name is required";
     }
 
-    if (currentFieldValues.type === "radio" || currentFieldValues.type === "select") {
+    if (
+      currentFieldValues.type === "radio" ||
+      currentFieldValues.type === "select"
+    ) {
       currentFieldValues.options.forEach((option, index) => {
         const key = currentFieldValues.type === "select" ? "select" : "radio";
         if (!option[key]?.label.trim()) {
@@ -147,7 +148,7 @@ export default function EditForms() {
 
     setFieldErrors({});
     append(currentFieldValues);
-    
+
     setValue("fieldValues", {
       title: "",
       required: false,
@@ -280,54 +281,77 @@ export default function EditForms() {
                           <Button
                             label="Add more Option"
                             className="mt-2"
-                            onClick={() => onChangeFieldValues("addOption")}
+                            onClick={() =>
+                              onChangeFieldValues("addOption", true)
+                            }
                           />
                         </>
                       )}
                     </div>
 
-                    <div className="space-x-2">
-                      <input
-                        type="checkbox"
-                        {...register("fieldValues.required")}
-                        id="required"
-                        onChange={(e) =>
-                          onChangeFieldValues("required", e.target.checked)
-                        }
-                      />
-                      <label htmlFor="required">Required</label>
-                    </div>
-                    <div>
-                      <label htmlFor="column">Column</label>
-                      <select
-                        {...register("fieldValues.column")}
-                        id="column"
-                        onChange={(e) =>
-                          onChangeFieldValues("column", e.target.value)
-                        }
-                      >
-                        <option value="12">1</option>
-                        <option value="6">2</option>
-                        <option value="4">3</option>
-                      </select>
-                    </div>
+                    {/* template dependency */}
+                    <div className="w-full flex gap-4 items-center">
+                      <div className="space-x-2">
+                        <input
+                          type="checkbox"
+                          {...register("fieldValues.required")}
+                          id="required"
+                          onChange={(e) =>
+                            onChangeFieldValues("required", e.target.checked)
+                          }
+                        />
+                        <label
+                          htmlFor="required"
+                          className="font-semibold text-gray-700 mr-1"
+                        >
+                          Required
+                        </label>
+                      </div>
 
-                    <div>
-                      <label htmlFor="type">Type</label>
-                      <select
-                        {...register("fieldValues.type")}
-                        id="type"
-                        onChange={(e) =>
-                          onChangeFieldValues("type", e.target.value)
-                        }
-                      >
-                        <option value="text">Text</option>
-                        <option value="number">Number</option>
-                        <option value="date">Date</option>
-                        <option value="radio">Radio</option>
-                        <option value="select">Select</option>
-                        <option value="jobCategory">Job Category</option>
-                      </select>
+                      <div>
+                        <label
+                          htmlFor="column"
+                          className="font-semibold text-gray-700 mr-1"
+                        >
+                          Column
+                        </label>
+                        <select
+                          {...register("fieldValues.column")}
+                          id="column"
+                          onChange={(e) =>
+                            onChangeFieldValues("column", e.target.value)
+                          }
+                          className="px-2 rounded-lg border-[1px] border-gray-300 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 hover:border-gray-400 transition duration-200 ease-in-out bg-white text-gray-800 cursor-pointer"
+                        >
+                          <option value="12">1</option>
+                          <option value="6">2</option>
+                          <option value="4">3</option>
+                        </select>
+                      </div>
+
+                      <div className="">
+                        <label
+                          htmlFor="type"
+                          className="font-semibold text-gray-700 mr-1"
+                        >
+                          Type
+                        </label>
+                        <select
+                          {...register("fieldValues.type")}
+                          id="type"
+                          onChange={(e) =>
+                            onChangeFieldValues("type", e.target.value)
+                          }
+                          className="px-2 rounded-lg border-[1px] border-gray-300 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 hover:border-gray-400 transition duration-200 ease-in-out bg-white text-gray-800 cursor-pointer"
+                        >
+                          <option value="text">Text</option>
+                          <option value="number">Number</option>
+                          <option value="date">Date</option>
+                          <option value="radio">Radio</option>
+                          <option value="select">Select</option>
+                          <option value="jobCategory">Job Category</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </FieldModal>

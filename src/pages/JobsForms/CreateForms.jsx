@@ -48,7 +48,7 @@ export default function CreateForms() {
 
   const onChangeFieldValues = (name, value) => {
     // Clear error for the field being changed if the value is non-empty
-    if (value.trim()) {
+    if (value && typeof value === "string" && value.trim()) {
       setFieldErrors((prevErrors) => {
         const newErrors = { ...prevErrors };
         if (name === "title") {
@@ -60,7 +60,7 @@ export default function CreateForms() {
         return newErrors;
       });
     }
-    
+
     if (name === "column") {
       setValue("fieldValues", {
         ...fieldValues,
@@ -88,20 +88,17 @@ export default function CreateForms() {
 
     if (name === "addOption") {
       const key = fieldValues.type === "select" ? "select" : "radio";
+      const newOption = { [key]: { label: "", value: "" } };
       setValue("fieldValues", {
         ...fieldValues,
-        options: [...fieldValues.options, { [key]: { label: "", value: "" } }],
+        options: [...fieldValues.options, newOption],
       });
       return;
     }
 
     if (name === "type") {
       const key =
-        value === "select" || value === "radio"
-          ? value === "select"
-            ? "select"
-            : "radio"
-          : null;
+        value === "select" ? "select" : value === "radio" ? "radio" : null;
       setValue("fieldValues", {
         ...fieldValues,
         type: value,
@@ -126,7 +123,10 @@ export default function CreateForms() {
     }
 
     // Validate options for radio/select types
-    if (currentFieldValues.type === "radio" || currentFieldValues.type === "select") {
+    if (
+      currentFieldValues.type === "radio" ||
+      currentFieldValues.type === "select"
+    ) {
       currentFieldValues.options.forEach((option, index) => {
         const key = currentFieldValues.type === "select" ? "select" : "radio";
         if (!option[key]?.label.trim()) {
@@ -142,7 +142,7 @@ export default function CreateForms() {
 
     setFieldErrors({});
     append(currentFieldValues);
-    
+
     setValue("fieldValues", {
       title: "",
       required: false,
@@ -173,7 +173,7 @@ export default function CreateForms() {
       console.log("payload", jobFormData);
       const response = await createJobForm(jobFormData);
       console.log("Job form created successfully:", response);
-      if(response.success && response.data) {
+      if (response.success && response.data) {
         navigate("/jobs/forms");
       }
     } catch (error) {
@@ -214,7 +214,7 @@ export default function CreateForms() {
                   Basic Information
                 </h2>
 
-                <FieldModal title="Add Field" handleAddField={handleAddField}>
+                <FieldModal title="Add Field" handleAddField={handleAddField} >
                   <div className="flex gap-4 items-center">
                     <div>
                       <InputField
@@ -278,54 +278,67 @@ export default function CreateForms() {
                           <Button
                             label="Add more Option"
                             className="mt-2"
-                            onClick={() => onChangeFieldValues("addOption")}
+                            onClick={() =>
+                              onChangeFieldValues("addOption", true)
+                            }
                           />
                         </>
                       )}
                     </div>
 
-                    <div className="space-x-2">
-                      <input
-                        type="checkbox"
-                        {...register("fieldValues.required")}
-                        id="required"
-                        onChange={(e) =>
-                          onChangeFieldValues("required", e.target.checked)
-                        }
-                      />
-                      <label htmlFor="required">Required</label>
-                    </div>
-                    <div>
-                      <label htmlFor="column">Column</label>
-                      <select
-                        {...register("fieldValues.column")}
-                        id="column"
-                        onChange={(e) =>
-                          onChangeFieldValues("column", e.target.value)
-                        }
-                      >
-                        <option value="12">1</option>
-                        <option value="6">2</option>
-                        <option value="4">3</option>
-                      </select>
-                    </div>
+                    {/* template dependency */}
+                    <div className="w-full flex gap-4 items-center">
+                      <div className="space-x-2">
+                        <input
+                          type="checkbox"
+                          {...register("fieldValues.required")}
+                          id="required"
+                          onChange={(e) =>
+                            onChangeFieldValues("required", e.target.checked)
+                          }
+                        />
+                        <label htmlFor="required" className="font-semibold text-gray-700 mr-1">Required</label>
+                      </div>
 
-                    <div>
-                      <label htmlFor="type">Type</label>
-                      <select
-                        {...register("fieldValues.type")}
-                        id="type"
-                        onChange={(e) =>
-                          onChangeFieldValues("type", e.target.value)
-                        }
-                      >
-                        <option value="text">Text</option>
-                        <option value="number">Number</option>
-                        <option value="date">Date</option>
-                        <option value="radio">Radio</option>
-                        <option value="select">Select</option>
-                        <option value="jobCategory">Job Category</option>
-                      </select>
+                      <div>
+                        <label htmlFor="column" className="font-semibold text-gray-700 mr-1">Column</label>
+                        <select
+                          {...register("fieldValues.column")}
+                          id="column"
+                          onChange={(e) =>
+                            onChangeFieldValues("column", e.target.value)
+                          }
+                          className="px-2 rounded-lg border-[1px] border-gray-300 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 hover:border-gray-400 transition duration-200 ease-in-out bg-white text-gray-800 cursor-pointer"
+                        >
+                          <option value="12">1</option>
+                          <option value="6">2</option>
+                          <option value="4">3</option>
+                        </select>
+                      </div>
+
+                      <div className="">
+                        <label
+                          htmlFor="type"
+                          className="font-semibold text-gray-700 mr-1"
+                        >
+                          Type
+                        </label>
+                        <select
+                          {...register("fieldValues.type")}
+                          id="type"
+                          onChange={(e) =>
+                            onChangeFieldValues("type", e.target.value)
+                          }
+                          className="px-2 rounded-lg border-[1px] border-gray-300 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 hover:border-gray-400 transition duration-200 ease-in-out bg-white text-gray-800 cursor-pointer"
+                        >
+                          <option value="text">Text</option>
+                          <option value="number">Number</option>
+                          <option value="date">Date</option>
+                          <option value="radio">Radio</option>
+                          <option value="select">Select</option>
+                          <option value="jobCategory">Job Category</option>
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </FieldModal>
