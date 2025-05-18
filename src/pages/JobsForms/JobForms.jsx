@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Button from "../../components/button/Button";
 import { getAllJobForms, deleteJobForm } from "../../api/axios/job-form";
 import AlertDialog from "../../components/common/AlertDialog";
@@ -8,6 +8,7 @@ export default function JobForms() {
   const [jobForms, setJobForms] = useState({});
   const [showDialog, setShowDialog] = useState(false);
   const [formIdToDelete, setFormIdToDelete] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchJobForms = async () => {
@@ -73,9 +74,9 @@ export default function JobForms() {
               </div>
 
               <div className="flex gap-2">
-                <Link to={`/jobs/forms/use-template/${form.id}`}>
-                  <Button label="Use" variant="success" />
-                </Link>
+                <Button label="Use" variant="success" onClick={() => {
+                  navigate(`/jobs/create/template/${form?.id}`);
+                }} />
                 <Link to={`/jobs/forms/edit/${form.id}`}>
                   <Button label="Edit" variant="primary" />
                 </Link>
