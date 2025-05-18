@@ -25,8 +25,6 @@ export default function EditForms() {
           type: "text",
           options: [{ radio: { label: "", value: "" } }],
         },
-        numberOfHiring: 1,
-        skills: "",
       },
     });
 
@@ -42,8 +40,9 @@ export default function EditForms() {
       try {
         // Fetch job form data
         const formData = await getJobFormById(id);
-        setFormTitle(formData.formTitle);
-        setValue("fields", formData.fields);
+        console.log("formdata", formData)
+        setFormTitle(formData?.data?.formTitle);
+        setValue("fields", formData?.data?.fields);
 
         // Fetch categories
         const categoryData = await getAllCategories();

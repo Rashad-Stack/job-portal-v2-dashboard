@@ -1,24 +1,9 @@
 import axiosInstance from ".";
 
-const API_BASE_URL = "http://localhost:3000/api/v2/job/forms/";
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("svaAuth");
-  if (!token) {
-    throw new Error("Authentication token not found. Please log in again.");
-  }
-  return {
-    Authorization: `Bearer ${token}`,
-  };
-};
-
 // Get all job forms
 export const getAllJobForms = async () => {
   try {
-    const response = await axiosInstance.get(`${API_BASE_URL}all`, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
-    });
+    const response = await axiosInstance.get(`/job/forms/all`);
     return response.data;
   } catch (error) {
     console.error("Error fetching job forms:", error);
@@ -29,10 +14,7 @@ export const getAllJobForms = async () => {
 // Get job form by ID
 export const getJobFormById = async (id) => {
   try {
-    const response = await axiosInstance.get(`${API_BASE_URL}${id}`, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
-    });
+    const response = await axiosInstance.get(`/job/forms/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching job form:", error);
@@ -47,10 +29,7 @@ export const createJobForm = async (jobFormData) => {
       ...jobFormData,
     };
 
-    const response = await axiosInstance.post(`${API_BASE_URL}create`, transformedData, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
-    });
+    const response = await axiosInstance.post(`/job/forms/create`, transformedData);
 
     return response.data;
   } catch (error) {
@@ -70,10 +49,7 @@ export const updateJobForm = async (id, jobFormData) => {
         : jobFormData.skills,
     };
 
-    const response = await axiosInstance.put(`${API_BASE_URL}update/${id}`, transformedData, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
-    });
+    const response = await axiosInstance.put(`/job/forms/update/${id}`, transformedData);
 
     return response.data;
   } catch (error) {
@@ -85,10 +61,7 @@ export const updateJobForm = async (id, jobFormData) => {
 // Delete job form
 export const deleteJobForm = async (id) => {
   try {
-    const response = await axiosInstance.delete(`${API_BASE_URL}delete/${id}`, {
-      headers: getAuthHeaders(),
-      withCredentials: true,
-    });
+    const response = await axiosInstance.delete(`/job/forms/delete/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error deleting job form:", error);
