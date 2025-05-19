@@ -135,6 +135,7 @@ export default function EditForms() {
   };
 
   const renderField = (field, index) => {
+    console.log("field", field);
     const commonProps = {
       key: field.id || index,
       id: field.name, // Using name as ID, ensure names are unique if needed
@@ -169,26 +170,28 @@ export default function EditForms() {
       case "radio":
         return (
           <div className="flex gap-4">
-            {field.options.map((option, optIndex) => (
-              <div key={optIndex} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  id={`radio-${index}-${optIndex}`}
-                  value={option.value}
-                  {...register(`fields.${index}.value`, {
-                    // Register value on the parent field name
-                    required: field.required
-                      ? `${field.title} is required`
-                      : false,
-                  })}
-                />
-                <label
-                  htmlFor={`radio-${index}-${optIndex}`}
-                  className="text-gray-700 text-sm">
-                  {option.label}
-                </label>
-              </div>
-            ))}
+            {field &&
+              field?.options.length > 0 &&
+              field.options.map((option, optIndex) => (
+                <div key={optIndex} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id={`radio-${index}-${optIndex}`}
+                    value={option.value}
+                    {...register(`fields.${index}.value`, {
+                      // Register value on the parent field name
+                      required: field.required
+                        ? `${field.title} is required`
+                        : false,
+                    })}
+                  />
+                  <label
+                    htmlFor={`radio-${index}-${optIndex}`}
+                    className="text-gray-700 text-sm">
+                    {option.label}
+                  </label>
+                </div>
+              ))}
           </div>
         );
       case "select":
@@ -417,32 +420,35 @@ export default function EditForms() {
               </div>
 
               <div className="grid grid-cols-12 gap-4">
-                {fields.map((item, index) => (
-                  <div
-                    key={item.id}
-                    style={{ gridColumn: `span ${item.column}` }}
-                    className="p-4 border border-gray-200 rounded-md relative group" // Added relative and group for delete button positioning
-                  >
-                    {/* Delete Field Button */}
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="absolute top-2 right-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                      aria-label={`Remove ${item.title} field`}>
-                      ✕
-                    </button>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {item.title}{" "}
-                      {item.required && <span className="text-red-500">*</span>}
-                    </label>
-                    {renderField(item, index)}
-                    {errors.fields?.[index]?.value && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.fields[index].value.message}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                {fields.length > 0 &&
+                  fields.map((item, index) => (
+                    <div
+                      key={item.id}
+                      style={{ gridColumn: `span ${item.column}` }}
+                      className="p-4 border border-gray-200 rounded-md relative group" // Added relative and group for delete button positioning
+                    >
+                      {/* Delete Field Button */}
+                      <button
+                        type="button"
+                        onClick={() => remove(index)}
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label={`Remove ${item.title} field`}>
+                        ✕
+                      </button>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {item.title}{" "}
+                        {item.required && (
+                          <span className="text-red-500">*</span>
+                        )}
+                      </label>
+                      {renderField(item, index)}
+                      {errors.fields?.[index]?.value && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.fields[index].value.message}
+                        </p>
+                      )}
+                    </div>
+                  ))}
               </div>
 
               {fields.length > 0 && (
