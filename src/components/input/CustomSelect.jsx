@@ -31,13 +31,12 @@ const CustomSelect = ({
           <option
             key={option.value}
             value={option.value}
-            className="bg-white text-gray-700 hover:bg-green-500 hover:text-white"
+            className="bg-white text-gray-700 hover:bg-[#00ab0c] hover:text-white"
           >
             {option.label}
           </option>
         ))}
       </select>
-      {/* Custom Dropdown Arrow */}
       <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-600">
         <svg
           className="w-4 h-4"

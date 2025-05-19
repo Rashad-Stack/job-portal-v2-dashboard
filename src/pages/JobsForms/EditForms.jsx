@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { getJobFormById, updateJobForm } from "../../api/axios/job-form";
 import { getAllCategories } from "../../api/category";
+import CustomSelect from "../../components/input/CustomSelect";
+import { useEffect, useState } from "react";
 
 export default function EditForms() {
   const { id } = useParams();
@@ -65,7 +67,7 @@ export default function EditForms() {
       }
     };
     fetchData();
-  }, [id, reset]); // Depend on id and reset from react-hook-form
+  }, [id, reset]);
 
   const handleAddField = () => {
     const currentNewFieldValues = getValues("newField");
@@ -87,22 +89,37 @@ export default function EditForms() {
     }
 
     if (Object.keys(newErrors).length > 0) {
-      // Display errors (you'd need a way to show these in your modal)
       console.error("Validation errors:", newErrors);
-      return; // Prevent adding the field if there are errors
+      return;
     }
 
-    append(currentNewFieldValues);
-    setIsModalOpen(false); // Close modal after adding field
+    const fieldToAdd = {
+      title: currentNewFieldValues.title.trim(),
+      type: currentNewFieldValues.type,
+      required: currentNewFieldValues.required,
+      column: currentNewFieldValues.column,
+      options:
+        currentNewFieldValues.type === "radio" ||
+        currentNewFieldValues.type === "select"
+          ? currentNewFieldValues.options.map((option) => ({
+              label: option.label.trim(),
+              value: option.label.trim().toLowerCase().replace(/\s+/g, "_"),
+            }))
+          : [],
+    };
+
+    append(fieldToAdd);
+    setIsModalOpen(false);
     reset({
-      ...getValues(), // Keep existing fields
+      ...getValues(),
       newField: {
         title: "",
         required: false,
         column: 12,
-        type: newFieldValues.type, // Keep the last selected type
+        type: currentNewFieldValues.type,
         options:
-          newFieldValues.type === "radio" || newFieldValues.type === "select"
+          currentNewFieldValues.type === "radio" ||
+          currentNewFieldValues.type === "select"
             ? [{ label: "", value: "" }]
             : [],
       },
@@ -111,9 +128,10 @@ export default function EditForms() {
 
   const handleSave = async (data) => {
     try {
-      const formattedFields = data.fields.map((field) => {
-        return { ...field, options: field.options || [] }; // Ensure options is always an array
-      });
+      const formattedFields = data.fields.map((field) => ({
+        ...field,
+        options: field.options || [],
+      }));
 
       const jobFormData = {
         formTitle,
@@ -122,30 +140,26 @@ export default function EditForms() {
       const response = await updateJobForm(id, jobFormData);
       console.log("Job form updated successfully:", response);
       if (response.success) {
-        // Assuming success is a property in your response
         navigate("/jobs/forms");
       } else {
         console.error("Update failed:", response);
-        // Handle API errors
       }
     } catch (error) {
       console.error("Error updating job form:", error);
-      // Handle network or other errors
     }
   };
 
   const renderField = (field, index) => {
-    console.log("field", field);
     const commonProps = {
       key: field.id || index,
-      id: field.name, // Using name as ID, ensure names are unique if needed
+      id: `fields.${index}.value`,
+      name: `fields.${index}.value`,
+      className:
+        "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500",
       ...register(`fields.${index}.value`, {
-        // Register the value of the field
         required: field.required ? `${field.title} is required` : false,
         valueAsNumber: field.type === "number",
       }),
-      className:
-        "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500",
     };
 
     switch (field.type) {
@@ -170,8 +184,7 @@ export default function EditForms() {
       case "radio":
         return (
           <div className="flex gap-4">
-            {field &&
-              field?.options.length > 0 &&
+            {field?.options?.length > 0 &&
               field.options.map((option, optIndex) => (
                 <div key={optIndex} className="flex items-center gap-2">
                   <input
@@ -179,11 +192,11 @@ export default function EditForms() {
                     id={`radio-${index}-${optIndex}`}
                     value={option.value}
                     {...register(`fields.${index}.value`, {
-                      // Register value on the parent field name
                       required: field.required
                         ? `${field.title} is required`
                         : false,
                     })}
+                    className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
                   />
                   <label
                     htmlFor={`radio-${index}-${optIndex}`}
@@ -197,26 +210,27 @@ export default function EditForms() {
         );
       case "select":
         return (
-          <select {...commonProps}>
-            <option value="">Select {field.title}</option>
-            {field.options.map((option, optIndex) => (
-              <option key={optIndex} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
+          <CustomSelect
+            {...commonProps}
+            options={field.options.map((option) => ({
+              label: option.label,
+              value: option.value,
+            }))}
+            disabledOption={`Select ${field.title}`}
+            register={register}
+          />
         );
       case "jobCategory":
         return (
-          <select {...commonProps}>
-            <option value="">Select Job Category</option>
-            {categories?.data?.length > 0 &&
-              categories?.data.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-          </select>
+          <CustomSelect
+            {...commonProps}
+            options={categories?.data?.map((category) => ({
+              label: category.name,
+              value: category.id,
+            }))}
+            disabledOption="Select Job Category"
+            register={register}
+          />
         );
       default:
         return null;
@@ -235,7 +249,7 @@ export default function EditForms() {
             </div>
 
             <section className="space-y-4 text-left px-6 py-4">
-              <div className="">
+              <div>
                 <label htmlFor="formTitle" className="font-semibold text-xl">
                   Form Title
                 </label>
@@ -246,7 +260,7 @@ export default function EditForms() {
                   placeholder="Form Title"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
-                  className="w-full p-2 border outline-none border-gray-300 rounded-lg text-gray-800 my-3"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 my-3"
                 />
               </div>
 
@@ -254,7 +268,6 @@ export default function EditForms() {
                 <h2 className="text-xl font-semibold text-gray-800">
                   Form Fields
                 </h2>
-                {/* Replace FieldModal with a simple button that toggles a modal state */}
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(true)}
@@ -263,7 +276,6 @@ export default function EditForms() {
                   Add Field
                 </button>
 
-                {/* Simple Modal Implementation */}
                 {isModalOpen && (
                   <div className="fixed inset-0 bg-gray-600/50 flex items-center justify-center z-50 shadow-2xl">
                     <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
@@ -282,7 +294,7 @@ export default function EditForms() {
                             {...register("newField.title", {
                               required: "Field name is required",
                             })}
-                            className="w-full p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 rounded-md"
+                            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                           />
                           {errors.newField?.title && (
                             <p className="text-red-500 text-xs mt-1">
@@ -291,7 +303,6 @@ export default function EditForms() {
                           )}
                         </div>
 
-                        {/* Field Type */}
                         <div>
                           <label
                             htmlFor="newFieldType"
@@ -299,32 +310,19 @@ export default function EditForms() {
                           >
                             Type
                           </label>
-                          <div className="relative w-full">
-                            <select
-                              id="newField"
-                              className="w-full appearance-none p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                              {...register("newField.type")}
-                            >
-                              <option value="text">Text</option>
-                              <option value="number">Number</option>
-                              <option value="date">Date</option>
-                              <option value="radio">Radio</option>
-                              <option value="select">Select</option>
-                            </select>
-
-                            {/* Custom dropdown arrow */}
-                            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-600">
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M19 9l-7 7-7-7" />
-                              </svg>
-                            </div>
-                          </div>
+                          <CustomSelect
+                            id="newFieldType"
+                            name="newField.type"
+                            register={register}
+                            options={[
+                              { label: "Text", value: "text" },
+                              { label: "Number", value: "number" },
+                              { label: "Date", value: "date" },
+                              { label: "Radio", value: "radio" },
+                              { label: "Select", value: "select" },
+                            ]}
+                            disabledOption="Select Field Type"
+                          />
                         </div>
 
                         {(newFieldValues.type === "radio" ||
@@ -349,9 +347,8 @@ export default function EditForms() {
                                     }
                                   )}
                                   placeholder={`Option ${index + 1}`}
-                                  className="flex-grow p-2 border border-gray-300 rounded-md"
+                                  className="flex-grow p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                                 />
-                                {/* You might want to generate value automatically or add an input for it */}
                                 {errors.newField?.options?.[index]?.label && (
                                   <p className="text-red-500 text-xs mt-1">
                                     {
@@ -388,14 +385,13 @@ export default function EditForms() {
                                   { label: "", value: "" },
                                 ])
                               }
-                              className="mt-2 px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 text-sm"
+                              className="mt-2 px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm"
                             >
                               Add Option
                             </button>
                           </div>
                         )}
 
-                        {/* Custom Size */}
                         <div>
                           <label
                             htmlFor="newFieldColumn"
@@ -403,32 +399,20 @@ export default function EditForms() {
                           >
                             Column
                           </label>
-                          <div className="relative w-full">
-                            <select
-                              id="newFieldColumn"
-                              className="w-full appearance-none p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                              {...register("newField.column", {
-                                valueAsNumber: true,
-                              })}
-                            >
-                              <option value="12">1</option>
-                              <option value="6">2</option>
-                              <option value="4">3</option>
-                            </select>
-
-                            {/* Custom Arrow Icon */}
-                            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-600">
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                viewBox="0 0 24 24"
-                              >
-                                <path d="M19 9l-7 7-7-7" />
-                              </svg>
-                            </div>
-                          </div>
+                          <CustomSelect
+                            id="newFieldColumn"
+                            name="newField.column"
+                            register={register}
+                            options={[
+                              { label: "1", value: 12 },
+                              { label: "2", value: 6 },
+                              { label: "3", value: 4 },
+                            ]}
+                            disabledOption="Select Column Size"
+                            {...register("newField.column", {
+                              valueAsNumber: true,
+                            })}
+                          />
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -436,7 +420,7 @@ export default function EditForms() {
                             type="checkbox"
                             id="newFieldRequired"
                             {...register("newField.required")}
-                            className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                            className="h-4 w-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
                           />
                           <label
                             htmlFor="newFieldRequired"
@@ -450,14 +434,14 @@ export default function EditForms() {
                         <button
                           type="button"
                           onClick={() => setIsModalOpen(false)}
-                          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                          className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
                         >
                           Cancel
                         </button>
                         <button
-                          type="button" // Changed to button to prevent form submission
+                          type="button"
                           onClick={handleAddField}
-                          className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:bg-gradient-to-l hover:from-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-800/50 cursor-pointer transition-all duration-300"
+                          className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:bg-gradient-to-l hover:from-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-800/50 transition-all duration-300"
                         >
                           Add Field
                         </button>
@@ -467,16 +451,14 @@ export default function EditForms() {
                 )}
               </div>
 
-              {/* Render Fields */}
               <div className="grid grid-cols-12 gap-4">
                 {fields.length > 0 &&
                   fields.map((item, index) => (
                     <div
                       key={item.id}
                       style={{ gridColumn: `span ${item.column}` }}
-                      className="p-4 border border-gray-200 rounded-md relative group"
+                      className="p-4 border border-gray-200 rounded-lg relative group"
                     >
-                      {/* Delete Field Button */}
                       <button
                         type="button"
                         onClick={() => remove(index)}
@@ -504,7 +486,7 @@ export default function EditForms() {
               {fields.length > 0 && (
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 cursor-pointer"
+                  className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
                 >
                   Update Form
                 </button>

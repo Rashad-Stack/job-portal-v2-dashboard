@@ -7,7 +7,7 @@ import { getAllCategories } from "../../api/axios/category";
 import TextEditor from "../../components/common/TextEditor";
 import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
-import SelectInput from "../../components/input/SelectInput";
+import CustomSelect from "../../components/input/CustomSelect";
 
 const TemplateForm = () => {
   const { id: templateId } = useParams();
@@ -135,6 +135,7 @@ const TemplateForm = () => {
                         ? `${field.title} is required`
                         : false,
                     })}
+                    className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
                   />
                   <label
                     htmlFor={`radio-${index}-${optIndex}`}
@@ -154,25 +155,65 @@ const TemplateForm = () => {
         );
       case "select":
         return (
-          <Controller
-            name={`fields.${index}.value`}
-            control={control}
-            rules={{
-              required: field.required ? `${field.title} is required` : false,
-            }}
-            render={({ field: { onChange, value } }) => (
-              <SelectInput
-                {...commonProps}
-                label={field.title}
-                value={value || ""}
-                onChange={(e) => onChange(e.target.value)}
-                options={field.options.map((opt) => ({
-                  label: opt.label,
-                  value: opt.value,
-                }))}
-              />
+          <div>
+            <InputLabel labelTitle={{ title: field.title }} />
+            <Controller
+              name={`fields.${index}.value`}
+              control={control}
+              rules={{
+                required: field.required ? `${field.title} is required` : false,
+              }}
+              render={({ field: { onChange, value } }) => (
+                <CustomSelect
+                  id={`fields.${index}.value`}
+                  name={`fields.${index}.value`}
+                  value={value || ""}
+                  onChange={(e) => onChange(e.target.value)}
+                  options={field.options.map((opt) => ({
+                    label: opt.label,
+                    value: opt.value,
+                  }))}
+                  disabledOption={`Select ${field.title}`}
+                />
+              )}
+            />
+            {errors.fields?.[index]?.value && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.fields[index].value.message}
+              </p>
             )}
-          />
+          </div>
+        );
+      case "jobCategory":
+        return (
+          <div>
+            <InputLabel labelTitle={{ title: field.title }} />
+            <Controller
+              name={`fields.${index}.value`}
+              control={control}
+              rules={{
+                required: field.required ? `${field.title} is required` : false,
+              }}
+              render={({ field: { onChange, value } }) => (
+                <CustomSelect
+                  id={`fields.${index}.value`}
+                  name={`fields.${index}.value`}
+                  value={value || ""}
+                  onChange={(e) => onChange(e.target.value)}
+                  options={categories.map((cat) => ({
+                    label: cat.name,
+                    value: cat.id,
+                  }))}
+                  disabledOption="Select Job Category"
+                />
+              )}
+            />
+            {errors.fields?.[index]?.value && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.fields[index].value.message}
+              </p>
+            )}
+          </div>
         );
       default:
         return null;
@@ -184,13 +225,14 @@ const TemplateForm = () => {
       setLoading(true);
       setError("");
 
-      // Map dynamic fields to payload fields
       const fieldMap = {};
       formData.fields.forEach((field) => {
         const fieldTitle = field.title.toLowerCase().replace(/\s+/g, "");
         const fieldValue =
           field.type === "number" ? Number(field.value) : field.value;
-        if (
+        if (field.type === "jobCategory") {
+          fieldMap["categoryId"] = fieldValue;
+        } else if (
           fieldTitle.includes("title") ||
           fieldTitle.includes("jobtitle")
         ) {
@@ -215,7 +257,6 @@ const TemplateForm = () => {
         }
       });
 
-      // Construct the payload
       const jobData = {
         title: fieldMap.title || templateData.formTitle || "",
         companyName: fieldMap.companyName || "",
@@ -224,7 +265,7 @@ const TemplateForm = () => {
         location: fieldMap.location || "",
         googleForm: fieldMap.googleForm || "",
         jobType: formData.jobType || "FULL_TIME",
-        categoryId: formData.categoryId || "",
+        categoryId: formData.categoryId || fieldMap.categoryId || "",
         jobLevel: formData.jobLevel || "MID_LEVEL",
         jobNature: formData.jobNature || "ONSITE",
         shift: formData.shift || "DAY",
@@ -251,7 +292,7 @@ const TemplateForm = () => {
   return (
     <div className="min-h-screen bg-gray-50/60 py-8 px-4 sm:px-0">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white border bottom-1 border-slate-200 rounded-2xl overflow-hidden">
+        <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
           <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c]">
             <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
               Create New Job Post
@@ -273,8 +314,6 @@ const TemplateForm = () => {
               <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
                 Basic Information
               </h2>
-
-              {/* Render the form fields */}
               <div className="grid grid-cols-12 gap-4">
                 {templateData.fields?.map((field, index) => (
                   <div
@@ -287,7 +326,6 @@ const TemplateForm = () => {
               </div>
             </div>
 
-            {/* Job Category Section */}
             <div className="space-y-4">
               <Controller
                 name="categoryId"
@@ -295,15 +333,17 @@ const TemplateForm = () => {
                 rules={{ required: "Job category is required" }}
                 render={({ field: { onChange, value } }) => (
                   <div>
-                    <SelectInput
+                    <InputLabel labelTitle={{ title: "Job Category" }} />
+                    <CustomSelect
+                      id="categoryId"
                       name="categoryId"
-                      label="Job Category"
                       value={value || ""}
                       onChange={(e) => onChange(e.target.value)}
                       options={categories.map((cat) => ({
                         label: cat.name,
                         value: cat.id,
                       }))}
+                      disabledOption="Select Job Category"
                     />
                     {errors.categoryId && (
                       <p className="text-red-500 text-xs mt-1">
@@ -315,7 +355,6 @@ const TemplateForm = () => {
               />
             </div>
 
-            {/* Description Section */}
             <div className="space-y-4">
               <Controller
                 name="description"
@@ -324,12 +363,12 @@ const TemplateForm = () => {
                 render={({ field: { onChange, value } }) => (
                   <div>
                     <InputLabel labelTitle={{ title: "Job Description" }} />
-                      <TextEditor
-                        name="description"
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                        tab="write"
-                      />
+                    <TextEditor
+                      name="description"
+                      value={value}
+                      onChange={(e) => onChange(e.target.value)}
+                      tab="write"
+                    />
                     {errors.description && (
                       <p className="text-red-500 text-xs mt-1">
                         {errors.description.message}
@@ -344,7 +383,7 @@ const TemplateForm = () => {
               <button
                 type="submit"
                 disabled={loading || templateLoading}
-                className="w-full py-3 px-4 bg-gradient-to-r from-[#2d9134] to-[#2d9134] text-white font-medium rounded-lg hover:from-[#2d9134] hover:to-[#126918] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 disabled:opacity-50"
+                className="w-full py-3 px-4 bg-gradient-to-r from-[#2d9134] to-[#2d9134] text-white font-medium rounded-lg hover:from-[#2d9134] hover:to-[#126918] focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-300 disabled:opacity-50"
               >
                 {loading ? "Creating..." : "Create Job Post"}
               </button>
