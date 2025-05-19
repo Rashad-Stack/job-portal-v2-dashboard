@@ -135,6 +135,7 @@ export default function EditForms() {
   };
 
   const renderField = (field, index) => {
+    console.log("field", field);
     const commonProps = {
       key: field.id || index,
       id: field.name, // Using name as ID, ensure names are unique if needed
@@ -169,26 +170,28 @@ export default function EditForms() {
       case "radio":
         return (
           <div className="flex gap-4">
-            {field.options.map((option, optIndex) => (
-              <div key={optIndex} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  id={`radio-${index}-${optIndex}`}
-                  value={option.value}
-                  {...register(`fields.${index}.value`, {
-                    // Register value on the parent field name
-                    required: field.required
-                      ? `${field.title} is required`
-                      : false,
-                  })}
-                />
-                <label
-                  htmlFor={`radio-${index}-${optIndex}`}
-                  className="text-gray-700 text-sm">
-                  {option.label}
-                </label>
-              </div>
-            ))}
+            {field &&
+              field?.options.length > 0 &&
+              field.options.map((option, optIndex) => (
+                <div key={optIndex} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id={`radio-${index}-${optIndex}`}
+                    value={option.value}
+                    {...register(`fields.${index}.value`, {
+                      // Register value on the parent field name
+                      required: field.required
+                        ? `${field.title} is required`
+                        : false,
+                    })}
+                  />
+                  <label
+                    htmlFor={`radio-${index}-${optIndex}`}
+                    className="text-gray-700 text-sm">
+                    {option.label}
+                  </label>
+                </div>
+              ))}
           </div>
         );
       case "select":
