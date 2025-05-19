@@ -417,32 +417,35 @@ export default function EditForms() {
               </div>
 
               <div className="grid grid-cols-12 gap-4">
-                {fields.map((item, index) => (
-                  <div
-                    key={item.id}
-                    style={{ gridColumn: `span ${item.column}` }}
-                    className="p-4 border border-gray-200 rounded-md relative group" // Added relative and group for delete button positioning
-                  >
-                    {/* Delete Field Button */}
-                    <button
-                      type="button"
-                      onClick={() => remove(index)}
-                      className="absolute top-2 right-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                      aria-label={`Remove ${item.title} field`}>
-                      ✕
-                    </button>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      {item.title}{" "}
-                      {item.required && <span className="text-red-500">*</span>}
-                    </label>
-                    {renderField(item, index)}
-                    {errors.fields?.[index]?.value && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.fields[index].value.message}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                {fields.length > 0 &&
+                  fields.map((item, index) => (
+                    <div
+                      key={item.id}
+                      style={{ gridColumn: `span ${item.column}` }}
+                      className="p-4 border border-gray-200 rounded-md relative group" // Added relative and group for delete button positioning
+                    >
+                      {/* Delete Field Button */}
+                      <button
+                        type="button"
+                        onClick={() => remove(index)}
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                        aria-label={`Remove ${item.title} field`}>
+                        ✕
+                      </button>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {item.title}{" "}
+                        {item.required && (
+                          <span className="text-red-500">*</span>
+                        )}
+                      </label>
+                      {renderField(item, index)}
+                      {errors.fields?.[index]?.value && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.fields[index].value.message}
+                        </p>
+                      )}
+                    </div>
+                  ))}
               </div>
 
               {fields.length > 0 && (
