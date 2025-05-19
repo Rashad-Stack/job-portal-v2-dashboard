@@ -116,7 +116,7 @@ export default function CreateForms() {
       console.log("payload", jobFormData);
       const response = await createJobForm(jobFormData);
       console.log("Job form created successfully:", response);
-      if (response.success && response.data) {
+      if (response.data) {
         navigate("/jobs/forms");
       }
     } catch (error) {
