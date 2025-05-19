@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { createJobForm } from "../../api/axios/job-form"; 
-import { getAllCategories } from "../../api/category"; 
-import {  toast } from 'sonner'
+import { createJobForm } from "../../api/axios/job-form";
+import { getAllCategories } from "../../api/category";
+import { toast } from "sonner";
 
 // Assuming these are basic button and input field components you might have elsewhere,
 // or they will be replaced by native elements with Tailwind classes.
@@ -217,7 +217,8 @@ export default function CreateForms() {
                   />
                   <label
                     htmlFor={`radio-${index}-${optIndex}`}
-                    className="ml-2 text-sm text-gray-700">
+                    className="ml-2 text-sm text-gray-700"
+                  >
                     {option.label}
                   </label>
                 </div>
@@ -240,7 +241,8 @@ export default function CreateForms() {
               className={baseClasses}
               {...register(`fields[${index}].value`, {
                 required: field.required ? `${field.title} is required` : false,
-              })}>
+              })}
+            >
               <option value="">Select {field.title}</option>
               {field.options.map((option, optIndex) => (
                 <option key={optIndex} value={option.value}>
@@ -265,7 +267,8 @@ export default function CreateForms() {
               className={baseClasses}
               {...register(`fields[${index}].value`, {
                 required: field.required ? `${field.title} is required` : false,
-              })}>
+              })}
+            >
               <option value="">Select Job Category</option>
               {categories?.data?.length > 0 &&
                 categories.data.map((category) => (
@@ -298,7 +301,8 @@ export default function CreateForms() {
               <div className="mt-4">
                 <label
                   htmlFor="formTitle"
-                  className="block text-sm font-medium text-white mb-1">
+                  className="block text-sm font-medium text-white mb-1"
+                >
                   Form Title
                 </label>
                 <input
@@ -327,24 +331,38 @@ export default function CreateForms() {
                   type="button"
                   onClick={() => {
                     const formTitle = getValues("formTitle");
-                    if(!formTitle) return toast.warning("Please set form title first");
+                    if (!formTitle)
+                      return toast.warning("Please set form title first");
                     setIsModalOpen(true);
                   }}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                  className="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all duration-300"
+                >
                   Add Field
                 </button>
               </div>
 
+              {/* Render Fields */}
               <div className="grid grid-cols-12 gap-4">
                 {fields.map((item, index) => (
                   <div
                     key={item.id}
-                    className={`col-span-12 md:col-span-${item.column} relative border border-gray-200 rounded-lg p-4`}>
+                    style={{
+                      gridColumn: `span ${item.column || 12} / span ${
+                        item.column || 12
+                      }`,
+                      position: "relative",
+                      border: "1px solid #E5E7EB",
+                      borderRadius: "0.5rem",
+                      padding: "1rem",
+                    }}
+                    className="column_reponsive"
+                  >
                     {renderDynamicField(item, index)}
                     <button
                       type="button"
                       className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-                      onClick={() => remove(index)}>
+                      onClick={() => remove(index)}
+                    >
                       ✕
                     </button>
                   </div>
@@ -355,7 +373,8 @@ export default function CreateForms() {
                 <div className="mt-6">
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                  >
                     Save This Template
                   </button>
                 </div>
@@ -367,14 +386,15 @@ export default function CreateForms() {
 
       {/* Field Modal (Simplified) */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-600/50 flex items-center justify-center z-50 shadow-2xl">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Add New Field</h3>
             <form onSubmit={handleSubmit(handleAddField)} className="space-y-4">
               <div>
                 <label
                   htmlFor="newField.title"
-                  className="block text-sm font-medium text-gray-700 mb-1">
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Field Name *
                 </label>
                 <input
@@ -392,16 +412,19 @@ export default function CreateForms() {
                 )}
               </div>
 
+              {/* Field Type */}
               <div>
                 <label
                   htmlFor="newField.type"
-                  className="block text-sm font-medium text-gray-700 mb-1">
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Field Type
                 </label>
                 <select
                   id="newField.type"
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  {...register("newField.type")}>
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  {...register("newField.type")}
+                >
                   <option value="text">Text</option>
                   <option value="number">Number</option>
                   <option value="date">Date</option>
@@ -411,6 +434,7 @@ export default function CreateForms() {
                 </select>
               </div>
 
+              {/* field options */}
               {(newFieldValues.type === "radio" ||
                 newFieldValues.type === "select") && (
                 <div className="space-y-2">
@@ -437,7 +461,8 @@ export default function CreateForms() {
                                 (_, i) => i !== index
                               );
                             setValue("newField.options", updatedOptions);
-                          }}>
+                          }}
+                        >
                           ✕
                         </button>
                       )}
@@ -451,22 +476,26 @@ export default function CreateForms() {
                         { label: "", value: "" },
                       ])
                     }
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  >
                     Add Option
                   </button>
                 </div>
               )}
 
+              {/* Column Size */}
               <div>
                 <label
                   htmlFor="newField.column"
-                  className="block text-sm font-medium text-gray-700 mb-1">
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
                   Column Size
                 </label>
                 <select
                   id="newField.column"
                   className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  {...register("newField.column", { valueAsNumber: true })}>
+                  {...register("newField.column", { valueAsNumber: true })}
+                >
                   <option value="12">1</option>
                   <option value="6">2</option>
                   <option value="4">3</option>
@@ -482,7 +511,8 @@ export default function CreateForms() {
                 />
                 <label
                   htmlFor="newField.required"
-                  className="ml-2 text-sm text-gray-700">
+                  className="ml-2 text-sm text-gray-700"
+                >
                   Required
                 </label>
               </div>
@@ -491,12 +521,14 @@ export default function CreateForms() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 cursor-pointer"
+                >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  className="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all duration-300"
+                >
                   Add Field
                 </button>
               </div>
