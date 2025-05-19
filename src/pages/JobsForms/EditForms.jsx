@@ -232,7 +232,13 @@ export default function EditForms() {
               <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
                 Edit Job Post Form
               </h1>
-              <div>
+            </div>
+
+            <section className="space-y-4 text-left px-6 py-4">
+              <div className="">
+                <label htmlFor="formTitle" className="font-semibold text-xl">
+                  Form Title
+                </label>
                 <input
                   id="formTitle"
                   type="text"
@@ -240,12 +246,10 @@ export default function EditForms() {
                   placeholder="Form Title"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
-                  className="w-fit p-2 border outline-none border-gray-300 rounded-lg text-gray-800 my-3"
+                  className="w-full p-2 border outline-none border-gray-300 rounded-lg text-gray-800 my-3"
                 />
               </div>
-            </div>
 
-            <section className="space-y-4 text-left p-6">
               <div className="border-b pb-4 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-800">
                   Form Fields
@@ -254,14 +258,14 @@ export default function EditForms() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(true)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                  className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:bg-gradient-to-l hover:from-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-800/50 cursor-pointer transition-all duration-300"
                 >
                   Add Field
                 </button>
 
                 {/* Simple Modal Implementation */}
                 {isModalOpen && (
-                  <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex justify-center items-center z-50">
+                  <div className="fixed inset-0 bg-gray-600/50 flex items-center justify-center z-50 shadow-2xl">
                     <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
                       <h3 className="text-lg font-bold mb-4">Add New Field</h3>
                       <div className="flex flex-col gap-4">
@@ -278,7 +282,7 @@ export default function EditForms() {
                             {...register("newField.title", {
                               required: "Field name is required",
                             })}
-                            className="w-full p-2 border border-gray-300 rounded-md"
+                            className="w-full p-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 rounded-md"
                           />
                           {errors.newField?.title && (
                             <p className="text-red-500 text-xs mt-1">
@@ -287,6 +291,7 @@ export default function EditForms() {
                           )}
                         </div>
 
+                        {/* Field Type */}
                         <div>
                           <label
                             htmlFor="newFieldType"
@@ -294,18 +299,32 @@ export default function EditForms() {
                           >
                             Type
                           </label>
-                          <select
-                            id="newFieldType"
-                            {...register("newField.type")}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                          >
-                            <option value="text">Text</option>
-                            <option value="number">Number</option>
-                            <option value="date">Date</option>
-                            <option value="radio">Radio</option>
-                            <option value="select">Select</option>
-                            <option value="jobCategory">Job Category</option>
-                          </select>
+                          <div className="relative w-full">
+                            <select
+                              id="newField"
+                              className="w-full appearance-none p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                              {...register("newField.type")}
+                            >
+                              <option value="text">Text</option>
+                              <option value="number">Number</option>
+                              <option value="date">Date</option>
+                              <option value="radio">Radio</option>
+                              <option value="select">Select</option>
+                            </select>
+
+                            {/* Custom dropdown arrow */}
+                            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-600">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </div>
+                          </div>
                         </div>
 
                         {(newFieldValues.type === "radio" ||
@@ -376,6 +395,7 @@ export default function EditForms() {
                           </div>
                         )}
 
+                        {/* Custom Size */}
                         <div>
                           <label
                             htmlFor="newFieldColumn"
@@ -383,17 +403,32 @@ export default function EditForms() {
                           >
                             Column
                           </label>
-                          <select
-                            id="newFieldColumn"
-                            {...register("newField.column", {
-                              valueAsNumber: true,
-                            })}
-                            className="w-full p-2 border border-gray-300 rounded-md"
-                          >
-                            <option value={12}>1</option>
-                            <option value={6}>2</option>
-                            <option value={4}>3</option>
-                          </select>
+                          <div className="relative w-full">
+                            <select
+                              id="newFieldColumn"
+                              className="w-full appearance-none p-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                              {...register("newField.column", {
+                                valueAsNumber: true,
+                              })}
+                            >
+                              <option value="12">1</option>
+                              <option value="6">2</option>
+                              <option value="4">3</option>
+                            </select>
+
+                            {/* Custom Arrow Icon */}
+                            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-600">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                              >
+                                <path d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </div>
+                          </div>
                         </div>
 
                         <div className="flex items-center gap-2">
@@ -422,7 +457,7 @@ export default function EditForms() {
                         <button
                           type="button" // Changed to button to prevent form submission
                           onClick={handleAddField}
-                          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                          className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:bg-gradient-to-l hover:from-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-800/50 cursor-pointer transition-all duration-300"
                         >
                           Add Field
                         </button>
@@ -469,7 +504,7 @@ export default function EditForms() {
               {fields.length > 0 && (
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                  className="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 cursor-pointer"
                 >
                   Update Form
                 </button>

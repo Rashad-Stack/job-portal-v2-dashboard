@@ -1,4 +1,3 @@
-// SelectInput.jsx
 import InputLabel from "./InputLabel";
 
 const SelectInput = ({ name, label, value, onChange, options }) => {

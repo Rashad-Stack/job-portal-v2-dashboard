@@ -23,6 +23,7 @@ const TemplateForm = () => {
     mode: "onChange",
     defaultValues: {
       description: "",
+      categoryId: "",
       fields: [],
     },
   });
@@ -173,28 +174,6 @@ const TemplateForm = () => {
             )}
           />
         );
-      case "jobCategory":
-        return (
-          <Controller
-            name={`fields.${index}.value`}
-            control={control}
-            rules={{
-              required: field.required ? `${field.title} is required` : false,
-            }}
-            render={({ field: { onChange, value } }) => (
-              <SelectInput
-                {...commonProps}
-                label={field.title}
-                value={value || ""}
-                onChange={(e) => onChange(e.target.value)}
-                options={categories.map((cat) => ({
-                  label: cat.name,
-                  value: cat.id,
-                }))}
-              />
-            )}
-          />
-        );
       default:
         return null;
     }
@@ -205,24 +184,62 @@ const TemplateForm = () => {
       setLoading(true);
       setError("");
 
+      // Map dynamic fields to payload fields
+      const fieldMap = {};
+      formData.fields.forEach((field) => {
+        const fieldTitle = field.title.toLowerCase().replace(/\s+/g, "");
+        const fieldValue =
+          field.type === "number" ? Number(field.value) : field.value;
+        if (
+          fieldTitle.includes("title") ||
+          fieldTitle.includes("jobtitle")
+        ) {
+          fieldMap["title"] = fieldValue;
+        } else if (
+          fieldTitle.includes("company") ||
+          fieldTitle.includes("companyname")
+        ) {
+          fieldMap["companyName"] = fieldValue;
+        } else if (
+          fieldTitle.includes("hiring") ||
+          fieldTitle.includes("numberofhiring")
+        ) {
+          fieldMap["numberOfHiring"] = fieldValue;
+        } else if (fieldTitle.includes("location")) {
+          fieldMap["location"] = fieldValue;
+        } else if (
+          fieldTitle.includes("googleform") ||
+          fieldTitle.includes("formlink")
+        ) {
+          fieldMap["googleForm"] = fieldValue;
+        }
+      });
+
+      // Construct the payload
       const jobData = {
-        formId: templateId,
-        formTitle: templateData.formTitle,
-        description: formData.description,
-        fields: formData.fields.map((field, index) => ({
-          id: templateData.fields[index].id,
-          title: field.title,
-          type: field.type,
-          required: field.required,
-          column: field.column,
-          options: field.options || [],
-          value: field.value,
-        })),
+        title: fieldMap.title || templateData.formTitle || "",
+        companyName: fieldMap.companyName || "",
+        numberOfHiring: fieldMap.numberOfHiring || 1,
+        appliedBy: false,
+        location: fieldMap.location || "",
+        googleForm: fieldMap.googleForm || "",
+        jobType: formData.jobType || "FULL_TIME",
+        categoryId: formData.categoryId || "",
+        jobLevel: formData.jobLevel || "MID_LEVEL",
+        jobNature: formData.jobNature || "ONSITE",
+        shift: formData.shift || "DAY",
+        deadline: formData.deadline
+          ? new Date(formData.deadline).toISOString()
+          : "",
+        description: formData.description || "",
+        minSalary: Number(formData.minSalary) || 0,
+        maxSalary: Number(formData.maxSalary) || 0,
+        responsibilities: [],
       };
 
       const response = await createJob(jobData);
       console.log("Job created successfully:", response);
-      navigate("/jobs");
+      navigate("/jobs/read");
     } catch (err) {
       console.error("Failed to create job:", err.message);
       setError("Failed to create job. Please try again later.");
@@ -252,22 +269,54 @@ const TemplateForm = () => {
               <div className="text-center">Loading template...</div>
             )}
 
-            <section className="space-y-4 text-left">
+            <div className="space-y-4 text-left">
               <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
                 Basic Information
               </h2>
 
               {/* Render the form fields */}
               <div className="grid grid-cols-12 gap-4">
-                {templateData.fields?.map((field, index) =>
-                  <div key={index} style={{ gridColumn: `span ${field.column}` }}>
+                {templateData.fields?.map((field, index) => (
+                  <div
+                    key={index}
+                    style={{ gridColumn: `span ${field.column}` }}
+                  >
                     {renderField(field, index)}
                   </div>
-                )}
+                ))}
               </div>
-            </section>
+            </div>
 
-            <section className="space-y-4">
+            {/* Job Category Section */}
+            <div className="space-y-4">
+              <Controller
+                name="categoryId"
+                control={control}
+                rules={{ required: "Job category is required" }}
+                render={({ field: { onChange, value } }) => (
+                  <div>
+                    <SelectInput
+                      name="categoryId"
+                      label="Job Category"
+                      value={value || ""}
+                      onChange={(e) => onChange(e.target.value)}
+                      options={categories.map((cat) => ({
+                        label: cat.name,
+                        value: cat.id,
+                      }))}
+                    />
+                    {errors.categoryId && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.categoryId.message}
+                      </p>
+                    )}
+                  </div>
+                )}
+              />
+            </div>
+
+            {/* Description Section */}
+            <div className="space-y-4">
               <Controller
                 name="description"
                 control={control}
@@ -275,12 +324,12 @@ const TemplateForm = () => {
                 render={({ field: { onChange, value } }) => (
                   <div>
                     <InputLabel labelTitle={{ title: "Job Description" }} />
-                    <TextEditor
-                      name="description"
-                      value={value}
-                      onChange={(e) => onChange(e.target.value)}
-                      tab="write"
-                    />
+                      <TextEditor
+                        name="description"
+                        value={value}
+                        onChange={(e) => onChange(e.target.value)}
+                        tab="write"
+                      />
                     {errors.description && (
                       <p className="text-red-500 text-xs mt-1">
                         {errors.description.message}
@@ -289,7 +338,8 @@ const TemplateForm = () => {
                   </div>
                 )}
               />
-            </section>
+            </div>
+
             <div className="pt-6">
               <button
                 type="submit"

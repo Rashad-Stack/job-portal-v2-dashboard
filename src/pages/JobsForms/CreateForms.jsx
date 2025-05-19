@@ -4,6 +4,8 @@ import { useNavigate } from "react-router";
 import { createJobForm } from "../../api/axios/job-form";
 import { getAllCategories } from "../../api/category";
 import { toast } from "sonner";
+import { Select } from "flowbite-react";
+import CustomSelect from "../../components/input/CustomSelect";
 
 // Assuming these are basic button and input field components you might have elsewhere,
 // or they will be replaced by native elements with Tailwind classes.
@@ -298,10 +300,14 @@ export default function CreateForms() {
               <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
                 Create New Job Post Form
               </h1>
-              <div className="mt-4">
+            </div>
+
+            <section className="space-y-4 text-left p-6">
+              {/* Form Title */}
+              <div className="">
                 <label
                   htmlFor="formTitle"
-                  className="block text-sm font-medium text-white mb-1"
+                  className="block mb-1 text-xl font-semibold"
                 >
                   Form Title
                 </label>
@@ -320,9 +326,8 @@ export default function CreateForms() {
                   </p>
                 )}
               </div>
-            </div>
 
-            <section className="space-y-4 text-left p-6">
+              {/* From Fields Action */}
               <div className="border-b pb-2 flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-800">
                   Form Fields
@@ -335,7 +340,7 @@ export default function CreateForms() {
                       return toast.warning("Please set form title first");
                     setIsModalOpen(true);
                   }}
-                  className="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all duration-300"
+                  className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:bg-gradient-to-l hover:from-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-800/50 cursor-pointer transition-all duration-300"
                 >
                   Add Field
                 </button>
@@ -390,6 +395,7 @@ export default function CreateForms() {
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Add New Field</h3>
             <form onSubmit={handleSubmit(handleAddField)} className="space-y-4">
+              {/* Field Name */}
               <div>
                 <label
                   htmlFor="newField.title"
@@ -400,7 +406,7 @@ export default function CreateForms() {
                 <input
                   type="text"
                   id="newField.title"
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   {...register("newField.title", {
                     required: "Field name is required",
                   })}
@@ -420,18 +426,19 @@ export default function CreateForms() {
                 >
                   Field Type
                 </label>
-                <select
+                <CustomSelect
                   id="newField.type"
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  {...register("newField.type")}
-                >
-                  <option value="text">Text</option>
-                  <option value="number">Number</option>
-                  <option value="date">Date</option>
-                  <option value="radio">Radio</option>
-                  <option value="select">Select</option>
-                  <option value="jobCategory">Job Category</option>
-                </select>
+                  name="newField.type"
+                  register={register}
+                  options={[
+                    { label: "Text", value: "text" },
+                    { label: "Number", value: "number" },
+                    { label: "Date", value: "date" },
+                    { label: "Radio", value: "radio" },
+                    { label: "Select", value: "select" },
+                  ]}
+                  disabledOption="Select Field Type"
+                />
               </div>
 
               {/* field options */}
@@ -491,15 +498,18 @@ export default function CreateForms() {
                 >
                   Column Size
                 </label>
-                <select
+                <CustomSelect
                   id="newField.column"
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  name="newField.column"
+                  register={register}
+                  options={[
+                    { label: "1", value: 12 },
+                    { label: "2", value: 6 },
+                    { label: "3", value: 4 },
+                  ]}
+                  disabledOption="Select Column Size"
                   {...register("newField.column", { valueAsNumber: true })}
-                >
-                  <option value="12">1</option>
-                  <option value="6">2</option>
-                  <option value="4">3</option>
-                </select>
+                />
               </div>
 
               <div className="flex items-center">
@@ -527,7 +537,7 @@ export default function CreateForms() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-indigo-700 text-white rounded-lg hover:bg-indigo-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer transition-all duration-300"
+                  className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:bg-gradient-to-l hover:from-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-800/50 cursor-pointer transition-all duration-300"
                 >
                   Add Field
                 </button>
