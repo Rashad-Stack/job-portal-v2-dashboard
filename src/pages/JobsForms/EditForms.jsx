@@ -187,7 +187,8 @@ export default function EditForms() {
                   />
                   <label
                     htmlFor={`radio-${index}-${optIndex}`}
-                    className="text-gray-700 text-sm">
+                    className="text-gray-700 text-sm"
+                  >
                     {option.label}
                   </label>
                 </div>
@@ -253,7 +254,8 @@ export default function EditForms() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(true)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                  className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                >
                   Add Field
                 </button>
 
@@ -266,7 +268,8 @@ export default function EditForms() {
                         <div>
                           <label
                             htmlFor="newFieldTitle"
-                            className="block text-sm font-medium text-gray-700 mb-1">
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
                             Field name *
                           </label>
                           <input
@@ -287,13 +290,15 @@ export default function EditForms() {
                         <div>
                           <label
                             htmlFor="newFieldType"
-                            className="block text-sm font-medium text-gray-700 mb-1">
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
                             Type
                           </label>
                           <select
                             id="newFieldType"
                             {...register("newField.type")}
-                            className="w-full p-2 border border-gray-300 rounded-md">
+                            className="w-full p-2 border border-gray-300 rounded-md"
+                          >
                             <option value="text">Text</option>
                             <option value="number">Number</option>
                             <option value="date">Date</option>
@@ -312,7 +317,8 @@ export default function EditForms() {
                             {newFieldValues.options.map((option, index) => (
                               <div
                                 key={index}
-                                className="flex items-center gap-2 mb-2">
+                                className="flex items-center gap-2 mb-2"
+                              >
                                 <input
                                   type="text"
                                   {...register(
@@ -348,7 +354,8 @@ export default function EditForms() {
                                         updatedOptions
                                       );
                                     }}
-                                    className="text-red-500 hover:text-red-700 text-lg leading-none">
+                                    className="text-red-500 hover:text-red-700 text-lg leading-none"
+                                  >
                                     ✕
                                   </button>
                                 )}
@@ -362,7 +369,8 @@ export default function EditForms() {
                                   { label: "", value: "" },
                                 ])
                               }
-                              className="mt-2 px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 text-sm">
+                              className="mt-2 px-3 py-1 border border-gray-300 rounded-md hover:bg-gray-100 text-sm"
+                            >
                               Add Option
                             </button>
                           </div>
@@ -371,7 +379,8 @@ export default function EditForms() {
                         <div>
                           <label
                             htmlFor="newFieldColumn"
-                            className="block text-sm font-medium text-gray-700 mb-1">
+                            className="block text-sm font-medium text-gray-700 mb-1"
+                          >
                             Column
                           </label>
                           <select
@@ -379,7 +388,8 @@ export default function EditForms() {
                             {...register("newField.column", {
                               valueAsNumber: true,
                             })}
-                            className="w-full p-2 border border-gray-300 rounded-md">
+                            className="w-full p-2 border border-gray-300 rounded-md"
+                          >
                             <option value={12}>1</option>
                             <option value={6}>2</option>
                             <option value={4}>3</option>
@@ -395,7 +405,8 @@ export default function EditForms() {
                           />
                           <label
                             htmlFor="newFieldRequired"
-                            className="text-sm font-medium text-gray-700">
+                            className="text-sm font-medium text-gray-700"
+                          >
                             Required
                           </label>
                         </div>
@@ -404,13 +415,15 @@ export default function EditForms() {
                         <button
                           type="button"
                           onClick={() => setIsModalOpen(false)}
-                          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                          className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                        >
                           Cancel
                         </button>
                         <button
                           type="button" // Changed to button to prevent form submission
                           onClick={handleAddField}
-                          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">
+                          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        >
                           Add Field
                         </button>
                       </div>
@@ -419,20 +432,22 @@ export default function EditForms() {
                 )}
               </div>
 
+              {/* Render Fields */}
               <div className="grid grid-cols-12 gap-4">
                 {fields.length > 0 &&
                   fields.map((item, index) => (
                     <div
                       key={item.id}
                       style={{ gridColumn: `span ${item.column}` }}
-                      className="p-4 border border-gray-200 rounded-md relative group" // Added relative and group for delete button positioning
+                      className="p-4 border border-gray-200 rounded-md relative group"
                     >
                       {/* Delete Field Button */}
                       <button
                         type="button"
                         onClick={() => remove(index)}
                         className="absolute top-2 right-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                        aria-label={`Remove ${item.title} field`}>
+                        aria-label={`Remove ${item.title} field`}
+                      >
                         ✕
                       </button>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -454,7 +469,8 @@ export default function EditForms() {
               {fields.length > 0 && (
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+                  className="px-6 py-3 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                >
                   Update Form
                 </button>
               )}

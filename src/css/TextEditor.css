@@ -1,0 +1,123 @@
+/* Container for the entire editor */
+.custom-react-mde {
+  border: 1px solid #d1d5db; /* Matches border-gray-300 */
+  border-radius: 0.5rem; /* Matches rounded-lg */
+  background-color: #fff; /* Matches white background */
+}
+
+/* Dark mode styles */
+.dark .custom-react-mde {
+  border-color: #4b5563; /* Matches dark:border-gray-600 */
+  background-color: #374151; /* Matches dark:bg-gray-700 */
+}
+
+/* Toolbar styling */
+.custom-mde-toolbar {
+  background: linear-gradient(to right, #f3f4f6, #e5e7eb); /* Subtle gradient for toolbar */
+  border-bottom: 1px solid #d1d5db;
+  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 0.5rem;
+}
+
+/* Dark mode toolbar */
+.dark .custom-mde-toolbar {
+  background: linear-gradient(to right, #4b5563, #6b7280);
+  border-bottom-color: #4b5563;
+}
+
+/* Tab buttons (Write and Preview) */
+.custom-mde-toolbar .mde-tabs button {
+  background-color: transparent;
+  color: #374151; /* Matches text-gray-800 */
+  font-weight: 500;
+  padding: 0.2rem 1rem;
+  margin: 0 0.25rem;
+  border-radius: 0.375rem; /* Slightly rounded tabs */
+  transition: all 0.2s ease;
+}
+
+/* Dark mode tab buttons */
+.dark .custom-mde-toolbar .mde-tabs button {
+  color: #d1d5db; /* Matches dark:text-white */
+}
+
+/* Active tab */
+.custom-mde-toolbar .mde-tabs button.selected,
+.custom-mde-toolbar .mde-tabs button:hover {
+  background-color: #00ab0c; /* Matches green theme */
+  color: #fff;
+}
+
+/* Dark mode active tab */
+.dark .custom-mde-toolbar .mde-tabs button.selected,
+.dark .custom-mde-toolbar .mde-tabs button:hover {
+  background-color: #1e6623; /* Slightly darker green for dark mode */
+}
+
+/* Toolbar buttons (bold, italic, etc.) */
+.custom-mde-toolbar button {
+  color: #374151;
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  margin: 0 0.125rem;
+  transition: background-color 0.2s ease;
+}
+
+.custom-mde-toolbar button:hover {
+  background-color: #e5e7eb; /* Matches hover:bg-gray-100 */
+}
+
+.dark .custom-mde-toolbar button {
+  color: #d1d5db;
+}
+
+.dark .custom-mde-toolbar button:hover {
+  background-color: #6b7280;
+}
+
+/* Textarea styling */
+.custom-mde-textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  background-color: #fff;
+  color: #1f2937; /* Matches text-gray-800 */
+  font-size: 1rem;
+  line-height: 1.5;
+  min-height: 150px;
+  resize: vertical;
+}
+
+/* Focus state for textarea */
+.custom-mde-textarea:focus {
+  outline: none;
+  border: 2px solid #1e6623; /* Matches focus:border-[#1e6623] */
+  box-shadow: 0 0 0 2px #00ab0c; /* Matches focus:ring-2 focus:ring-[#00ab0c] */
+}
+
+/* Dark mode textarea */
+.dark .custom-mde-textarea {
+  background-color: #374151;
+  color: #d1d5db;
+}
+
+/* Dark mode textarea focus */
+.dark .custom-mde-textarea:focus {
+  border-color: #1e6623;
+  box-shadow: 0 0 0 2px #00ab0c;
+}
+
+/* Preview pane styling */
+.custom-mde-preview {
+  padding: 0.5rem;
+  background-color: #fff;
+  color: #1f2937;
+  border-radius: 0 0 0.5rem 0.5rem;
+  min-height: 150px;
+}
+
+/* Dark mode preview */
+.dark .custom-mde-preview {
+  background-color: #374151;
+  color: #d1d5db;
+}

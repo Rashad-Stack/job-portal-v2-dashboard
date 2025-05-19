@@ -1,40 +1,36 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
+import { useForm, Controller } from "react-hook-form";
 import { createJob } from "../../api/jobs";
+import { getJobFormById } from "../../api/axios/job-form";
+import { getAllCategories } from "../../api/axios/category";
 import TextEditor from "../../components/common/TextEditor";
 import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
 import SelectInput from "../../components/input/SelectInput";
-import { getJobFormById } from "../../api/axios/job-form";
-import { getAllCategories } from "../../api/axios/category";
 
 const TemplateForm = () => {
-  const navigate = useNavigate();
   const { id: templateId } = useParams();
-  console.log("template id", templateId);
+  const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    title: "",
-    companyName: "",
-    numberOfHiring: "",
-    appliedBy: false,
-    location: "",
-    googleForm: "",
-    jobType: "FULL_TIME",
-    categoryId: "",
-    jobLevel: "MID_LEVEL",
-    jobNature: "ONSITE",
-    shift: "DAY",
-    deadline: "",
-    description: "",
-    minSalary: "",
-    maxSalary: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    control,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      description: "",
+      fields: [],
+    },
   });
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [templateLoading, setTemplateLoading] = useState(false);
-  const [category, setCategory] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [templateData, setTemplateData] = useState({});
 
   useEffect(() => {
@@ -42,10 +38,10 @@ const TemplateForm = () => {
       try {
         setTemplateLoading(true);
         setError("");
-
         const { data } = await getJobFormById(templateId);
         console.log("template data", data);
         setTemplateData(data);
+        setValue("fields", data.fields || []);
       } catch (err) {
         console.error("Failed to fetch Template:", err.message);
         setError("Failed to fetch Template. Please try again later.");
@@ -55,94 +51,181 @@ const TemplateForm = () => {
     };
 
     fetchTemplate();
-  }, [templateId]);
+  }, [templateId, setValue]);
 
   useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const { data } = await getAllCategories();
+        setCategories(data || []);
+      } catch (err) {
+        console.error("Failed to fetch Categories:", err.message);
+        setError("Failed to fetch Categories. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchCategories();
   }, []);
 
-  const fetchCategories = async () => {
+  const renderField = (field, index) => {
+    const commonProps = {
+      key: field.id || index,
+      name: `fields.${index}.value`,
+      required: field.required,
+    };
+
+    switch (field.type) {
+      case "text":
+        return (
+          <InputField
+            {...commonProps}
+            label={field.title}
+            type="text"
+            placeholder={`Enter ${field.title}`}
+            {...register(`fields.${index}.value`, {
+              required: field.required ? `${field.title} is required` : false,
+            })}
+            error={errors.fields?.[index]?.value?.message}
+          />
+        );
+      case "number":
+        return (
+          <InputField
+            {...commonProps}
+            label={field.title}
+            type="number"
+            placeholder={`Enter ${field.title}`}
+            {...register(`fields.${index}.value`, {
+              required: field.required ? `${field.title} is required` : false,
+              valueAsNumber: true,
+            })}
+            error={errors.fields?.[index]?.value?.message}
+          />
+        );
+      case "date":
+        return (
+          <InputField
+            {...commonProps}
+            label={field.title}
+            type="date"
+            {...register(`fields.${index}.value`, {
+              required: field.required ? `${field.title} is required` : false,
+            })}
+            error={errors.fields?.[index]?.value?.message}
+          />
+        );
+      case "radio":
+        return (
+          <div>
+            <InputLabel labelTitle={{ title: field.title }} />
+            <div className="flex gap-4">
+              {field.options?.map((option, optIndex) => (
+                <div key={optIndex} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id={`radio-${index}-${optIndex}`}
+                    value={option.value}
+                    {...register(`fields.${index}.value`, {
+                      required: field.required
+                        ? `${field.title} is required`
+                        : false,
+                    })}
+                  />
+                  <label
+                    htmlFor={`radio-${index}-${optIndex}`}
+                    className="text-gray-700 text-sm"
+                  >
+                    {option.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+            {errors.fields?.[index]?.value && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.fields[index].value.message}
+              </p>
+            )}
+          </div>
+        );
+      case "select":
+        return (
+          <Controller
+            name={`fields.${index}.value`}
+            control={control}
+            rules={{
+              required: field.required ? `${field.title} is required` : false,
+            }}
+            render={({ field: { onChange, value } }) => (
+              <SelectInput
+                {...commonProps}
+                label={field.title}
+                value={value || ""}
+                onChange={(e) => onChange(e.target.value)}
+                options={field.options.map((opt) => ({
+                  label: opt.label,
+                  value: opt.value,
+                }))}
+              />
+            )}
+          />
+        );
+      case "jobCategory":
+        return (
+          <Controller
+            name={`fields.${index}.value`}
+            control={control}
+            rules={{
+              required: field.required ? `${field.title} is required` : false,
+            }}
+            render={({ field: { onChange, value } }) => (
+              <SelectInput
+                {...commonProps}
+                label={field.title}
+                value={value || ""}
+                onChange={(e) => onChange(e.target.value)}
+                options={categories.map((cat) => ({
+                  label: cat.name,
+                  value: cat.id,
+                }))}
+              />
+            )}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  const onSubmit = async (formData) => {
     try {
       setLoading(true);
       setError("");
-      const { data } = getAllCategories();
-      setCategory(data || []);
+
+      const jobData = {
+        formId: templateId,
+        formTitle: templateData.formTitle,
+        description: formData.description,
+        fields: formData.fields.map((field, index) => ({
+          id: templateData.fields[index].id,
+          title: field.title,
+          type: field.type,
+          required: field.required,
+          column: field.column,
+          options: field.options || [],
+          value: field.value,
+        })),
+      };
+
+      const response = await createJob(jobData);
+      console.log("Job created successfully:", response);
+      navigate("/jobs");
     } catch (err) {
-      console.error("Failed to fetch Categories:", err.message);
-      setError("Failed to fetch Categories. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type } = e.target;
-
-    if (name === "appliedBy") {
-      setFormData((prev) => ({
-        ...prev,
-        appliedBy: value === "true",
-      }));
-    } else if (type === "number") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value === "" ? "" : Number(value),
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const requiredFields = [
-        "companyName",
-        "title",
-        "numberOfHiring",
-        "location",
-        "jobType",
-        "jobLevel",
-        "categoryId",
-        "jobNature",
-        "shift",
-        "deadline",
-        "description",
-        "minSalary",
-        "maxSalary",
-      ];
-      if (formData.appliedBy === false) {
-        requiredFields.push("googleForm");
-      }
-
-      const emptyFields = requiredFields.filter((field) => {
-        const value = formData[field];
-        return !value || (typeof value === "string" && value.trim() === "");
-      });
-
-      if (emptyFields.length > 0) {
-        setError(
-          `Please fill out the following fields: ${emptyFields.join(", ")}`
-        );
-        setLoading(false);
-        return;
-      }
-      const dataToSend = { ...formData };
-      if (!dataToSend.companyName || dataToSend.companyName.trim() === "") {
-        delete dataToSend.companyName;
-      }
-
-      await createJob(dataToSend);
-      navigate("/jobs/read");
-    } catch (error) {
-      console.error("Error creating job:", error);
-      setError(error.message || "Failed to create job");
+      console.error("Failed to create job:", err.message);
+      setError("Failed to create job. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -158,235 +241,62 @@ const TemplateForm = () => {
             </h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
             {error && (
               <div className="p-4 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300">
                 {error}
               </div>
             )}
-            {/* Basic Information */}
+
+            {templateLoading && (
+              <div className="text-center">Loading template...</div>
+            )}
+
             <section className="space-y-4 text-left">
               <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
                 Basic Information
               </h2>
-              {/* Job Title */}
-              <div>
-                <InputField
-                  label="Job Title *"
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  required
-                  placeholder="Enter Job Title"
-                />
+
+              {/* Render the form fields */}
+              <div className="grid grid-cols-12 gap-4">
+                {templateData.fields?.map((field, index) =>
+                  <div key={index} style={{ gridColumn: `span ${field.column}` }}>
+                    {renderField(field, index)}
+                  </div>
+                )}
               </div>
+            </section>
 
-              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2   gap-4">
-                <div>
-                  {/* Company Name */}
-                  <InputField
-                    label="Company Name"
-                    type="text"
-                    name="companyName"
-                    value={formData.companyName}
-                    onChange={handleChange}
-                    placeholder="Company Name"
-                  />
-                </div>
-                <div>
-                  <InputField
-                    label="Number of Hiring"
-                    type="number"
-                    name="numberOfHiring"
-                    value={formData.numberOfHiring}
-                    onChange={handleChange}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <InputLabel labelTitle={{ title: "Applied By" }} />
-                  <div className="space-y-4">
-                    <div className="flex flex-wrap gap-6">
-                      <label className="flex items-center">
-                        <InputField
-                          type="radio"
-                          name="appliedBy"
-                          value="true"
-                          checked={formData.appliedBy === true}
-                          onChange={handleChange}
-                        />
-                        <span className="ml-2 text-gray-700 dark:text-gray-300">
-                          Internal
-                        </span>
-                      </label>
-                      <label className="flex items-center">
-                        <InputField
-                          type="radio"
-                          name="appliedBy"
-                          value="false"
-                          checked={formData.appliedBy === false}
-                          onChange={handleChange}
-                        />
-                        <span className="ml-2 text-gray-700 dark:text-gray-300">
-                          External
-                        </span>
-                      </label>
-                    </div>
-
-                    {formData.appliedBy === false && (
-                      <div>
-                        <InputField
-                          label="Google Form URL"
-                          type="text"
-                          name="googleForm"
-                          value={formData.googleForm}
-                          onChange={handleChange}
-                          placeholder="Enter Google Form URL"
-                        />
-                      </div>
+            <section className="space-y-4">
+              <Controller
+                name="description"
+                control={control}
+                rules={{ required: "Job description is required" }}
+                render={({ field: { onChange, value } }) => (
+                  <div>
+                    <InputLabel labelTitle={{ title: "Job Description" }} />
+                    <TextEditor
+                      name="description"
+                      value={value}
+                      onChange={(e) => onChange(e.target.value)}
+                      tab="write"
+                    />
+                    {errors.description && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.description.message}
+                      </p>
                     )}
                   </div>
-                </div>
-              </div>
-            </section>
-            
-            <section className="space-y-4">
-              <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                <SelectInput
-                  name="jobNature"
-                  label="Job Nature"
-                  value={formData.jobNature}
-                  onChange={handleChange}
-                  options={[
-                    { value: "ONSITE", label: "On Site" },
-                    { value: "REMOTE", label: "Remote" },
-                  ]}
-                />
-
-                <SelectInput
-                  name="jobLevel"
-                  label="Job Level"
-                  value={formData.jobLevel}
-                  onChange={handleChange}
-                  options={[
-                    { value: "ENTRY_LEVEL", label: "Entry Level" },
-                    { value: "MID_LEVEL", label: "Mid Level" },
-                    { value: "ADVANCED_LEVEL", label: "Advanced Level" },
-                    { value: "INTERNSHIP", label: "Intern" },
-                  ]}
-                />
-
-                <SelectInput
-                  name="jobType"
-                  label="Job Type"
-                  value={formData.jobType}
-                  onChange={handleChange}
-                  options={[
-                    { value: "FULL_TIME", label: "Full Time" },
-                    { value: "PART_TIME", label: "Part Time" },
-                    { value: "CONTRACT", label: "Contract" },
-                    { value: "INTERNSHIP", label: "Intern" },
-                  ]}
-                />
-              </div>
-            </section>
-
-            {/* Job Category */}
-            <div>
-              <SelectInput
-                name="categoryId"
-                label="Job Category"
-                value={formData.categoryId}
-                onChange={handleChange}
-                options={category.map((item) => ({
-                  value: item.id,
-                  label: item.name,
-                }))}
+                )}
               />
-            </div>
-            
-            <section className="space-y-4">
-              <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                <div>
-                  <div>
-                    <SelectInput
-                      name="shift"
-                      label="Shift"
-                      value={formData.shift}
-                      onChange={handleChange}
-                      options={[
-                        { value: "DAY", label: "Day" },
-                        { value: "EVENING", label: "Evening" },
-                        { value: "NIGHT", label: "Night" },
-                      ]}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <section className="space-y-4">
-                      <div>
-                        <InputField
-                          label="Location*"
-                          type="text"
-                          name="location"
-                          value={formData.location}
-                          onChange={handleChange}
-                          required
-                        />
-                      </div>
-                    </section>
-                  </div>
-                </div>
-              </div>
-            </section>
-            <section className="space-y-4">
-              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-3">
-                <InputField
-                  label="Application Deadline"
-                  type="date"
-                  name="deadline"
-                  value={formData.deadline}
-                  onChange={handleChange}
-                />
-
-                <InputField
-                  label="Minimum Salary"
-                  type="number"
-                  name="minSalary"
-                  value={formData.minSalary}
-                  onChange={handleChange}
-                />
-
-                <InputField
-                  label="Maximum Salary"
-                  type="number"
-                  name="maxSalary"
-                  value={formData.maxSalary}
-                  onChange={handleChange}
-                />
-              </div>
-            </section>
-            {/* Description Markdown */}
-            <section className="space-y-4">
-              <div>
-                <InputLabel labelTitle={{ title: "Job Description" }} />
-                <TextEditor
-                  tab="write"
-                  label="Job Description"
-                  name="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                />
-              </div>
             </section>
             <div className="pt-6">
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-gradient-to-r from-[#2d9134] to-[#2d9134] text-white font-medium rounded-lg hover:from-[#2d9134] hover:to-[#126918] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300"
+                disabled={loading || templateLoading}
+                className="w-full py-3 px-4 bg-gradient-to-r from-[#2d9134] to-[#2d9134] text-white font-medium rounded-lg hover:from-[#2d9134] hover:to-[#126918] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 disabled:opacity-50"
               >
-                Create Job Post
+                {loading ? "Creating..." : "Create Job Post"}
               </button>
             </div>
           </form>
