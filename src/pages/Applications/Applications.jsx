@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getAllApplications } from "../../api/axios/applications";
 import ApplicationCard from "../../components/applications/applicationCard";
+import { getAllApplications } from "../../api/applications";
 
 export default function Applications() {
   const [applications, setApplications] = useState([]);

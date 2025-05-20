@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
-import { getAllCategories } from "../../api/category";
-import { createJob } from "../../api/jobs";
 import TextEditor from "../../components/common/TextEditor";
 import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
 import SelectInput from "../../components/input/SelectInput";
-import { getJobFormById } from "../../api/axios/job-form";
 import Loading from "../../components/loader/Loading";
+import { getAllCategories } from "../../api/category";
+import { createJobForm, getJobFormById } from "../../api/job-form";
 
 const JobCreate = () => {
   const navigate = useNavigate();
@@ -136,7 +135,7 @@ const JobCreate = () => {
       dataToSend.appliedByInternal = data.appliedByInternal === "true";
 
       console.log("dataToSend", dataToSend);
-      await createJob(dataToSend);
+      await createJobForm(dataToSend);
       navigate("/jobs/read");
     } catch (error) {
       console.error("Error creating job:", error);

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import Button from "../../components/button/Button";
-import { getAllJobForms, deleteJobForm } from "../../api/axios/job-form";
 import AlertDialog from "../../components/common/AlertDialog";
+import { deleteJobForm, getAllJobForms } from "../../api/job-form";
 
 export default function JobForms() {
   const [jobForms, setJobForms] = useState({});

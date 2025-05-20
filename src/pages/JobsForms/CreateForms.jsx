@@ -1,18 +1,10 @@
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { createJobForm } from "../../api/axios/job-form";
 import { getAllCategories } from "../../api/category";
 import { toast } from "sonner";
-import { Select } from "flowbite-react";
 import CustomSelect from "../../components/input/CustomSelect";
-
-// Assuming these are basic button and input field components you might have elsewhere,
-// or they will be replaced by native elements with Tailwind classes.
-// For this refactor, we will replace them with native elements and Tailwind classes.
-// import Button from "../../components/button/Button";
-// import InputField from "../../components/input/InputField";
-// import FieldModal from "../../components/JobsForms/FieldModal";
+import { createJobForm } from "../../api/job-form";
 
 export default function CreateForms() {
   const navigate = useNavigate();

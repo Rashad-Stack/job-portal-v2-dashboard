@@ -1,10 +1,10 @@
 // import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
-import { getJobFormById, updateJobForm } from "../../api/axios/job-form";
 import { getAllCategories } from "../../api/category";
 import CustomSelect from "../../components/input/CustomSelect";
 import { useEffect, useState } from "react";
+import { updateJobForm } from "../../api/job-form";
 
 export default function EditForms() {
   const { id } = useParams();

@@ -1,4 +1,4 @@
-import axiosInstance from ".";
+import axiosInstance from "./axios";
 
 // Get all job forms
 export const getAllJobForms = async () => {
