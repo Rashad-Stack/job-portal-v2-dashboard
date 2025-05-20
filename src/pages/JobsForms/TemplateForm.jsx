@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useForm, Controller } from "react-hook-form";
-import { createJob } from "../../api/jobs";
-import { getJobFormById } from "../../api/axios/job-form";
-import { getAllCategories } from "../../api/axios/category";
 import TextEditor from "../../components/common/TextEditor";
 import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
 import CustomSelect from "../../components/input/CustomSelect";
+import { createJobForm, getJobFormById } from "../../api/job-form";
+import { getAllCategories } from "../../api/category";
 
 const TemplateForm = () => {
   const { id: templateId } = useParams();
@@ -278,7 +277,7 @@ const TemplateForm = () => {
         responsibilities: [],
       };
 
-      const response = await createJob(jobData);
+      const response = await createJobForm(jobData);
       console.log("Job created successfully:", response);
       navigate("/jobs/read");
     } catch (err) {

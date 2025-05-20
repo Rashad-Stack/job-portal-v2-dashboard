@@ -1,10 +1,10 @@
 // import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
-import { getJobFormById, updateJobForm } from "../../api/axios/job-form";
 import { getAllCategories } from "../../api/category";
 import CustomSelect from "../../components/input/CustomSelect";
 import { useEffect, useState } from "react";
+import { updateJobForm } from "../../api/job-form";
 
 export default function EditForms() {
   const { id } = useParams();
@@ -157,7 +157,6 @@ export default function EditForms() {
       className:
         "w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500",
       ...register(`fields.${index}.value`, {
-        required: field.required ? `${field.title} is required` : false,
         valueAsNumber: field.type === "number",
       }),
     };
@@ -191,11 +190,7 @@ export default function EditForms() {
                     type="radio"
                     id={`radio-${index}-${optIndex}`}
                     value={option.value}
-                    {...register(`fields.${index}.value`, {
-                      required: field.required
-                        ? `${field.title} is required`
-                        : false,
-                    })}
+                    {...register(`fields.${index}.value`)}
                     className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
                   />
                   <label
@@ -217,18 +212,6 @@ export default function EditForms() {
               value: option.value,
             }))}
             disabledOption={`Select ${field.title}`}
-            register={register}
-          />
-        );
-      case "jobCategory":
-        return (
-          <CustomSelect
-            {...commonProps}
-            options={categories?.data?.map((category) => ({
-              label: category.name,
-              value: category.id,
-            }))}
-            disabledOption="Select Job Category"
             register={register}
           />
         );
@@ -486,7 +469,7 @@ export default function EditForms() {
               {fields.length > 0 && (
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                  className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 cursor-pointer transition-all duration-300"
                 >
                   Update Form
                 </button>

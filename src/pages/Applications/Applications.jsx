@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { getAllApplications } from "../../api/axios/applications";
-import Swal from "sweetalert2";
-import { MdDelete } from "react-icons/md";
-
+import ApplicationCard from "../../components/applications/applicationCard";
+import { getAllApplications } from "../../api/applications";
 
 export default function Applications() {
   const [applications, setApplications] = useState([]);
