@@ -8,6 +8,7 @@ import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
 import SelectInput from "../../components/input/SelectInput";
 import { getJobFormById } from "../../api/axios/job-form";
+import Loading from "../../components/loader/Loading";
 
 const JobCreate = () => {
   const navigate = useNavigate();
@@ -257,6 +258,8 @@ const JobCreate = () => {
         return null;
     }
   };
+
+  if(templateLoading) return <Loading />
 
   return (
     <div className="min-h-screen bg-gray-50/60 py-8 px-4 sm:px-0">
