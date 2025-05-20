@@ -1,26 +1,15 @@
-const API_BASE_URL = "http://localhost:3000/api/v2/status";
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("svaAuth");
-  if (!token) {
-    throw new Error("Authentication token not found. Please log in again.");
-  }
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-};
+import axiosInstance from "./axios";
+
+// const API_BASE_URL = "http://localhost:3000/api/v2/status";
+
 // Get all Status
 export const getAllStatus = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/all`, {
-      method: "GET",
-      headers: getAuthHeaders(),
-      credentials: "include",
-    });
-    if (!response.ok) {
+    const response = await axiosInstance.get(`/status/all`);
+    if (response.status !== 200) {
       throw new Error("Failed to fetch status");
     }
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error fetching status:", error);
     throw error;
@@ -29,11 +18,11 @@ export const getAllStatus = async () => {
 // Get job by Status
 export const getStatusId = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/${id}`);
-    if (!response.ok) {
+    const response = await axiosInstance.get(`/status/${id}`);
+    if (response.status !== 200) {
       throw new Error("Failed to fetch Status");
     }
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error fetching Status:", error);
     throw error;
@@ -46,23 +35,15 @@ export const createStatus = async (statusData) => {
       ...statusData,
     };
 
-    const response = await fetch(`${API_BASE_URL}/create`, {
-      method: "POST",
-      headers: {
-        ...getAuthHeaders(),
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify(transformedData),
-    });
+    const response = await axiosInstance.post(`/status/create`, transformedData);
 
-    if (!response.ok) {
+    if (response.status !== 201) {
       const errorData = await response.json();
       console.error("Backend error message:", errorData);
       throw new Error(errorData.message || "Failed to create job");
     }
 
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error creating job (catch block):", error);
     throw error;
@@ -71,22 +52,14 @@ export const createStatus = async (statusData) => {
 // Update Status
 export const updateStatus = async ({ id, name }) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/update`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeaders(),
-      },
-      credentials: "include",
-      body: JSON.stringify({ id, name }),
-    });
+    const response = await axiosInstance.put(`/status/update`, { id, name });
 
-    if (!response.ok) {
+    if (response.status !== 200) {
       const errorData = await response.json();
       throw new Error(errorData.message || "Failed to update Status");
     }
 
-    return await response.json();
+    return response.data;
   } catch (error) {
     console.error("Error updating status:", error);
     throw error;
@@ -96,22 +69,14 @@ export const updateStatus = async ({ id, name }) => {
 // Delete Status
 export const deleteStatus = async (id) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/delete`, {
-      method: "DELETE",
-      headers: {
-        ...getAuthHeaders(),
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({ id }),
-    });
+    const response = await axiosInstance.delete(`/status/delete`, { id });
 
-    if (!response.ok) {
-      const errorData = await response.json();
+    if (response.status !== 200) {
+      const errorData = await response.data;
       throw new Error(errorData.message || "Failed to delete Status");
     }
 
-    return await response.json();
+    return response.json();
   } catch (error) {
     console.error("Error deleting status:", error);
     throw error;

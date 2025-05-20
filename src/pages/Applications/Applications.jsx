@@ -1,30 +1,26 @@
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
-import { deleteJob, getAllJobs } from "../../api/jobs";
-import JobsTable from "../../components/jobs/JobsTable";
+import { getAllApplications } from "../../api/axios/applications";
+import ApplicationCard from "../../components/applications/applicationCard";
 
-const AllJobs = () => {
-  const [jobs, setJobs] = useState([]);
+export default function Applications() {
+  const [applications, setApplications] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchJobs();
+    (async () => {
+      try {
+        const { data } = await getAllApplications();
+        setApplications(data);
+      } catch (err) {
+        console.error("Failed to fetch jobs:", err.message);
+        setError("Failed to fetch applications. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
-  const fetchJobs = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      const { data } = await getAllJobs();
-      setJobs(data || []);
-    } catch (err) {
-      console.error("Failed to fetch jobs:", err.message);
-      setError("Failed to fetch jobs. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
   const handleDelete = async (id) => {
     try {
       const result = await Swal.fire({
@@ -38,8 +34,8 @@ const AllJobs = () => {
       });
 
       if (result.isConfirmed) {
-        await deleteJob(id);
-        setJobs((prevJobs) => prevJobs.filter((job) => job._id !== id));
+        // await deleteJob(id);
+        // setJobs((prevJobs) => prevJobs.filter((job) => job._id !== id));
 
         window.location.reload();
       }
@@ -59,7 +55,7 @@ const AllJobs = () => {
         <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-2xl overflow-hidden">
           <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#009e0b]">
             <h1 className="text-2xl md:text-3xl font-bold text-white">
-              All Job Posts
+              All Job Applications
             </h1>
           </div>
 
@@ -71,13 +67,13 @@ const AllJobs = () => {
             )}
 
             <div className="grid gap-6">
-              {jobs.length > 0 ? (
-                [...jobs]
+              {applications.length > 0 ? (
+                [...applications]
                   .reverse()
-                  .map((job, index) => (
-                    <JobsTable
-                      key={job.id}
-                      job={job}
+                  .map((application, index) => (
+                    <ApplicationCard
+                      key={application.id}
+                      application={application}
                       index={index}
                       handleDelete={handleDelete}
                     />
@@ -93,6 +89,4 @@ const AllJobs = () => {
       </div>
     </div>
   );
-};
-
-export default AllJobs;
+}

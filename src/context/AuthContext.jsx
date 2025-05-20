@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { login as loginAPI } from '../api/auth.js';
+import { jwtDecode } from "jwt-decode";
+import { createContext, useContext, useEffect, useState } from "react";
+import { login as loginAPI } from "../api/auth.js";
 
 const AuthContext = createContext();
 
@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // 🔄 Load token from localStorage on app load
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       try {
         const decoded = jwtDecode(token);
@@ -20,8 +20,8 @@ export const AuthProvider = ({ children }) => {
           role: decoded.role,
         });
       } catch (err) {
-        console.error('Invalid token', err);
-        localStorage.removeItem('token');
+        console.error("Invalid token", err);
+        localStorage.removeItem("token");
       }
     }
   }, []);
@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     await logoutAPI();
     setUser(null);
   };

@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { getAllCategories } from "../../api/category";
 import { createJob } from "../../api/jobs";
-import axios from "axios";
+import TextEditor from "../../components/common/TextEditor";
 import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
 import SelectInput from "../../components/input/SelectInput";
+import { getJobFormById } from "../../api/axios/job-form";
 
 const JobCreate = () => {
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     title: "",
     companyName: "",
@@ -21,6 +24,9 @@ const JobCreate = () => {
     jobNature: "ONSITE",
     shift: "DAY",
     deadline: "",
+    description: "",
+    minSalary: "",
+    maxSalary: "",
   });
 
   const [error, setError] = useState("");
@@ -35,10 +41,8 @@ const JobCreate = () => {
     try {
       setLoading(true);
       setError("");
-      const { data } = await axios.get(
-        "http://localhost:3000/api/v2/category/all"
-      );
-      setCategory(data.data || []);
+      const { data } = await getAllCategories();
+      setCategory(data || []);
     } catch (err) {
       console.error("Failed to fetch Categories:", err.message);
       setError("Failed to fetch Categories. Please try again later.");
@@ -85,6 +89,9 @@ const JobCreate = () => {
         "jobNature",
         "shift",
         "deadline",
+        "description",
+        "minSalary",
+        "maxSalary",
       ];
       if (formData.appliedBy === false) {
         requiredFields.push("googleForm");
@@ -111,11 +118,7 @@ const JobCreate = () => {
       navigate("/jobs/read");
     } catch (error) {
       console.error("Error creating job:", error);
-      if (error.message.includes("Authentication token not found")) {
-        navigate("/login", { state: { from: "/jobs/create" } });
-      } else {
-        setError(error.message || "Failed to create job");
-      }
+      setError(error.message || "Failed to create job");
     } finally {
       setLoading(false);
     }
@@ -143,6 +146,7 @@ const JobCreate = () => {
               <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
                 Basic Information
               </h2>
+              {/* Job Title */}
               <div>
                 <InputField
                   label="Job Title *"
@@ -154,6 +158,7 @@ const JobCreate = () => {
                   placeholder="Enter Job Title"
                 />
               </div>
+              {/* Company Name */}
               <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2   gap-4">
                 <div>
                   <InputField
@@ -311,13 +316,43 @@ const JobCreate = () => {
                 </div>
               </div>
             </section>
+
             <section className="space-y-4">
-              <div>
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-3">
                 <InputField
                   label="Application Deadline"
                   type="date"
                   name="deadline"
                   value={formData.deadline}
+                  onChange={handleChange}
+                />
+
+                <InputField
+                  label="Minimum Salary"
+                  type="number"
+                  name="minSalary"
+                  value={formData.minSalary}
+                  onChange={handleChange}
+                />
+
+                <InputField
+                  label="Maximum Salary"
+                  type="number"
+                  name="maxSalary"
+                  value={formData.maxSalary}
+                  onChange={handleChange}
+                />
+              </div>
+            </section>
+
+            <section className="space-y-4">
+              <div>
+                <InputLabel labelTitle={{ title: "Job Description" }} />
+                <TextEditor
+                  tab="write"
+                  label="Job Description"
+                  name="description"
+                  value={formData.description}
                   onChange={handleChange}
                 />
               </div>
