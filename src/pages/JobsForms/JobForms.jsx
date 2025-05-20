@@ -72,10 +72,10 @@ export default function JobForms() {
                   {form.formTitle}
                 </span>
               </div>
-
+  
               <div className="flex gap-2">
                 <Button label="Use" variant="success" onClick={() => {
-                  navigate(`/jobs/create/template/${form?.id}`);
+                  navigate(`/jobs/create?templateId=${form?.id}`);
                 }} />
                 <Link to={`/jobs/forms/edit/${form.id}`}>
                   <Button label="Edit" variant="primary" />

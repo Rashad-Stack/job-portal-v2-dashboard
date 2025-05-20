@@ -144,15 +144,8 @@ export default function CreateForms() {
               type="text"
               className={baseClasses}
               placeholder={`Enter ${field.title}`}
-              {...register(`fields[${index}].value`, {
-                required: field.required ? `${field.title} is required` : false,
-              })}
+              {...register(`fields[${index}].value`)}
             />
-            {errors.fields?.[index]?.value && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.fields[index].value.message}
-              </p>
-            )}
           </div>
         );
       case "number":
@@ -165,16 +158,8 @@ export default function CreateForms() {
               type="number"
               className={baseClasses}
               placeholder={`Enter ${field.title}`}
-              {...register(`fields[${index}].value`, {
-                required: field.required ? `${field.title} is required` : false,
-                valueAsNumber: true,
-              })}
+              {...register(`fields[${index}].value`)}
             />
-            {errors.fields?.[index]?.value && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.fields[index].value.message}
-              </p>
-            )}
           </div>
         );
       case "date":
@@ -186,15 +171,8 @@ export default function CreateForms() {
             <input
               type="date"
               className={baseClasses}
-              {...register(`fields[${index}].value`, {
-                required: field.required ? `${field.title} is required` : false,
-              })}
+              {...register(`fields[${index}].value`)}
             />
-            {errors.fields?.[index]?.value && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.fields[index].value.message}
-              </p>
-            )}
           </div>
         );
       case "radio":
@@ -211,11 +189,7 @@ export default function CreateForms() {
                     id={`radio-${index}-${optIndex}`}
                     value={option.value}
                     className="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300"
-                    {...register(`fields[${index}].value`, {
-                      required: field.required
-                        ? `${field.title} is required`
-                        : false,
-                    })}
+                    {...register(`fields[${index}].value`,)}
                   />
                   <label
                     htmlFor={`radio-${index}-${optIndex}`}
@@ -226,11 +200,6 @@ export default function CreateForms() {
                 </div>
               ))}
             </div>
-            {errors.fields?.[index]?.value && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.fields[index].value.message}
-              </p>
-            )}
           </div>
         );
       case "select":
@@ -241,9 +210,7 @@ export default function CreateForms() {
             </label>
             <select
               className={baseClasses}
-              {...register(`fields[${index}].value`, {
-                required: field.required ? `${field.title} is required` : false,
-              })}
+              {...register(`fields[${index}].value`)}
             >
               <option value="">Select {field.title}</option>
               {field.options.map((option, optIndex) => (
@@ -252,38 +219,6 @@ export default function CreateForms() {
                 </option>
               ))}
             </select>
-            {errors.fields?.[index]?.value && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.fields[index].value.message}
-              </p>
-            )}
-          </div>
-        );
-      case "jobCategory":
-        return (
-          <div>
-            <label className={labelClasses}>
-              {field.title} {field.required && "*"}
-            </label>
-            <select
-              className={baseClasses}
-              {...register(`fields[${index}].value`, {
-                required: field.required ? `${field.title} is required` : false,
-              })}
-            >
-              <option value="">Select Job Category</option>
-              {categories?.data?.length > 0 &&
-                categories.data.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-            </select>
-            {errors.fields?.[index]?.value && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.fields[index].value.message}
-              </p>
-            )}
           </div>
         );
       default:
@@ -394,7 +329,7 @@ export default function CreateForms() {
         <div className="fixed inset-0 bg-gray-600/50 flex items-center justify-center z-50 shadow-2xl">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4">Add New Field</h3>
-            <form onSubmit={handleSubmit(handleAddField)} className="space-y-4">
+            <form className="space-y-4">
               {/* Field Name */}
               <div>
                 <label
@@ -536,7 +471,8 @@ export default function CreateForms() {
                   Cancel
                 </button>
                 <button
-                  type="submit"
+                  onClick={handleAddField}
+                  type="button"
                   className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:bg-gradient-to-l hover:from-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-800/50 cursor-pointer transition-all duration-300"
                 >
                   Add Field
