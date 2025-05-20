@@ -32,7 +32,7 @@ const JobCreate = () => {
       title: "",
       companyName: "",
       numberOfHiring: "",
-      appliedByInternal: false,
+      appliedByInternal: "false", 
       location: "",
       googleForm: "",
       jobType: "FULL_TIME",
@@ -44,11 +44,12 @@ const JobCreate = () => {
       description: "",
       minSalary: "",
       maxSalary: "",
-      fields: [], // For template fields
+      fields: [],
     },
   });
 
   const appliedByInternal = watch("appliedByInternal");
+  console.log("appliedByInternal", appliedByInternal);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -62,11 +63,10 @@ const JobCreate = () => {
         try {
           setTemplateLoading(true);
           setError("");
-
           const { data } = await getJobFormById(templateId);
           console.log("template data", data);
           setTemplateData(data);
-          setValue("appliedByInternal", "true");
+          setValue("appliedByInternal", "true", { shouldValidate: true });
         } catch (err) {
           console.error("Failed to fetch Template:", err.message);
           setError("Failed to fetch Template. Please try again later.");
@@ -132,6 +132,10 @@ const JobCreate = () => {
         dataToSend.maxSalary = Number(dataToSend.maxSalary);
       }
 
+      // Convert appliedByInternal to boolean for API
+      dataToSend.appliedByInternal = data.appliedByInternal === "true";
+
+      console.log("dataToSend", dataToSend);
       await createJob(dataToSend);
       navigate("/jobs/read");
     } catch (error) {
@@ -259,7 +263,7 @@ const JobCreate = () => {
     }
   };
 
-  if(templateLoading) return <Loading />
+  if (templateLoading) return <Loading />;
 
   return (
     <div className="min-h-screen bg-gray-50/60 py-8 px-4 sm:px-0">
@@ -353,23 +357,7 @@ const JobCreate = () => {
                       </p>
                     )}
 
-                    {!appliedByInternal && (
-                      <div>
-                        <InputField
-                          label="Google Form URL"
-                          type="text"
-                          {...register("googleForm", {
-                            required:
-                              "Google Form URL is required for external applications",
-                          })}
-                          error={errors.googleForm?.message}
-                          placeholder="Enter Google Form URL"
-                        />
-                      </div>
-                    )}
-
-                    {/* Template Fields */}
-                    {appliedByInternal && (
+                    {appliedByInternal === "true" ? (
                       <div className="grid grid-cols-12 gap-4">
                         {templateData.fields?.map((field, index) => (
                           <div
@@ -379,6 +367,21 @@ const JobCreate = () => {
                             {renderField(field, index)}
                           </div>
                         ))}
+                      </div>
+                    ) : (
+                      <div>
+                        <InputField
+                          label="Google Form URL"
+                          type="text"
+                          {...register("googleForm", {
+                            required:
+                              appliedByInternal === "false"
+                                ? "Google Form URL is required for external applications"
+                                : false,
+                          })}
+                          error={errors.googleForm?.message}
+                          placeholder="Enter Google Form URL"
+                        />
                       </div>
                     )}
                   </div>
