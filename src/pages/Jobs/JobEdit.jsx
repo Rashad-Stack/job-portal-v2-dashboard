@@ -8,7 +8,7 @@ import InputLabel from "../../components/input/InputLabel";
 import CustomSelect from "../../components/input/CustomSelect";
 import Loading from "../../components/loader/Loading";
 import { getJobById, updateJob } from "../../api/jobs";
-import { getJobFormById } from "../../api/axios/job-form";
+import { getJobFormById } from "../../api/job-form";
 
 const JobEdit = () => {
   const navigate = useNavigate();
