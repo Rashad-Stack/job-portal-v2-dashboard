@@ -55,6 +55,7 @@ export default function Router() {
           <Route path="/job-index/category" element={<Category />} />
         </Route>
         <Route path="/login" element={<Login />} />
+        <Route path="jobs/applications/:jobId" element={<Applications />} />
       </Routes>
     </BrowserRouter>
   );
