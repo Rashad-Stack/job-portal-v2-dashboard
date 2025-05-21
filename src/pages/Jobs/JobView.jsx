@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { getCategoryById } from "../../api/category";
 import { getJobById } from "../../api/jobs";
+import Loading from "../../components/loader/Loading";
 
 const formatInputDate = (date) => {
   if (!date || date === "1970-11-03T00:00:00.000Z") return "";
@@ -31,6 +32,7 @@ export default function JobView() {
         setJobLoading(true);
         setError("");
         const { data } = await getJobById(id);
+        console.log("job data", data);
         setJob(data);
         setCategoryId(data.categoryId);
       } catch (err) {
@@ -64,16 +66,12 @@ export default function JobView() {
     fetchMyCategory();
   }, [categoryId]);
 
-  // if (!jobLoading || !categoryLoading) {
-  //   return <div className="text-center p-6 text-gray-500">Loading...</div>;
-  // }
+  if (jobLoading) {
+    return <Loading/>;
+  }
 
   if (error) {
     return <div className="text-center p-6 text-red-600">{error}</div>;
-  }
-
-  if (!job) {
-    return <div className="text-center p-6 text-gray-500">Job not found</div>;
   }
 
   const {
@@ -131,11 +129,7 @@ export default function JobView() {
         </p>
         <p className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
           <span className="font-semibold text-gray-800">Applied By:</span>{" "}
-          {appliedBy !== undefined
-            ? appliedBy
-              ? "Internal"
-              : "External"
-            : "N/A"}
+          {job.appliedByInternal ? "Internal" : "External"}
         </p>
         <p className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
           <span className="font-semibold text-gray-800">Shift:</span>{" "}

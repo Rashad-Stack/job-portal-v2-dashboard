@@ -1,149 +1,305 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router";
-import { getAllCategories } from "../../api/category.js";
+import { useParams, useNavigate } from "react-router";
+import { useForm, Controller } from "react-hook-form";
+import { getAllCategories } from "../../api/category";
+import TextEditor from "../../components/common/TextEditor";
+import InputField from "../../components/input/InputField";
+import InputLabel from "../../components/input/InputLabel";
+import CustomSelect from "../../components/input/CustomSelect";
+import Loading from "../../components/loader/Loading";
 import { getJobById, updateJob } from "../../api/jobs";
-import TextEditor from "../../components/common/TextEditor.jsx";
-import InputField from "../../components/input/InputField.jsx";
-import InputLabel from "../../components/input/InputLabel.jsx";
-import SelectInput from "../../components/input/SelectInput.jsx";
-
-const formatInputDate = (date) => {
-  if (!date || date === "1970-11-03T00:00:00.000Z") return "";
-  const parsedDate = new Date(date);
-  if (isNaN(parsedDate.getTime())) return "";
-  const year = parsedDate.getFullYear();
-  const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
-  const day = String(parsedDate.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
+import { getJobFormById } from "../../api/axios/job-form";
 
 const JobEdit = () => {
-  const { id } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
-  const [myCategory, setMyCategory] = useState([]);
+  const { id } = useParams();
 
-  const [formData, setFormData] = useState({
-    title: "",
-    companyName: "",
-    numberOfHiring: "",
-    categoryId: "",
-    appliedBy: false,
-    location: "",
-    jobType: "FULL_TIME",
-    jobLevel: "MID_LEVEL",
-    category: "",
-    jobNature: "ONSITE",
-    shift: "DAY",
-    deadline: "",
-    googleForm: "",
-    description: "",
-    minSalary: "",
-    maxSalary: "",
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    control,
+    watch,
+    reset,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      title: "",
+      companyName: "",
+      numberOfHiring: "",
+      appliedByInternal: "false",
+      location: "",
+      googleForm: "",
+      jobType: "FULL_TIME",
+      categoryId: "",
+      jobLevel: "MID_LEVEL",
+      jobNature: "ONSITE",
+      shift: "DAY",
+      deadline: "",
+      description: "",
+      minSalary: "",
+      maxSalary: "",
+      fields: [],
+    },
   });
 
+  const appliedByInternal = watch("appliedByInternal");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState([]);
+  const [templateData, setTemplateData] = useState({});
+  const [templateLoading, setTemplateLoading] = useState(false);
+  const [jobLoading, setJobLoading] = useState(false);
+
+  // Fetch job data by ID
   useEffect(() => {
     const fetchJob = async () => {
       try {
-        setLoading(true);
+        setJobLoading(true);
+        setError("");
         const { data } = await getJobById(id);
-        setFormData({
-          ...data,
-          appliedBy: !!data.appliedBy,
+        console.log("job data", data);
+
+        // Pre-populate form with job data
+        reset({
+          title: data.title || "",
+          companyName: data.companyName || "",
+          numberOfHiring: data.numberOfHiring || "",
+          appliedByInternal: data.appliedByInternal ? "true" : "false",
+          location: data.location || "",
+          googleForm: data.googleForm || "",
+          jobType: data.jobType || "FULL_TIME",
+          categoryId: data.categoryId || "",
+          jobLevel: data.jobLevel || "MID_LEVEL",
+          jobNature: data.jobNature || "ONSITE",
+          shift: data.shift || "DAY",
+          deadline: data.deadline ? data.deadline.split("T")[0] : "", // Format date for input
+          description: data.description || "",
+          minSalary: data.minSalary || "",
+          maxSalary: data.maxSalary || "",
+          fields: data.fields
+            ? Object.entries(data.fields).map(([key, value]) => ({ value })) // Transform fields object to array
+            : [],
         });
+
+        // If job uses internal application, fetch template data
+        if (data.appliedByInternal && data.templateId) {
+          setTemplateLoading(true);
+          const { data: template } = await getJobFormById(data.templateId);
+          setTemplateData(template);
+          setTemplateLoading(false);
+        }
       } catch (err) {
         console.error("Failed to fetch job:", err.message);
         setError("Failed to fetch job. Please try again later.");
+      } finally {
+        setJobLoading(false);
+      }
+    };
+
+    fetchJob();
+  }, [id, reset]);
+
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const { data } = await getAllCategories();
+        setCategory(data || []);
+      } catch (err) {
+        console.error("Failed to fetch Categories:", err.message);
+        setError("Failed to fetch Categories. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchJob();
-  }, [id]);
-  useEffect(() => {
     fetchCategories();
   }, []);
 
-  const fetchCategories = async () => {
+  const onSubmit = async (data) => {
+    setError("");
+    setLoading(true);
+
     try {
-      setLoading(true);
-      setError("");
-      const { data } = await getAllCategories();
-      setMyCategory(data);
-    } catch (err) {
-      console.error("Failed to fetch Categories:", err.message);
-      setError("Failed to fetch Categories. Please try again later.");
+      const dataToSend = { ...data };
+
+      // Transform fields array into an object with title as key and value as value
+      if (data.fields && templateData.fields) {
+        dataToSend.fields = templateData.fields.reduce((acc, field, index) => {
+          const fieldValue = data.fields[index]?.value || "";
+          if (field.title) {
+            acc[field.title.toLowerCase()] = fieldValue;
+          }
+          return acc;
+        }, {});
+      } else {
+        dataToSend.fields = {};
+      }
+
+      if (!dataToSend.companyName || dataToSend.companyName.trim() === "") {
+        delete dataToSend.companyName;
+      }
+
+      // Convert numberOfHiring, minSalary, and maxSalary to numbers if they exist
+      if (dataToSend.numberOfHiring) {
+        dataToSend.numberOfHiring = Number(dataToSend.numberOfHiring);
+      }
+      if (dataToSend.minSalary) {
+        dataToSend.minSalary = Number(dataToSend.minSalary);
+      }
+      if (dataToSend.maxSalary) {
+        dataToSend.maxSalary = Number(dataToSend.maxSalary);
+      }
+
+      // Convert appliedByInternal to boolean for API
+      dataToSend.appliedByInternal = data.appliedByInternal === "true";
+
+      console.log("dataToSend", dataToSend);
+      await updateJob(id, dataToSend); // Update job with ID
+      navigate("/jobs/read");
+    } catch (error) {
+      console.error("Error updating job:", error);
+      setError(error.message || "Failed to update job");
     } finally {
       setLoading(false);
     }
   };
-  const sanitizeData = () => {
-    const sanitized = { ...formData };
-    sanitized.title = formData.title.trim();
-    return sanitized;
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError("");
+  const renderField = (field, index) => {
+    console.log("field", field)
+    const commonProps = {
+      key: field.id || index,
+      name: `fields.${index}.value`,
+      required: field.required,
+    };
 
-    const cleanedFormData = sanitizeData();
-
-    try {
-      await updateJob(id, cleanedFormData);
-      navigate("/jobs/read");
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to update job");
-    } finally {
-      setIsSubmitting(false);
+    switch (field.type) {
+      case "text":
+        return (
+          <InputField
+            {...commonProps}
+            label={field.title}
+            type="text"
+            placeholder={`Enter ${field.title}`}
+            {...register(`fields.${index}.value`, {
+              required: field.required ? `${field.title} is required` : false,
+            })}
+            error={errors.fields?.[index]?.value?.message}
+          />
+        );
+      case "number":
+        return (
+          <InputField
+            {...commonProps}
+            label={field.title}
+            type="number"
+            placeholder={`Enter ${field.title}`}
+            {...register(`fields.${index}.value`, {
+              required: field.required ? `${field.title} is required` : false,
+              valueAsNumber: true,
+            })}
+            error={errors.fields?.[index]?.value?.message}
+          />
+        );
+      case "date":
+        return (
+          <InputField
+            {...commonProps}
+            label={field.title}
+            type="date"
+            {...register(`fields.${index}.value`, {
+              required: field.required ? `${field.title} is required` : false,
+            })}
+            error={errors.fields?.[index]?.value?.message}
+          />
+        );
+      case "radio":
+        return (
+          <div>
+            <InputLabel labelTitle={{ title: field.title }} />
+            <div className="flex gap-4">
+              {field.options?.map((option, optIndex) => (
+                <div key={optIndex} className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    id={`radio-${index}-${optIndex}`}
+                    value={option.value}
+                    {...register(`fields.${index}.value`, {
+                      required: field.required
+                        ? `${field.title} is required`
+                        : false,
+                    })}
+                    className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
+                  />
+                  <label
+                    htmlFor={`radio-${index}-${optIndex}`}
+                    className="text-gray-700 text-sm"
+                  >
+                    {option.label}
+                  </label>
+                </div>
+              ))}
+            </div>
+            {errors.fields?.[index]?.value && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.fields[index].value.message}
+              </p>
+            )}
+          </div>
+        );
+      case "select":
+        return (
+          <div>
+            <label htmlFor={`fields.${index}.value`}>{field.title}</label>
+            <Controller
+              name={`fields.${index}.value`}
+              control={control}
+              rules={{
+                required: field.required ? `${field.title} is required` : false,
+              }}
+              render={({ field: { onChange, value } }) => (
+                <CustomSelect
+                  id={`fields.${index}.value`}
+                  name={`fields.${index}.value`}
+                  value={value || ""}
+                  onChange={onChange}
+                  options={field.options.map((opt) => ({
+                    label: opt.label,
+                    value: opt.value,
+                  }))}
+                  disabledOption={`Select ${field.title}`}
+                />
+              )}
+            />
+            {errors.fields?.[index]?.value && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.fields[index].value.message}
+              </p>
+            )}
+          </div>
+        );
+      default:
+        return null;
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value, type } = e.target;
-
-    if (name === "appliedBy") {
-      setFormData((prev) => ({
-        ...prev,
-        appliedBy: value === "true",
-      }));
-    } else if (name === "companyName") {
-      setFormData((prev) => ({
-        ...prev,
-        companyName: value.trimStart(),
-      }));
-    } else if (type === "number") {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value === "" ? "" : Number(value),
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  };
-
-  if (loading) {
-    return <div className="text-center p-4">Loading...</div>;
-  }
+  if (jobLoading || templateLoading) return <Loading />;
 
   return (
-    <div className="min-h-screen bg-gray-50/60 dark:bg-gray-900 py-8 px-4">
+    <div className="min-h-screen bg-gray-50/60 py-8 px-4 sm:px-0">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm">
-          <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#008f0a]">
+        <div className="bg-white border bottom-1 border-slate-200 rounded-2xl overflow-hidden">
+          <div className="p-6 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c]">
             <h1 className="text-2xl md:text-3xl font-bold text-white text-center">
-              Update Job Post
+              Edit Job Post
             </h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
             {error && (
               <div className="p-4 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300">
                 {error}
@@ -151,80 +307,104 @@ const JobEdit = () => {
             )}
 
             {/* Basic Information */}
-            <section className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 pb-2 border-b dark:border-gray-700">
+            <section className="space-y-4 text-left">
+              <h2 className="text-xl font-semibold text-gray-800 pb-2 border-b">
                 Basic Information
               </h2>
+              {/* Job Title */}
               <div>
-                <InputLabel labelTitle={{ title: "Job Title *" }} />
                 <InputField
+                  label="Job Title *"
                   type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  className="..."
-                  required
-                  placeholder="Job Title"
+                  {...register("title", { required: "Job Title is required" })}
+                  error={errors.title?.message}
+                  placeholder="Enter Job Title"
                 />
               </div>
-              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-                <InputField
-                  label="Company Name"
-                  type="text"
-                  name="companyName"
-                  value={formData.companyName}
-                  onChange={handleChange}
-                  required
-                  placeholder="Company Name"
-                />
 
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                <div>
+                  <InputField
+                    label="Company Name"
+                    type="text"
+                    {...register("companyName")}
+                    placeholder="Company Name"
+                  />
+                </div>
                 <div>
                   <InputField
                     label="Number of Hiring"
                     type="number"
-                    name="numberOfHiring"
-                    value={formData.numberOfHiring}
-                    onChange={handleChange}
+                    {...register("numberOfHiring", {
+                      required: "Number of Hiring is required",
+                      valueAsNumber: true,
+                    })}
+                    error={errors.numberOfHiring?.message}
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00ab0c] focus:border-[#2d9134]"
                   />
                 </div>
                 <div className="md:col-span-2">
                   <InputLabel labelTitle={{ title: "Applied By" }} />
                   <div className="space-y-4">
+                    {/* Application Method Radio Buttons */}
                     <div className="flex flex-wrap gap-6">
                       <label className="flex items-center">
-                        <InputField
+                        <input
                           type="radio"
-                          name="appliedBy"
                           value="true"
-                          checked={formData.appliedBy === true}
-                          onChange={handleChange}
+                          {...register("appliedByInternal", {
+                            required: "Please select an application method",
+                          })}
+                          className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
                         />
                         <span className="ml-2 text-gray-700 dark:text-gray-300">
                           Internal
                         </span>
                       </label>
                       <label className="flex items-center">
-                        <InputField
+                        <input
                           type="radio"
-                          name="appliedBy"
                           value="false"
-                          checked={formData.appliedBy === false}
-                          onChange={handleChange}
+                          {...register("appliedByInternal", {
+                            required: "Please select an application method",
+                          })}
+                          className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
                         />
                         <span className="ml-2 text-gray-700 dark:text-gray-300">
                           External
                         </span>
                       </label>
                     </div>
+                    {errors.appliedByInternal && (
+                      <p className="text-red-500 text-xs mt-1">
+                        {errors.appliedByInternal.message}
+                      </p>
+                    )}
 
-                    {formData.appliedBy === false && (
+                    {appliedByInternal === "true" ? (
+                      <div className="grid grid-cols-12 gap-4">
+                        {templateData.fields?.map((field, index) => (
+                          <div
+                            key={index}
+                            style={{ gridColumn: `span ${field.column}` }}
+                          >
+                            {renderField(field, index)}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
                       <div>
                         <InputField
                           label="Google Form URL"
                           type="text"
-                          name="googleForm"
-                          value={formData.googleForm}
-                          onChange={handleChange}
+                          {...register("googleForm", {
+                            required:
+                              appliedByInternal === "false"
+                                ? "Google Form URL is required for external applications"
+                                : false,
+                          })}
+                          error={errors.googleForm?.message}
+                          placeholder="Enter Google Form URL"
                         />
                       </div>
                     )}
@@ -235,41 +415,107 @@ const JobEdit = () => {
 
             <section className="space-y-4">
               <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
-                <SelectInput
+                <Controller
                   name="jobNature"
-                  label="Job Nature"
-                  value={formData.jobNature}
-                  onChange={handleChange}
-                  options={[
-                    { value: "ONSITE", label: "On Site" },
-                    { value: "REMOTE", label: "Remote" },
-                  ]}
+                  control={control}
+                  rules={{ required: "Job Nature is required" }}
+                  render={({ field: { onChange, value } }) => (
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="jobNature"
+                        className="block text-sm font-medium text-gray-700 text-start"
+                      >
+                        Job Nature
+                      </label>
+                      <CustomSelect
+                        id="jobNature"
+                        name="jobNature"
+                        value={value}
+                        onChange={onChange}
+                        options={[
+                          { value: "ONSITE", label: "On Site" },
+                          { value: "REMOTE", label: "Remote" },
+                        ]}
+                        disabledOption="Select Job Nature"
+                        className={errors.jobNature ? "border-red-500" : ""}
+                      />
+                      {errors.jobNature && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.jobNature.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 />
 
-                <SelectInput
+                <Controller
                   name="jobLevel"
-                  label="Job Level"
-                  value={formData.jobLevel}
-                  onChange={handleChange}
-                  options={[
-                    { value: "ENTRY_LEVEL", label: "Entry Level" },
-                    { value: "MID_LEVEL", label: "Mid Level" },
-                    { value: "ADVANCED_LEVEL", label: "Advanced Level" },
-                    { value: "INTERNSHIP", label: "Intern" },
-                  ]}
+                  control={control}
+                  rules={{ required: "Job Level is required" }}
+                  render={({ field: { onChange, value } }) => (
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="jobLevel"
+                        className="block text-start text-sm font-medium text-gray-700"
+                      >
+                        Job Level
+                      </label>
+                      <CustomSelect
+                        id="jobLevel"
+                        name="jobLevel"
+                        value={value}
+                        onChange={onChange}
+                        options={[
+                          { value: "ENTRY_LEVEL", label: "Entry Level" },
+                          { value: "MID_LEVEL", label: "Mid Level" },
+                          { value: "ADVANCED_LEVEL", label: "Advanced Level" },
+                          { value: "INTERNSHIP", label: "Intern" },
+                        ]}
+                        disabledOption="Select Job Level"
+                        className={errors.jobLevel ? "border-red-500" : ""}
+                      />
+                      {errors.jobLevel && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.jobLevel.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 />
 
-                <SelectInput
+                <Controller
                   name="jobType"
-                  label="Job Type"
-                  value={formData.jobType}
-                  onChange={handleChange}
-                  options={[
-                    { value: "FULL_TIME", label: "Full Time" },
-                    { value: "PART_TIME", label: "Part Time" },
-                    { value: "CONTRACT", label: "Contract" },
-                    { value: "INTERNSHIP", label: "Intern" },
-                  ]}
+                  control={control}
+                  rules={{ required: "Job Type is required" }}
+                  render={({ field: { onChange, value } }) => (
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="jobType"
+                        className="block text-start text-sm font-medium text-gray-700"
+                      >
+                        Job Type
+                      </label>
+                      <CustomSelect
+                        id="jobType"
+                        name="jobType"
+                        value={value}
+                        onChange={onChange}
+                        options={[
+                          { value: "FULL_TIME", label: "Full Time" },
+                          { value: "PART_TIME", label: "Part Time" },
+                          { value: "CONTRACT", label: "Contract" },
+                          { value: "INTERNSHIP", label: "Intern" },
+                        ]}
+                        disabledOption="Select Job Type"
+                        className={errors.jobType ? "border-red-500" : ""}
+                      />
+                      {errors.jobType && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.jobType.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 />
               </div>
             </section>
@@ -277,49 +523,83 @@ const JobEdit = () => {
             <section className="space-y-4">
               <div className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
                 <div>
-                  <div>
-                    <SelectInput
-                      name="categoryId"
-                      label="Job Category"
-                      value={formData.categoryId}
-                      onChange={handleChange}
-                      options={myCategory.map((item) => ({
-                        value: item.id,
-                        label: item.name,
-                      }))}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <SelectInput
-                      name="shift"
-                      label="Shift"
-                      value={formData.shift}
-                      onChange={handleChange}
-                      options={[
-                        { value: "DAY", label: "Day" },
-                        { value: "EVENING", label: "Evening" },
-                        { value: "NIGHT", label: "Night" },
-                      ]}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <section className="space-y-4">
-                      <div>
-                        <InputField
-                          label="Location*"
-                          type="text"
-                          name="location"
-                          value={formData.location}
-                          onChange={handleChange}
-                          required
+                  <Controller
+                    name="categoryId"
+                    control={control}
+                    rules={{ required: "Job Category is required" }}
+                    render={({ field: { onChange, value } }) => (
+                      <div className="space-y-1">
+                        <label
+                          htmlFor="categoryId"
+                          className="block text-start text-sm font-medium text-gray-700"
+                        >
+                          Job Category
+                        </label>
+                        <CustomSelect
+                          id="categoryId"
+                          name="categoryId"
+                          value={value}
+                          onChange={onChange}
+                          options={category.map((item) => ({
+                            value: item.id,
+                            label: item.name,
+                          }))}
+                          disabledOption="Select Job Category"
+                          className={errors.categoryId ? "border-red-500" : ""}
                         />
+                        {errors.categoryId && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.categoryId.message}
+                          </p>
+                        )}
                       </div>
-                    </section>
-                  </div>
+                    )}
+                  />
+                </div>
+                <div>
+                  <Controller
+                    name="shift"
+                    control={control}
+                    rules={{ required: "Shift is required" }}
+                    render={({ field: { onChange, value } }) => (
+                      <div className="space-y-1">
+                        <label
+                          htmlFor="shift"
+                          className="block text-start text-sm font-medium text-gray-700"
+                        >
+                          Shift
+                        </label>
+                        <CustomSelect
+                          id="shift"
+                          name="shift"
+                          value={value}
+                          onChange={onChange}
+                          options={[
+                            { value: "DAY", label: "Day" },
+                            { value: "EVENING", label: "Evening" },
+                            { value: "NIGHT", label: "Night" },
+                          ]}
+                          disabledOption="Select Shift"
+                          className={errors.shift ? "border-red-500" : ""}
+                        />
+                        {errors.shift && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.shift.message}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  />
+                </div>
+                <div>
+                  <InputField
+                    label="Location*"
+                    type="text"
+                    {...register("location", {
+                      required: "Location is required",
+                    })}
+                    error={errors.location?.message}
+                  />
                 </div>
               </div>
             </section>
@@ -329,24 +609,30 @@ const JobEdit = () => {
                 <InputField
                   label="Application Deadline"
                   type="date"
-                  name="deadline"
-                  value={formatInputDate(formData.deadline)}
-                  onChange={handleChange}
+                  {...register("deadline", {
+                    required: "Application Deadline is required",
+                  })}
+                  error={errors.deadline?.message}
                 />
 
                 <InputField
                   label="Minimum Salary"
                   type="number"
-                  name="minSalary"
-                  value={formData.minSalary}
-                  onChange={handleChange}
+                  {...register("minSalary", {
+                    required: "Minimum Salary is required",
+                    valueAsNumber: true,
+                  })}
+                  error={errors.minSalary?.message}
                 />
+
                 <InputField
                   label="Maximum Salary"
                   type="number"
-                  name="maxSalary"
-                  value={formData.maxSalary}
-                  onChange={handleChange}
+                  {...register("maxSalary", {
+                    required: "Maximum Salary is required",
+                    valueAsNumber: true,
+                  })}
+                  error={errors.maxSalary?.message}
                 />
               </div>
             </section>
@@ -354,21 +640,35 @@ const JobEdit = () => {
             <section className="space-y-4">
               <div>
                 <InputLabel labelTitle={{ title: "Job Description" }} />
-                <TextEditor
-                  tab="preview"
-                  label="Job Description"
+                <Controller
                   name="description"
-                  value={formData.description}
-                  onChange={handleChange}
+                  control={control}
+                  rules={{ required: "Job Description is required" }}
+                  render={({ field: { onChange, value } }) => (
+                    <TextEditor
+                      tab="write"
+                      label="Job Description"
+                      name="description"
+                      value={value}
+                      onChange={onChange}
+                    />
+                  )}
                 />
+                {errors.description && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.description.message}
+                  </p>
+                )}
               </div>
             </section>
 
             <div className="pt-6">
               <button
                 type="submit"
-                className="w-full py-3 px-4 bg-gradient-to-r from-[#00ab0c] to-[#00ab0c] text-white font-medium rounded-lg hover:from-[#008f0a] hover:to-[#007a09] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00ab0c] transition-all duration-300 shadow-sm">
-                Update Job
+                disabled={loading}
+                className="w-full py-3 px-4 bg-gradient-to-r from-[#2d9134] to-[#2d9134] text-white font-medium rounded-lg hover:from-[#2d9134] hover:to-[#126918] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 disabled:opacity-50 cursor-pointer"
+              >
+                {loading ? "Updating..." : "Update Job Post"}
               </button>
             </div>
           </form>
