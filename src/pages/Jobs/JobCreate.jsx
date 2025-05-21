@@ -9,6 +9,7 @@ import Loading from "../../components/loader/Loading";
 import CustomSelect from "../../components/input/CustomSelect";
 import { createJob } from "../../api/jobs";
 import { getJobFormById } from "../../api/job-form";
+import { getAllCategories } from "../../api/category";
 
 const JobCreate = () => {
   const navigate = useNavigate();
