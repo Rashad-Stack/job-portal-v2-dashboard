@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, set } from "react-hook-form";
 import TextEditor from "../../components/common/TextEditor";
 import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
@@ -8,7 +8,7 @@ import SelectInput from "../../components/input/SelectInput";
 import Loading from "../../components/loader/Loading";
 import CustomSelect from "../../components/input/CustomSelect";
 import { createJob } from "../../api/jobs";
-import { getJobFormById } from "../../api/job-form";
+import { getAllJobForms, getJobFormById } from "../../api/job-form";
 import { getAllCategories } from "../../api/category";
 
 const JobCreate = () => {
@@ -27,6 +27,7 @@ const JobCreate = () => {
     control,
     watch,
     setValue,
+    getValues,
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -46,16 +47,39 @@ const JobCreate = () => {
       minSalary: "",
       maxSalary: "",
       fields: [],
+      templateId: "",
     },
   });
 
   const appliedByInternal = watch("appliedByInternal");
+  const templateIdWatch = watch("templateId");
+  console.log("templateIdWatch", templateIdWatch);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState([]);
   const [templateData, setTemplateData] = useState({});
+  const [allTemplates, setAllTemplates] = useState([]);
   const [templateLoading, setTemplateLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchAllTemplate = async () => {
+      try {
+        setTemplateLoading(true);
+        setError("");
+        const { data } = await getAllJobForms();
+        console.log("all templates", data);
+        setAllTemplates(data);
+      } catch (err) {
+        console.error("Failed to fetch Template:", err.message);
+        setError("Failed to fetch Template. Please try again later.");
+      } finally {
+        setTemplateLoading(false);
+      }
+    };
+
+    fetchAllTemplate();
+  }, []);
 
   useEffect(() => {
     const fetchTemplate = async () => {
@@ -64,7 +88,6 @@ const JobCreate = () => {
           setTemplateLoading(true);
           setError("");
           const { data } = await getJobFormById(templateId);
-          console.log("template data", data);
           setTemplateData(data);
           setValue("appliedByInternal", "true", { shouldValidate: true });
         } catch (err) {
@@ -131,8 +154,8 @@ const JobCreate = () => {
         dataToSend.maxSalary = Number(dataToSend.maxSalary);
       }
 
-      dataToSend.appliedByInternal = data.appliedByInternal === "true"; 
-      dataToSend.templateId = templateId; 
+      dataToSend.appliedByInternal = data.appliedByInternal === "true";
+      dataToSend.templateId = templateId;
       console.log("dataToSend", dataToSend);
 
       await createJob(dataToSend);
@@ -302,7 +325,9 @@ const JobCreate = () => {
                   <InputField
                     label="Company Name"
                     type="text"
-                    {...register("companyName")}
+                    {...register("companyName", {
+                      required: "Compony Name is required",
+                    })}
                     placeholder="Company Name"
                   />
                 </div>
@@ -355,6 +380,48 @@ const JobCreate = () => {
                         {errors.appliedByInternal.message}
                       </p>
                     )}
+
+                    {/* Template Forms Dropdown */}
+                    {appliedByInternal === "true" && (
+                      <Controller
+                        name="templateId"
+                        control={control}
+                        rules={{ required: "Template is required" }}
+                        render={({ field: { onChange, value } }) => (
+                          <CustomSelect
+                            id="templateId"
+                            name="templateId"
+                            value={value}
+                            onChange={onChange}
+                            label="Select Template"
+                            options={
+                              allTemplates &&
+                              allTemplates.map((template) => ({
+                                value: template?.id,
+                                label: template?.formTitle,
+                              }))
+                            }
+                            disabledOption="Select Template"
+                            error={errors.templateId?.message}
+                          />
+                        )}
+                      />
+                    )}
+
+                    {/* Conditional Fields */}
+                    {appliedByInternal === "true" &&
+                      templateIdWatch && (
+                        <div className="grid grid-cols-12 gap-4">
+                          {allTemplates.map((template) => template.id === templateIdWatch).fields?.map((field, index) => (
+                            <div
+                              key={index}
+                              style={{ gridColumn: `span ${field.column}` }}
+                            >
+                              {renderField(field, index)}
+                            </div>
+                          ))}
+                        </div>
+                     )}
 
                     {appliedByInternal === "true" ? (
                       <div className="grid grid-cols-12 gap-4">

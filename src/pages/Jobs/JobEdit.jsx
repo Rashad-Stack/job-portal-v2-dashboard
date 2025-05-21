@@ -326,7 +326,7 @@ const JobEdit = () => {
                   <InputField
                     label="Company Name"
                     type="text"
-                    {...register("companyName")}
+                    {...register("companyName", { required: "Compony Name is required" })}
                     placeholder="Company Name"
                   />
                 </div>

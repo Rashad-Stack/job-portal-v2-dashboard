@@ -1,24 +1,33 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import { data, Link, useNavigate } from "react-router";
 import Button from "../../components/button/Button";
 import AlertDialog from "../../components/common/AlertDialog";
 import { deleteJobForm, getAllJobForms } from "../../api/job-form";
 import { getAllJobs } from "../../api/jobs";
+import Loading from "../../components/loader/Loading";
+import { set } from "react-hook-form";
 
 export default function JobForms() {
   const [jobForms, setJobForms] = useState({});
-  const [jobs, setJobs] = useState([]); // State to store job data
+  const [jobs, setJobs] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const [formIdToDelete, setFormIdToDelete] = useState(null);
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(false);
+  const [templateLoading, setTemplateLoading] = useState(false);
+
   useEffect(() => {
     const fetchJobForms = async () => {
       try {
+        setTemplateLoading(true);
         const data = await getAllJobForms();
         setJobForms(data);
       } catch (error) {
         console.error("Failed to fetch job forms:", error);
+        setJobForms({data: []});
+      } finally{
+        setTemplateLoading(false);
       }
     };
     fetchJobForms();
@@ -27,10 +36,14 @@ export default function JobForms() {
   useEffect(() => {
     const fetchAllJobs = async () => {
       try {
+        setLoading(true);
         const { data } = await getAllJobs();
         setJobs(data); 
       } catch (error) {
         console.error("Failed to fetch jobs:", error);
+        setJobs([]);
+      } finally {
+        setLoading(false);
       }
     };
     fetchAllJobs();
@@ -66,6 +79,8 @@ export default function JobForms() {
     setShowDialog(false);
     setFormIdToDelete(null);
   };
+
+  if(loading || templateLoading) return <Loading/>;
 
   return (
     <div className="min-h-screen py-8 px-4">

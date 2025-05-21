@@ -1,6 +1,7 @@
 import InputLabel from "./InputLabel";
 
 const SelectInput = ({ name, label, value, onChange, options }) => {
+  console.log("options", options);
   return (
     <div>
       <InputLabel labelTitle={{ title: label }} />
