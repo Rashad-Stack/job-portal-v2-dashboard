@@ -132,7 +132,7 @@ const JobCreate = () => {
       }
 
       dataToSend.appliedByInternal = data.appliedByInternal === "true"; 
-      // dataToSend.templateId = templateId; 
+      dataToSend.templateId = templateId; 
       console.log("dataToSend", dataToSend);
 
       await createJob(dataToSend);

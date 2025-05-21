@@ -305,7 +305,7 @@ export default function CreateForms() {
                 <div className="mt-6">
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50"
+                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 cursor-pointer transition-all duration-300"
                   >
                     Save This Template
                   </button>
