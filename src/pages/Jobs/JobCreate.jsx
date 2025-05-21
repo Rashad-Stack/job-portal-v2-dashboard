@@ -7,7 +7,7 @@ import InputLabel from "../../components/input/InputLabel";
 import SelectInput from "../../components/input/SelectInput";
 import Loading from "../../components/loader/Loading";
 import CustomSelect from "../../components/input/CustomSelect";
-import { createJob } from "../../api/jobs";
+import { createJob, getAllJobs } from "../../api/jobs";
 import { getAllJobForms, getJobFormById } from "../../api/job-form";
 import { getAllCategories } from "../../api/category";
 
@@ -27,7 +27,6 @@ const JobCreate = () => {
     control,
     watch,
     setValue,
-    getValues,
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -53,15 +52,17 @@ const JobCreate = () => {
 
   const appliedByInternal = watch("appliedByInternal");
   const templateIdWatch = watch("templateId");
-  console.log("templateIdWatch", templateIdWatch);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [templateLoading, setTemplateLoading] = useState(false);
+
   const [category, setCategory] = useState([]);
   const [templateData, setTemplateData] = useState({});
   const [allTemplates, setAllTemplates] = useState([]);
-  const [templateLoading, setTemplateLoading] = useState(false);
+  const [jobs, setJobs] = useState([]);
 
+  // Fetch all template forms
   useEffect(() => {
     const fetchAllTemplate = async () => {
       try {
@@ -81,6 +82,7 @@ const JobCreate = () => {
     fetchAllTemplate();
   }, []);
 
+  // Fetch template data by ID
   useEffect(() => {
     const fetchTemplate = async () => {
       if (templateId) {
@@ -102,6 +104,7 @@ const JobCreate = () => {
     fetchTemplate();
   }, [templateId, setValue]);
 
+  // Fetch all categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -120,6 +123,28 @@ const JobCreate = () => {
     fetchCategories();
   }, []);
 
+  // fetch all jobs
+  useEffect(() => {
+    const fetchAllJobs = async () => {
+      try {
+        setLoading(true);
+        const { data } = await getAllJobs();
+        setJobs(data);
+      } catch (error) {
+        console.error("Failed to fetch jobs:", error);
+        setJobs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAllJobs();
+  }, []);
+
+  // Function to check if a template form is expired
+  const isFormExpired = (formId) => {
+    return jobs.some((job) => job.templateId === formId);
+  };
+
   const onSubmit = async (data) => {
     setError("");
     setLoading(true);
@@ -127,7 +152,7 @@ const JobCreate = () => {
     try {
       const dataToSend = { ...data };
 
-      // Transform fields array into an object with title as key and value as value
+      // prepare fields data conditionally
       if (data.fields && templateData.fields) {
         dataToSend.fields = templateData.fields.reduce((acc, field, index) => {
           const fieldValue = data.fields[index]?.value || "";
@@ -136,8 +161,20 @@ const JobCreate = () => {
           }
           return acc;
         }, {});
-      } else {
+      } else if (appliedByInternal === "false") {
         dataToSend.fields = {};
+      } else {
+        dataToSend.fields = allTemplates.reduce((acc, template) => {
+          if (template.id === templateIdWatch) {
+            template.fields.forEach((field, index) => {
+              const fieldValue = data.fields[index]?.value || "";
+              if (field.title) {
+                acc[field.title.toLowerCase()] = fieldValue;
+              }
+            });
+          }
+          return acc;
+        }, {});
       }
 
       if (!dataToSend.companyName || dataToSend.companyName.trim() === "") {
@@ -155,7 +192,7 @@ const JobCreate = () => {
       }
 
       dataToSend.appliedByInternal = data.appliedByInternal === "true";
-      dataToSend.templateId = templateId;
+      dataToSend.templateId = templateId || data.templateId;
       console.log("dataToSend", dataToSend);
 
       await createJob(dataToSend);
@@ -396,10 +433,16 @@ const JobCreate = () => {
                             label="Select Template"
                             options={
                               allTemplates &&
-                              allTemplates.map((template) => ({
-                                value: template?.id,
-                                label: template?.formTitle,
-                              }))
+                              allTemplates.map((template) => {
+                                const isExpired = isFormExpired(template?.id);
+                                if (isExpired) {
+                                  return null;
+                                }
+                                return {
+                                  value: template?.id,
+                                  label: template?.formTitle,
+                                };
+                              })
                             }
                             disabledOption="Select Template"
                             error={errors.templateId?.message}
@@ -409,10 +452,11 @@ const JobCreate = () => {
                     )}
 
                     {/* Conditional Fields */}
-                    {appliedByInternal === "true" &&
-                      templateIdWatch && (
-                        <div className="grid grid-cols-12 gap-4">
-                          {allTemplates.map((template) => template.id === templateIdWatch).fields?.map((field, index) => (
+                    {appliedByInternal === "true" && templateIdWatch && (
+                      <div className="grid grid-cols-12 gap-4">
+                        {allTemplates
+                          .find((template) => template.id === templateIdWatch)
+                          .fields?.map((field, index) => (
                             <div
                               key={index}
                               style={{ gridColumn: `span ${field.column}` }}
@@ -420,8 +464,8 @@ const JobCreate = () => {
                               {renderField(field, index)}
                             </div>
                           ))}
-                        </div>
-                     )}
+                      </div>
+                    )}
 
                     {appliedByInternal === "true" ? (
                       <div className="grid grid-cols-12 gap-4">

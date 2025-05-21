@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { data, Link, useNavigate } from "react-router";
+import {  Link, useNavigate } from "react-router";
 import Button from "../../components/button/Button";
 import AlertDialog from "../../components/common/AlertDialog";
 import { deleteJobForm, getAllJobForms } from "../../api/job-form";
 import { getAllJobs } from "../../api/jobs";
 import Loading from "../../components/loader/Loading";
-import { set } from "react-hook-form";
 
 export default function JobForms() {
   const [jobForms, setJobForms] = useState({});

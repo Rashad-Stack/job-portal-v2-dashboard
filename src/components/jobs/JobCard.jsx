@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { BiCategoryAlt } from "react-icons/bi";
 import { FaBriefcase, FaMapMarkerAlt, FaUsers } from "react-icons/fa";
 import { GiClick } from "react-icons/gi";
