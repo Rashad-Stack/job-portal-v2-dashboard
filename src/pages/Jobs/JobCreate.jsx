@@ -9,6 +9,7 @@ import InputLabel from "../../components/input/InputLabel";
 import SelectInput from "../../components/input/SelectInput";
 import { getJobFormById } from "../../api/axios/job-form";
 import Loading from "../../components/loader/Loading";
+import CustomSelect from "../../components/input/CustomSelect";
 
 const JobCreate = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const JobCreate = () => {
       title: "",
       companyName: "",
       numberOfHiring: "",
-      appliedByInternal: "false", 
+      appliedByInternal: "false",
       location: "",
       googleForm: "",
       jobType: "FULL_TIME",
@@ -49,7 +50,6 @@ const JobCreate = () => {
   });
 
   const appliedByInternal = watch("appliedByInternal");
-  console.log("appliedByInternal", appliedByInternal);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -230,7 +230,7 @@ const JobCreate = () => {
       case "select":
         return (
           <div>
-            <InputLabel labelTitle={{ title: field.title }} />
+            <label htmlFor={`fields.${index}.value`}>{field.title}</label>
             <Controller
               name={`fields.${index}.value`}
               control={control}
@@ -238,7 +238,7 @@ const JobCreate = () => {
                 required: field.required ? `${field.title} is required` : false,
               }}
               render={({ field: { onChange, value } }) => (
-                <SelectInput
+                <CustomSelect
                   id={`fields.${index}.value`}
                   name={`fields.${index}.value`}
                   value={value || ""}
@@ -396,17 +396,31 @@ const JobCreate = () => {
                   control={control}
                   rules={{ required: "Job Nature is required" }}
                   render={({ field: { onChange, value } }) => (
-                    <SelectInput
-                      name="jobNature"
-                      label="Job Nature"
-                      value={value}
-                      onChange={onChange}
-                      options={[
-                        { value: "ONSITE", label: "On Site" },
-                        { value: "REMOTE", label: "Remote" },
-                      ]}
-                      error={errors.jobNature?.message}
-                    />
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="jobNature"
+                        className="block text-sm font-medium text-gray-700 text-start"
+                      >
+                        Job Nature
+                      </label>
+                      <CustomSelect
+                        id="jobNature"
+                        name="jobNature"
+                        value={value}
+                        onChange={onChange}
+                        options={[
+                          { value: "ONSITE", label: "On Site" },
+                          { value: "REMOTE", label: "Remote" },
+                        ]}
+                        disabledOption="Select Job Nature"
+                        className={errors.jobNature ? "border-red-500" : ""}
+                      />
+                      {errors.jobNature && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.jobNature.message}
+                        </p>
+                      )}
+                    </div>
                   )}
                 />
 
@@ -415,19 +429,33 @@ const JobCreate = () => {
                   control={control}
                   rules={{ required: "Job Level is required" }}
                   render={({ field: { onChange, value } }) => (
-                    <SelectInput
-                      name="jobLevel"
-                      label="Job Level"
-                      value={value}
-                      onChange={onChange}
-                      options={[
-                        { value: "ENTRY_LEVEL", label: "Entry Level" },
-                        { value: "MID_LEVEL", label: "Mid Level" },
-                        { value: "ADVANCED_LEVEL", label: "Advanced Level" },
-                        { value: "INTERNSHIP", label: "Intern" },
-                      ]}
-                      error={errors.jobLevel?.message}
-                    />
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="jobLevel"
+                        className="block text-start text-sm font-medium text-gray-700"
+                      >
+                        Job Level
+                      </label>
+                      <CustomSelect
+                        id="jobLevel"
+                        name="jobLevel"
+                        value={value}
+                        onChange={onChange}
+                        options={[
+                          { value: "ENTRY_LEVEL", label: "Entry Level" },
+                          { value: "MID_LEVEL", label: "Mid Level" },
+                          { value: "ADVANCED_LEVEL", label: "Advanced Level" },
+                          { value: "INTERNSHIP", label: "Intern" },
+                        ]}
+                        disabledOption="Select Job Level"
+                        className={errors.jobLevel ? "border-red-500" : ""}
+                      />
+                      {errors.jobLevel && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.jobLevel.message}
+                        </p>
+                      )}
+                    </div>
                   )}
                 />
 
@@ -436,19 +464,33 @@ const JobCreate = () => {
                   control={control}
                   rules={{ required: "Job Type is required" }}
                   render={({ field: { onChange, value } }) => (
-                    <SelectInput
-                      name="jobType"
-                      label="Job Type"
-                      value={value}
-                      onChange={onChange}
-                      options={[
-                        { value: "FULL_TIME", label: "Full Time" },
-                        { value: "PART_TIME", label: "Part Time" },
-                        { value: "CONTRACT", label: "Contract" },
-                        { value: "INTERNSHIP", label: "Intern" },
-                      ]}
-                      error={errors.jobType?.message}
-                    />
+                    <div className="space-y-1">
+                      <label
+                        htmlFor="jobType"
+                        className="block text-start text-sm font-medium text-gray-700"
+                      >
+                        Job Type
+                      </label>
+                      <CustomSelect
+                        id="jobType"
+                        name="jobType"
+                        value={value}
+                        onChange={onChange}
+                        options={[
+                          { value: "FULL_TIME", label: "Full Time" },
+                          { value: "PART_TIME", label: "Part Time" },
+                          { value: "CONTRACT", label: "Contract" },
+                          { value: "INTERNSHIP", label: "Intern" },
+                        ]}
+                        disabledOption="Select Job Type"
+                        className={errors.jobType ? "border-red-500" : ""}
+                      />
+                      {errors.jobType && (
+                        <p className="text-red-500 text-xs mt-1">
+                          {errors.jobType.message}
+                        </p>
+                      )}
+                    </div>
                   )}
                 />
               </div>
@@ -462,17 +504,31 @@ const JobCreate = () => {
                     control={control}
                     rules={{ required: "Job Category is required" }}
                     render={({ field: { onChange, value } }) => (
-                      <SelectInput
-                        name="categoryId"
-                        label="Job Category"
-                        value={value}
-                        onChange={onChange}
-                        options={category.map((item) => ({
-                          value: item.id,
-                          label: item.name,
-                        }))}
-                        error={errors.categoryId?.message}
-                      />
+                      <div className="space-y-1">
+                        <label
+                          htmlFor="categoryId"
+                          className="block text-start text-sm font-medium text-gray-700"
+                        >
+                          Job Category
+                        </label>
+                        <CustomSelect
+                          id="categoryId"
+                          name="categoryId"
+                          value={value}
+                          onChange={onChange}
+                          options={category.map((item) => ({
+                            value: item.id,
+                            label: item.name,
+                          }))}
+                          disabledOption="Select Job Category"
+                          className={errors.categoryId ? "border-red-500" : ""}
+                        />
+                        {errors.categoryId && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.categoryId.message}
+                          </p>
+                        )}
+                      </div>
                     )}
                   />
                 </div>
@@ -482,18 +538,32 @@ const JobCreate = () => {
                     control={control}
                     rules={{ required: "Shift is required" }}
                     render={({ field: { onChange, value } }) => (
-                      <SelectInput
-                        name="shift"
-                        label="Shift"
-                        value={value}
-                        onChange={onChange}
-                        options={[
-                          { value: "DAY", label: "Day" },
-                          { value: "EVENING", label: "Evening" },
-                          { value: "NIGHT", label: "Night" },
-                        ]}
-                        error={errors.shift?.message}
-                      />
+                      <div className="space-y-1">
+                        <label
+                          htmlFor="shift"
+                          className="block text-start text-sm font-medium text-gray-700"
+                        >
+                          Shift
+                        </label>
+                        <CustomSelect
+                          id="shift"
+                          name="shift"
+                          value={value}
+                          onChange={onChange}
+                          options={[
+                            { value: "DAY", label: "Day" },
+                            { value: "EVENING", label: "Evening" },
+                            { value: "NIGHT", label: "Night" },
+                          ]}
+                          disabledOption="Select Shift"
+                          className={errors.shift ? "border-red-500" : ""}
+                        />
+                        {errors.shift && (
+                          <p className="text-red-500 text-xs mt-1">
+                            {errors.shift.message}
+                          </p>
+                        )}
+                      </div>
                     )}
                   />
                 </div>

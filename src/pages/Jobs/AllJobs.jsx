@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { deleteJob, getAllJobs } from "../../api/jobs";
-import JobsTable from "../../components/jobs/JobsTable";
+import JobCard from "../../components/jobs/JobCard";
+import Loading from "../../components/loader/Loading";
 
 const AllJobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -50,7 +51,7 @@ const AllJobs = () => {
   };
 
   if (loading) {
-    return <div className="text-center p-4">Loading...</div>;
+    return <Loading/>;
   }
 
   return (
@@ -75,7 +76,7 @@ const AllJobs = () => {
                 [...jobs]
                   .reverse()
                   .map((job, index) => (
-                    <JobsTable
+                    <JobCard
                       key={job.id}
                       job={job}
                       index={index}
