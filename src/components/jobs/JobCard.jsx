@@ -9,7 +9,6 @@ const formatDate = (date) => {
 };
 
 export default function JobCard({ job, handleDelete }) {
-  console.log("job", job);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">

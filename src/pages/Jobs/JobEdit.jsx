@@ -12,7 +12,7 @@ import { getJobFormById } from "../../api/axios/job-form";
 
 const JobEdit = () => {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get job ID from URL params
+  const { id } = useParams();
 
   const {
     register,
@@ -170,6 +170,7 @@ const JobEdit = () => {
   };
 
   const renderField = (field, index) => {
+    console.log("field", field)
     const commonProps = {
       key: field.id || index,
       name: `fields.${index}.value`,

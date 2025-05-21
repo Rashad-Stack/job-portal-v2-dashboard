@@ -121,7 +121,6 @@ const JobCreate = () => {
         delete dataToSend.companyName;
       }
 
-      // Convert numberOfHiring, minSalary, and maxSalary to numbers if they exist
       if (dataToSend.numberOfHiring) {
         dataToSend.numberOfHiring = Number(dataToSend.numberOfHiring);
       }
@@ -132,10 +131,10 @@ const JobCreate = () => {
         dataToSend.maxSalary = Number(dataToSend.maxSalary);
       }
 
-      // Convert appliedByInternal to boolean for API
-      dataToSend.appliedByInternal = data.appliedByInternal === "true";
-
+      dataToSend.appliedByInternal = data.appliedByInternal === "true"; 
+      // dataToSend.templateId = templateId; 
       console.log("dataToSend", dataToSend);
+
       await createJob(dataToSend);
       navigate("/jobs/read");
     } catch (error) {
