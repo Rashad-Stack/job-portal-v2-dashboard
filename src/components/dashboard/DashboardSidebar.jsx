@@ -39,6 +39,7 @@ function DashboardSidebar({ toggleSidebar }) {
     if (token) {
       try {
         const decoded = jwtDecode(token);
+        console.log("Decoded token:", decoded);
         setUserInfo(decoded);
         if (decoded.role === "ADMIN") {
           setShowSignUp(true);
@@ -55,7 +56,8 @@ function DashboardSidebar({ toggleSidebar }) {
           <li>
             <Link
               to="/"
-              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700 group"
+            >
               <MdOutlineDashboard />
               <span className="ms-3">Dashboard</span>
             </Link>
@@ -64,7 +66,8 @@ function DashboardSidebar({ toggleSidebar }) {
           <li>
             <Link
               to="/jobs/applications"
-              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700 group"
+            >
               <FaWpforms />
               <span className="ms-3">Applications</span>
             </Link>
@@ -73,7 +76,8 @@ function DashboardSidebar({ toggleSidebar }) {
           <li>
             <button
               onClick={toggleJobIndex}
-              className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 group"
+            >
               <CiViewTable />
               <span className="ms-3">Job Index</span>
             </button>
@@ -83,7 +87,8 @@ function DashboardSidebar({ toggleSidebar }) {
           <li className="">
             <button
               className="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              onClick={toggleJobs}>
+              onClick={toggleJobs}
+            >
               <MdWorkOutline />
               <span className="ms-3">Jobs</span>
             </button>
@@ -98,7 +103,8 @@ function DashboardSidebar({ toggleSidebar }) {
           <li>
             <Link
               to="/jobs/forms"
-              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white cursor-pointer  hover:bg-gray-100 dark:hover:bg-gray-700 group"
+            >
               <AiOutlineForm />
               <span className="ms-3">Forms</span>
             </Link>

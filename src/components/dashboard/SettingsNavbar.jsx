@@ -15,7 +15,7 @@ export default function SettingsNavbar({ toggleSidebar }) {
 
   return (
     <nav>
-      <ul className="pl-6 mt-2 space-y-2">
+      <ul className="pl-2 mt-2 space-y-2">
         <li>
           <Link
             to="/moderator/register"
@@ -23,7 +23,7 @@ export default function SettingsNavbar({ toggleSidebar }) {
             onClick={handleOnClick}
           >
             <AiOutlineForm />
-            <span className="ms-3">Create Moderator</span>
+            <span className="text-sm">Create Moderator</span>
           </Link>
         </li>
 
@@ -34,7 +34,7 @@ export default function SettingsNavbar({ toggleSidebar }) {
             onClick={handleOnClick}
           >
             <FaUsersCog />
-            <span className="ms-3">Manage Moderators</span>
+            <span className="text-sm">Manage Moderators</span>
           </Link>
         </li>
       </ul>

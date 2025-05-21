@@ -33,6 +33,7 @@ export default function JobCard({ job, handleDelete }) {
                 <BiCategoryAlt className="text-indigo-500 dark:text-indigo-400" />
                 <span>{job?.category?.name}</span>
               </div>
+              {/* Template fields */}
               <div className="w-full flex gap-2 items-center">
                 <GiClick className="text-indigo-500 dark:text-indigo-400" />
                 <span>

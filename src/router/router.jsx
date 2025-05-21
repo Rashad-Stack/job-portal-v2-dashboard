@@ -31,7 +31,8 @@ export default function Router() {
             <PrivateRoute>
               <DashboardLayout />
             </PrivateRoute>
-          }>
+          }
+        >
           <Route index element={<Home />} />
           <Route path="dashboard" element={<Navigate to="/" replace />} />
           <Route path="jobs/applications" element={<Applications />} />
@@ -47,13 +48,14 @@ export default function Router() {
           <Route path="/jobs/forms" element={<JobForms />} />
           <Route path="/jobs/create/template/:id" element={<TemplateForm />} />
           <Route path="/jobs/forms/create" element={<CreateForms />} />
-          <Route path="/jobs/forms/edit/:id" element={<EditForms/>} />
+          <Route path="/jobs/forms/edit/:id" element={<EditForms />} />
           <Route path="setting/manage_moderator" element={<Moderators />} />
           <Route path="moderator/register" element={<Register />} />
           <Route path="/job-index/status" element={<Status />} />
           <Route path="/job-index/manage" element={<Manage />} />
           <Route path="/job-index/category" element={<Category />} />
         </Route>
+        
         <Route path="/login" element={<Login />} />
         <Route path="jobs/applications/:jobId" element={<Applications />} />
       </Routes>
