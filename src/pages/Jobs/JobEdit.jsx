@@ -170,7 +170,6 @@ const JobEdit = () => {
   };
 
   const renderField = (field, index) => {
-    console.log("field", field)
     const commonProps = {
       key: field.id || index,
       name: `fields.${index}.value`,

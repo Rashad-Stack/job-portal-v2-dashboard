@@ -3,9 +3,11 @@ import { Link, useNavigate } from "react-router";
 import Button from "../../components/button/Button";
 import AlertDialog from "../../components/common/AlertDialog";
 import { deleteJobForm, getAllJobForms } from "../../api/job-form";
+import { getAllJobs } from "../../api/jobs";
 
 export default function JobForms() {
   const [jobForms, setJobForms] = useState({});
+  const [jobs, setJobs] = useState([]); // State to store job data
   const [showDialog, setShowDialog] = useState(false);
   const [formIdToDelete, setFormIdToDelete] = useState(null);
   const navigate = useNavigate();
@@ -21,6 +23,23 @@ export default function JobForms() {
     };
     fetchJobForms();
   }, []);
+
+  useEffect(() => {
+    const fetchAllJobs = async () => {
+      try {
+        const { data } = await getAllJobs();
+        setJobs(data); 
+      } catch (error) {
+        console.error("Failed to fetch jobs:", error);
+      }
+    };
+    fetchAllJobs();
+  }, []);
+
+  // Function to check if a form is expired
+  const isFormExpired = (formId) => {
+    return jobs.some((job) => job.templateId === formId);
+  };
 
   const handleDelete = async () => {
     try {
@@ -52,7 +71,7 @@ export default function JobForms() {
     <div className="min-h-screen py-8 px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-center text-2xl font-semibold text-gray-800 dark:text-gray-100 pt-4">
-          All Forms
+          All Template Forms
         </h1>
 
         <div className="flex justify-end my-6 w-full">
@@ -62,32 +81,54 @@ export default function JobForms() {
         </div>
 
         {jobForms?.data && jobForms?.data.length > 0 ? (
-          jobForms?.data.map((form) => (
-            <div
-              key={form.id}
-              className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 mt-4 rounded-lg border border-gray-200 dark:border-gray-700"
-            >
-              <div className="flex flex-col sm:ml-6 mt-3 sm:mt-0">
-                <span className="text-lg text-left font-semibold text-gray-800 dark:text-white">
-                  {form.formTitle}
-                </span>
+          jobForms?.data.map((form) => {
+            const isExpired = isFormExpired(form.id); 
+            return (
+              <div
+                key={form.id}
+                className={`relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 mt-4 rounded-lg border ${
+                  isExpired
+                    ? "border-red-300 dark:border-red-700 opacity-75"
+                    : "border-gray-200 dark:border-gray-700"
+                }`}
+              >
+                <div className="flex flex-col sm:ml-6 mt-3 sm:mt-0">
+                  <span className="text-lg text-left font-semibold text-gray-800 dark:text-white">
+                    {form.formTitle}
+                    {isExpired && (
+                      <span className="ml-2 text-sm text-red-500 dark:text-red-400">
+                        (Expired)
+                      </span>
+                    )}
+                  </span>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    label="Use"
+                    variant="success"
+                    onClick={() => {
+                      navigate(`/jobs/create?templateId=${form?.id}`);
+                    }}
+                    disabled={isExpired} 
+                  />
+                  <Link to={`/jobs/forms/edit/${form.id}`}>
+                    <Button
+                      label="Edit"
+                      variant="primary"
+                      disabled={isExpired} 
+                    />
+                  </Link>
+                  <Button
+                    label="Delete"
+                    variant="danger"
+                    onClick={() => openDeleteDialog(form.id)}
+                    disabled={isExpired} 
+                  />
+                </div>
               </div>
-  
-              <div className="flex gap-2">
-                <Button label="Use" variant="success" onClick={() => {
-                  navigate(`/jobs/create?templateId=${form?.id}`);
-                }} />
-                <Link to={`/jobs/forms/edit/${form.id}`}>
-                  <Button label="Edit" variant="primary" />
-                </Link>
-                <Button
-                  label="Delete"
-                  variant="danger"
-                  onClick={() => openDeleteDialog(form.id)}
-                />
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="text-center text-gray-600 dark:text-gray-400 mt-4">
             No job forms found.
