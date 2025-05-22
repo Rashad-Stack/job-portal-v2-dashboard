@@ -8,7 +8,6 @@ const formatDate = (date) => {
 };
 
 export default function JobCard({ job, handleDelete }) {
-
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
       <div className="flex flex-col md:flex-row md:items-center justify-between">
@@ -35,31 +34,20 @@ export default function JobCard({ job, handleDelete }) {
               </div>
               {/* Template fields */}
               <div className="w-full flex gap-2 items-center">
-                <GiClick className="text-indigo-500 dark:text-indigo-400" />
-                <span>
-                  {job?.appliedByInternal ? (
-                    <div className="flex flex-col md:flex-row items-center gap-2">
-                      {job?.fields
-                        ? Object.entries(job.fields).map(([key, value]) => (
-                            <div key={key} className="flex gap-2">
-                              <span className="capitalize font-semibold">{key}:</span>
-                              <span>{value || "N/A"}</span>
-                            </div>
-                          ))
-                        : "N/A"}
-                    </div>
-                  ) : (
-                    <a
-                      href={job?.googleForm}
-                      title={job?.googleForm}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-indigo-600 dark:text-indigo-400 hover:underline"
-                    >
-                      Google Form Link
-                    </a>
+                  {!job?.appliedByInternal && (
+                    <>
+                      <GiClick className="text-indigo-500 dark:text-indigo-400" />
+                      <a
+                        href={job?.googleForm}
+                        title={job?.googleForm}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                      >
+                        Google Form Link
+                      </a>
+                    </>
                   )}
-                </span>
               </div>
               <div className="flex items-center gap-2">
                 <FaUsers className="text-indigo-500 dark:text-indigo-400" />

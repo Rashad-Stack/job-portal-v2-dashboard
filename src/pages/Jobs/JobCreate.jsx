@@ -146,6 +146,7 @@ const JobCreate = () => {
   };
 
   const onSubmit = async (data) => {
+    console.log("form data", data)
     setError("");
     setLoading(true);
 
@@ -155,9 +156,10 @@ const JobCreate = () => {
       // prepare fields data conditionally
       if (data.fields && templateData.fields) {
         dataToSend.fields = templateData.fields.reduce((acc, field, index) => {
-          const fieldValue = data.fields[index]?.value || "";
+          console.log("field", field);
+          // const fieldValue = data.fields[index]?.value || "";
           if (field.title) {
-            acc[field.title.toLowerCase()] = fieldValue;
+            acc[field.title.toLowerCase()] = field;
           }
           return acc;
         }, {});
@@ -167,9 +169,9 @@ const JobCreate = () => {
         dataToSend.fields = allTemplates.reduce((acc, template) => {
           if (template.id === templateIdWatch) {
             template.fields.forEach((field, index) => {
-              const fieldValue = data.fields[index]?.value || "";
+              // const fieldValue = data.fields[index]?.value || "";
               if (field.title) {
-                acc[field.title.toLowerCase()] = fieldValue;
+                acc[field.title.toLowerCase()] = field;
               }
             });
           }
@@ -419,7 +421,7 @@ const JobCreate = () => {
                     )}
 
                     {/* Template Forms Dropdown */}
-                    {appliedByInternal === "true" && (
+                    {appliedByInternal === "true" && templateIdWatch && (
                       <Controller
                         name="templateId"
                         control={control}

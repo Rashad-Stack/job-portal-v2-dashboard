@@ -9,6 +9,7 @@ import { Link } from "react-router";
 import JobIndexBar from "./JobIndexBar";
 import JobsNavbar from "./JobsNavbar";
 import SettingsNavbar from "./SettingsNavbar";
+
 function DashboardSidebar({ toggleSidebar }) {
   const [isSettingsOpen, setSettingsOpen] = useState(false);
   const [isJobsOpen, setJobsOpen] = useState(false);
@@ -33,6 +34,7 @@ function DashboardSidebar({ toggleSidebar }) {
     setSettingsOpen(false);
     setJobsOpen(false);
   };
+
   useEffect(() => {
     const token = localStorage.getItem("svaAuth");
 
@@ -49,6 +51,7 @@ function DashboardSidebar({ toggleSidebar }) {
       }
     }
   }, []);
+
   return (
     <aside className="fixed top-0 left-0 z-40 w-44 h-screen pt-20 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
       <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
