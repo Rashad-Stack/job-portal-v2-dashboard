@@ -20,8 +20,12 @@ import Register from "../pages/Register/Register";
 import PrivateRoute from "./PrivateRoute.jsx";
 import EditForms from "../pages/JobsForms/EditForms.jsx";
 import TemplateForm from "../pages/JobsForms/TemplateForm.jsx";
+import { useAuth } from "../hooks/useAuth.js";
 
 export default function Router() {
+  const { user } = useAuth();
+  console.log("user", user);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -51,9 +55,13 @@ export default function Router() {
           <Route path="/jobs/forms/edit/:id" element={<EditForms />} />
 
           {/* Admin only Routes */}
-          <Route path="setting/manage_moderator" element={<Moderators />} />
-          <Route path="moderator/register" element={<Register />} />
-          
+          {user?.role === "ADMIN" && (
+            <>
+              <Route path="setting/manage_moderator" element={<Moderators />} />
+              <Route path="moderator/register" element={<Register />} />
+            </>
+          )}
+
           <Route path="/job-index/status" element={<Status />} />
           <Route path="/job-index/manage" element={<Manage />} />
           <Route path="/job-index/category" element={<Category />} />

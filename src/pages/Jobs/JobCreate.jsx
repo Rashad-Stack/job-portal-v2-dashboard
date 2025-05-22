@@ -18,7 +18,6 @@ const JobCreate = () => {
   // Parse query parameters
   const queryParams = new URLSearchParams(location.search);
   const templateId = queryParams.get("templateId");
-  console.log("templateId", templateId);
 
   const {
     register,

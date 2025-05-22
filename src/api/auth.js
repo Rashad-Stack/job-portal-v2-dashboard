@@ -21,3 +21,20 @@ export const logout = async () => {
   // ✅ Remove token from localStorage
   localStorage.removeItem("svaAuth");
 };
+
+// create a new user
+export const createUser = async (data) => {
+  const res = await axiosInstance.post("/user/create", {
+    name: data.name,
+    email: data.email,
+    password: data.password,
+    role: data.role
+  });
+
+  if (!res.status === 200) {
+    const err = await res.json();
+    throw new Error(err.message || "Failed To Create User");
+  }
+
+  return res.data;
+};
