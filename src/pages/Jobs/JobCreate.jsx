@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { useForm, Controller, set } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import TextEditor from "../../components/common/TextEditor";
 import InputField from "../../components/input/InputField";
 import InputLabel from "../../components/input/InputLabel";
-import SelectInput from "../../components/input/SelectInput";
 import Loading from "../../components/loader/Loading";
 import CustomSelect from "../../components/input/CustomSelect";
 import { createJob, getAllJobs } from "../../api/jobs";
 import { getAllJobForms, getJobFormById } from "../../api/job-form";
 import { getAllCategories } from "../../api/category";
+import DynamicFieldRenderer from "../../components/jobs/DynamicFieldRenderer";
 
 const JobCreate = () => {
   const navigate = useNavigate();
@@ -146,7 +146,7 @@ const JobCreate = () => {
   };
 
   const onSubmit = async (data) => {
-    console.log("form data", data)
+    console.log("form data", data);
     setError("");
     setLoading(true);
 
@@ -155,21 +155,19 @@ const JobCreate = () => {
 
       // prepare fields data conditionally
       if (data.fields && templateData.fields) {
-        dataToSend.fields = templateData.fields.reduce((acc, field, index) => {
+        dataToSend.fields = templateData.fields.reduce((acc, field) => {
           console.log("field", field);
-          // const fieldValue = data.fields[index]?.value || "";
           if (field.title) {
             acc[field.title.toLowerCase()] = field;
           }
           return acc;
         }, {});
       } else if (appliedByInternal === "false") {
-        dataToSend.fields = {};
+        delete dataToSend.fields;
       } else {
         dataToSend.fields = allTemplates.reduce((acc, template) => {
           if (template.id === templateIdWatch) {
-            template.fields.forEach((field, index) => {
-              // const fieldValue = data.fields[index]?.value || "";
+            template.fields.forEach((field) => {
               if (field.title) {
                 acc[field.title.toLowerCase()] = field;
               }
@@ -194,7 +192,14 @@ const JobCreate = () => {
       }
 
       dataToSend.appliedByInternal = data.appliedByInternal === "true";
-      dataToSend.templateId = templateId || data.templateId;
+
+      // Only include templateId if it exists and is not empty
+      if (templateId || data.templateId) {
+        dataToSend.templateId = templateId || data.templateId;
+      } else {
+        delete dataToSend.templateId;
+      }
+
       console.log("dataToSend", dataToSend);
 
       await createJob(dataToSend);
@@ -204,123 +209,6 @@ const JobCreate = () => {
       setError(error.message || "Failed to create job");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const renderField = (field, index) => {
-    const commonProps = {
-      key: field.id || index,
-      name: `fields.${index}.value`,
-      required: field.required,
-    };
-
-    switch (field.type) {
-      case "text":
-        return (
-          <InputField
-            {...commonProps}
-            label={field.title}
-            type="text"
-            placeholder={`Enter ${field.title}`}
-            {...register(`fields.${index}.value`, {
-              required: field.required ? `${field.title} is required` : false,
-            })}
-            error={errors.fields?.[index]?.value?.message}
-          />
-        );
-      case "number":
-        return (
-          <InputField
-            {...commonProps}
-            label={field.title}
-            type="number"
-            placeholder={`Enter ${field.title}`}
-            {...register(`fields.${index}.value`, {
-              required: field.required ? `${field.title} is required` : false,
-              valueAsNumber: true,
-            })}
-            error={errors.fields?.[index]?.value?.message}
-          />
-        );
-      case "date":
-        return (
-          <InputField
-            {...commonProps}
-            label={field.title}
-            type="date"
-            {...register(`fields.${index}.value`, {
-              required: field.required ? `${field.title} is required` : false,
-            })}
-            error={errors.fields?.[index]?.value?.message}
-          />
-        );
-      case "radio":
-        return (
-          <div>
-            <InputLabel labelTitle={{ title: field.title }} />
-            <div className="flex gap-4">
-              {field.options?.map((option, optIndex) => (
-                <div key={optIndex} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    id={`radio-${index}-${optIndex}`}
-                    value={option.value}
-                    {...register(`fields.${index}.value`, {
-                      required: field.required
-                        ? `${field.title} is required`
-                        : false,
-                    })}
-                    className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
-                  />
-                  <label
-                    htmlFor={`radio-${index}-${optIndex}`}
-                    className="text-gray-700 text-sm"
-                  >
-                    {option.label}
-                  </label>
-                </div>
-              ))}
-            </div>
-            {errors.fields?.[index]?.value && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.fields[index].value.message}
-              </p>
-            )}
-          </div>
-        );
-      case "select":
-        return (
-          <div>
-            <label htmlFor={`fields.${index}.value`}>{field.title}</label>
-            <Controller
-              name={`fields.${index}.value`}
-              control={control}
-              rules={{
-                required: field.required ? `${field.title} is required` : false,
-              }}
-              render={({ field: { onChange, value } }) => (
-                <CustomSelect
-                  id={`fields.${index}.value`}
-                  name={`fields.${index}.value`}
-                  value={value || ""}
-                  onChange={onChange}
-                  options={field.options.map((opt) => ({
-                    label: opt.label,
-                    value: opt.value,
-                  }))}
-                  disabledOption={`Select ${field.title}`}
-                />
-              )}
-            />
-            {errors.fields?.[index]?.value && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.fields[index].value.message}
-              </p>
-            )}
-          </div>
-        );
-      default:
-        return null;
     }
   };
 
@@ -421,7 +309,7 @@ const JobCreate = () => {
                     )}
 
                     {/* Template Forms Dropdown */}
-                    {appliedByInternal === "true" && templateIdWatch && (
+                    {appliedByInternal === "true" && !templateId && (
                       <Controller
                         name="templateId"
                         control={control}
@@ -463,7 +351,12 @@ const JobCreate = () => {
                               key={index}
                               style={{ gridColumn: `span ${field.column}` }}
                             >
-                              {renderField(field, index)}
+                              <DynamicFieldRenderer
+                                field={field}
+                                index={index}
+                                register={register}
+                                control={control}
+                              />
                             </div>
                           ))}
                       </div>
@@ -476,7 +369,12 @@ const JobCreate = () => {
                             key={index}
                             style={{ gridColumn: `span ${field.column}` }}
                           >
-                            {renderField(field, index)}
+                            <DynamicFieldRenderer
+                                field={field}
+                                index={index}
+                                register={register}
+                                control={control}
+                              />
                           </div>
                         ))}
                       </div>

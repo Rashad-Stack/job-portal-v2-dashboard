@@ -8,7 +8,7 @@ import InputLabel from "../../components/input/InputLabel";
 import CustomSelect from "../../components/input/CustomSelect";
 import Loading from "../../components/loader/Loading";
 import { getJobById, updateJob } from "../../api/jobs";
-import { getJobFormById } from "../../api/job-form";
+import DynamicFieldRenderer from "../../components/jobs/DynamicFieldRenderer";
 
 const JobEdit = () => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ const JobEdit = () => {
       description: "",
       minSalary: "",
       maxSalary: "",
-      fields: [],
+      fields: {},
     },
   });
 
@@ -49,10 +49,9 @@ const JobEdit = () => {
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState([]);
   const [templateData, setTemplateData] = useState({});
-  const [templateLoading, setTemplateLoading] = useState(false);
   const [jobLoading, setJobLoading] = useState(false);
 
-  // Fetch job data by ID
+  // Fetch job data and template data by ID
   useEffect(() => {
     const fetchJob = async () => {
       try {
@@ -78,18 +77,10 @@ const JobEdit = () => {
           description: data.description || "",
           minSalary: data.minSalary || "",
           maxSalary: data.maxSalary || "",
-          fields: data.fields
-            ? Object.entries(data.fields).map(([key, value]) => ({ value })) // Transform fields object to array
-            : [],
+          fields: data.fields || {},
         });
 
-        // If job uses internal application, fetch template data
-        if (data.appliedByInternal && data.templateId) {
-          setTemplateLoading(true);
-          const { data: template } = await getJobFormById(data.templateId);
-          setTemplateData(template);
-          setTemplateLoading(false);
-        }
+        setTemplateData(data.fields || {});
       } catch (err) {
         console.error("Failed to fetch job:", err.message);
         setError("Failed to fetch job. Please try again later.");
@@ -137,7 +128,7 @@ const JobEdit = () => {
           return acc;
         }, {});
       } else {
-        dataToSend.fields = {};
+        delete dataToSend.fields;
       }
 
       if (!dataToSend.companyName || dataToSend.companyName.trim() === "") {
@@ -159,7 +150,7 @@ const JobEdit = () => {
       dataToSend.appliedByInternal = data.appliedByInternal === "true";
 
       console.log("dataToSend", dataToSend);
-      await updateJob(id, dataToSend); // Update job with ID
+      await updateJob(id, dataToSend);
       navigate("/jobs/read");
     } catch (error) {
       console.error("Error updating job:", error);
@@ -169,124 +160,7 @@ const JobEdit = () => {
     }
   };
 
-  const renderField = (field, index) => {
-    const commonProps = {
-      key: field.id || index,
-      name: `fields.${index}.value`,
-      required: field.required,
-    };
-
-    switch (field.type) {
-      case "text":
-        return (
-          <InputField
-            {...commonProps}
-            label={field.title}
-            type="text"
-            placeholder={`Enter ${field.title}`}
-            {...register(`fields.${index}.value`, {
-              required: field.required ? `${field.title} is required` : false,
-            })}
-            error={errors.fields?.[index]?.value?.message}
-          />
-        );
-      case "number":
-        return (
-          <InputField
-            {...commonProps}
-            label={field.title}
-            type="number"
-            placeholder={`Enter ${field.title}`}
-            {...register(`fields.${index}.value`, {
-              required: field.required ? `${field.title} is required` : false,
-              valueAsNumber: true,
-            })}
-            error={errors.fields?.[index]?.value?.message}
-          />
-        );
-      case "date":
-        return (
-          <InputField
-            {...commonProps}
-            label={field.title}
-            type="date"
-            {...register(`fields.${index}.value`, {
-              required: field.required ? `${field.title} is required` : false,
-            })}
-            error={errors.fields?.[index]?.value?.message}
-          />
-        );
-      case "radio":
-        return (
-          <div>
-            <InputLabel labelTitle={{ title: field.title }} />
-            <div className="flex gap-4">
-              {field.options?.map((option, optIndex) => (
-                <div key={optIndex} className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    id={`radio-${index}-${optIndex}`}
-                    value={option.value}
-                    {...register(`fields.${index}.value`, {
-                      required: field.required
-                        ? `${field.title} is required`
-                        : false,
-                    })}
-                    className="h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
-                  />
-                  <label
-                    htmlFor={`radio-${index}-${optIndex}`}
-                    className="text-gray-700 text-sm"
-                  >
-                    {option.label}
-                  </label>
-                </div>
-              ))}
-            </div>
-            {errors.fields?.[index]?.value && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.fields[index].value.message}
-              </p>
-            )}
-          </div>
-        );
-      case "select":
-        return (
-          <div>
-            <label htmlFor={`fields.${index}.value`}>{field.title}</label>
-            <Controller
-              name={`fields.${index}.value`}
-              control={control}
-              rules={{
-                required: field.required ? `${field.title} is required` : false,
-              }}
-              render={({ field: { onChange, value } }) => (
-                <CustomSelect
-                  id={`fields.${index}.value`}
-                  name={`fields.${index}.value`}
-                  value={value || ""}
-                  onChange={onChange}
-                  options={field.options.map((opt) => ({
-                    label: opt.label,
-                    value: opt.value,
-                  }))}
-                  disabledOption={`Select ${field.title}`}
-                />
-              )}
-            />
-            {errors.fields?.[index]?.value && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.fields[index].value.message}
-              </p>
-            )}
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  if (jobLoading || templateLoading) return <Loading />;
+  if (jobLoading) return <Loading />;
 
   return (
     <div className="min-h-screen bg-gray-50/60 py-8 px-4 sm:px-0">
@@ -382,12 +256,17 @@ const JobEdit = () => {
 
                     {appliedByInternal === "true" ? (
                       <div className="grid grid-cols-12 gap-4">
-                        {templateData.fields?.map((field, index) => (
+                        {Object.values(templateData).map((template, index) => (
                           <div
                             key={index}
-                            style={{ gridColumn: `span ${field.column}` }}
+                            style={{ gridColumn: `span ${template.column}` }}
                           >
-                            {renderField(field, index)}
+                            <DynamicFieldRenderer
+                                field={template}
+                                index={index}
+                                register={register}
+                                control={control}
+                              />
                           </div>
                         ))}
                       </div>
