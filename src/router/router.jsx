@@ -24,7 +24,6 @@ import { useAuth } from "../hooks/useAuth.js";
 
 export default function Router() {
   const { user } = useAuth();
-  console.log("user", user);
 
   return (
     <BrowserRouter>

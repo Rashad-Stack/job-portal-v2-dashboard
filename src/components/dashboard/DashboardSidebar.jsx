@@ -9,13 +9,15 @@ import { Link } from "react-router";
 import JobIndexBar from "./JobIndexBar";
 import JobsNavbar from "./JobsNavbar";
 import SettingsNavbar from "./SettingsNavbar";
+import { useAuth } from "../../hooks/useAuth";
 
 function DashboardSidebar({ toggleSidebar }) {
   const [isSettingsOpen, setSettingsOpen] = useState(false);
   const [isJobsOpen, setJobsOpen] = useState(false);
   const [isJobIndexOpen, setJobIndexOpen] = useState(false);
-  const [showSignUp, setShowSignUp] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
+  
+  const { user } = useAuth();
+  const isAdmin = user?.role === "ADMIN" || false;
 
   const toggleSettings = () => {
     setSettingsOpen(!isSettingsOpen);
@@ -34,23 +36,6 @@ function DashboardSidebar({ toggleSidebar }) {
     setSettingsOpen(false);
     setJobsOpen(false);
   };
-
-  useEffect(() => {
-    const token = localStorage.getItem("svaAuth");
-
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        console.log("Decoded token:", decoded);
-        setUserInfo(decoded);
-        if (decoded.role === "ADMIN") {
-          setShowSignUp(true);
-        }
-      } catch (error) {
-        console.error("Error decoding token:", error);
-      }
-    }
-  }, []);
 
   return (
     <aside className="fixed top-0 left-0 z-40 w-44 h-screen pt-20 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -113,11 +98,12 @@ function DashboardSidebar({ toggleSidebar }) {
             </Link>
           </li>
 
-          {showSignUp && (
+          {isAdmin && (
             <li>
               <button
                 onClick={toggleSettings}
-                className="flex items-center w-full p-2 cursor-pointer text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                className="flex items-center w-full p-2 cursor-pointer text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
                 <IoSettingsOutline />
                 <span className="ms-3">System</span>
               </button>

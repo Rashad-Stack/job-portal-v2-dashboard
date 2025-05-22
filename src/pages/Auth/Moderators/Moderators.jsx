@@ -1,29 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { GoTrash } from "react-icons/go";
 import { MdMarkEmailRead } from "react-icons/md";
-import axios from "axios";
+import { Link } from "react-router"; // Added Link import
 import Swal from "sweetalert2";
+import { deleteUser, getAllUsers } from "../../../api/auth";
 
 export default function Moderators() {
   const [moderators, setModerators] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const fetchModerators = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      const { data } = await axios.get("http://localhost:3000/api/v2/user");
-      setModerators(data?.data ?? []);
-    } catch (err) {
-      console.error("Failed to fetch moderators:", err.message);
-      setError("Failed to fetch moderators. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchModerators = async () => {
+      try {
+        const response = await getAllUsers();
+        const allUsers = response.data;
+
+        const filteredModerators = allUsers.filter(
+          (user) => user.role === "MODERATOR"
+        );
+        console.log("filteredModerators", filteredModerators);
+
+        setModerators(filteredModerators);
+      } catch (err) {
+        console.error("Error fetching moderators:", err);
+        setError("Failed to load moderators.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchModerators();
   }, []);
 
@@ -40,12 +46,7 @@ export default function Moderators() {
 
     if (confirm.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:3000/api/v2/user/delete/${id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          withCredentials: true,
-        });
+        await deleteUser(id);
 
         setModerators((prev) => prev.filter((mod) => mod.id !== id));
         Swal.fire("Deleted!", "Moderator has been removed.", "success");
@@ -64,9 +65,17 @@ export default function Moderators() {
   return (
     <div className="min-h-screen px-4 sm:px-6 md:px-10 py-6 ">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-center pb-6 text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-100">
-          All Moderators
-        </h1>
+        <div className="flex flex-col sm:flex-row justify-between items-center pb-6">
+          <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-gray-100">
+            All Moderators
+          </h1>
+          <Link
+            to="/moderator/register"
+            className="mt-4 sm:mt-0 text-white bg-green-600 font-medium rounded-[8px] text-sm px-5 py-2.5 text-center hover:bg-green-700 transition-colors"
+          >
+            Create New Moderator
+          </Link>
+        </div>
 
         {loading && (
           <div className="text-center py-4 text-gray-600 dark:text-gray-400">
@@ -81,7 +90,7 @@ export default function Moderators() {
 
         <div className="space-y-4 mt-3 sm:mt-2 md:mt-4 lg:mt-10">
           {moderators
-            .filter((mod) => mod.role === "MODERATOR") // Corrected the role filter
+            .filter((mod) => mod.role === "MODERATOR")
             .map((mod) => (
               <div
                 key={mod.id}
