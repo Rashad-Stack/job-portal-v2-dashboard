@@ -16,18 +16,17 @@ export default function ApplicationList({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [comments, setComments] = useState(() => {
-    const saved = localStorage.getItem('applicantComments');
-    return saved ? JSON.parse(saved) : {};
-  });
+  const [comments, setComments] = useState({});
 
   useEffect(() => {
     setApplications(initialApplications);
     const initialComments = {};
-    initialApplications.forEach(app => {
-      // Initialize comments with the actual comment text, not the ID
-      initialComments[app.id] = app.comment?.comment || ""; // Access app.comment.comment
+    initialApplications.forEach((app) => {
+      // Initialize comments from the application's comment relationship
+      initialComments[app.id] = app.comments?.comment || "";
     });
+    console.log(initialApplications);
+    
     setComments(initialComments);
   }, [initialApplications]);
 
@@ -39,9 +38,13 @@ export default function ApplicationList({
     try {
       const updatePayload = {
         ...editedData,
-        joining: editedData.joining ? new Date(editedData.joining).toISOString() : null,
-        // Ensure the comment text is sent
-        comment: comments[applicationId] || "", 
+        joining: editedData.joining
+          ? new Date(editedData.joining).toISOString()
+          : null,
+        comment: comments[applicationId] || "", // Send comment text
+        commentId:
+          applications.find((a) => a.id === applicationId)?.comments?.id ||
+          null, // Include commentId if exists
       };
 
       const response = await applicationUpdate(applicationId, updatePayload);
@@ -52,12 +55,12 @@ export default function ApplicationList({
             ? {
                 ...app,
                 ...response.data,
-                // Update the comment field in the application state
-                comment: { ...app.comment, comment: comments[applicationId] }, 
+                comments: response.data.comments || app.comments, // Preserve comment relationship
               }
             : app
         )
       );
+
       setEditingId(null);
       setSuccess("Application updated successfully!");
       setTimeout(() => setSuccess(null), 3000);
@@ -85,10 +88,10 @@ export default function ApplicationList({
       hiringStatus: application.hiringStatus,
       joining: application.joining,
     });
+    // Initialize comment from the application's comment relationship
     setComments((prev) => ({
       ...prev,
-      // Use the actual comment text for editing
-      [application.id]: application.comment?.comment || "", 
+      [application.id]: application.comments?.comment || "",
     }));
   };
 
@@ -100,14 +103,10 @@ export default function ApplicationList({
   };
 
   const handleCommentChange = (applicationId, value) => {
-    // setComments((prev) => ({
-    //   ...prev,
-    //   [applicationId]: value,
-    // }));
-    console.log(applicationId);
-    console.log(value);
-    
-    
+    setComments((prev) => ({
+      ...prev,
+      [applicationId]: value,
+    }));
   };
 
   const statusOptions = {
@@ -118,7 +117,14 @@ export default function ApplicationList({
     level: ["NONE", "LEVEL_A", "LEVEL_B", "LEVEL_C", "LEVEL_D"],
     profile: ["NONE", "YES", "NO"],
     hiringType: ["NONE", "INTERN", "PROBATION"],
-    designation: ["NONE", "FRONTEND", "BACKEND", "FULLSTACK", "UI/UX", "DEVOPS"],
+    designation: [
+      "NONE",
+      "FRONTEND",
+      "BACKEND",
+      "FULLSTACK",
+      "UI/UX",
+      "DEVOPS",
+    ],
   };
   const tableHeaders = [
     "Name",
@@ -321,9 +327,11 @@ export default function ApplicationList({
 
                   <td className="px-3 py-2 whitespace-nowrap">
                     {editingId === application.id ? (
-                        <select
+                      <select
                         value={editedData.designation || "NOT_YET"}
-                        onChange={(e) => handleChange("designation", e.target.value)}
+                        onChange={(e) =>
+                          handleChange("designation", e.target.value)
+                        }
                         className="text-sm border rounded p-1 w-full"
                       >
                         {statusOptions.designation.map((option) => (
@@ -424,7 +432,9 @@ export default function ApplicationList({
                     {editingId === application.id ? (
                       <input
                         type="number"
-                        value={parseInt(editedData.internShipProbationSalary) || ""}
+                        value={
+                          parseInt(editedData.internShipProbationSalary) || ""
+                        }
                         onChange={(e) =>
                           handleChange(
                             "internShipProbationSalary",
@@ -510,18 +520,18 @@ export default function ApplicationList({
                     {editingId === application.id ? (
                       <textarea
                         value={comments[application.id] || ""}
-                        onChange={(e) => handleCommentChange(application.id, e.target.value)}
+                        onChange={(e) =>
+                          handleCommentChange(application.id, e.target.value)
+                        }
                         className="text-sm border rounded p-1 w-full"
                         rows={2}
                       />
                     ) : (
                       <span className="text-sm text-gray-500 dark:text-gray-300">
-                        {/* Display the actual comment text */}
-                        {application.comment?.comment || "N/A"} 
+                        {application.comments?.comment || "N/A"}
                       </span>
                     )}
                   </td>
-
 
                   <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                     {editingId === application.id ? (
