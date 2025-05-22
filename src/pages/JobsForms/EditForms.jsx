@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import { getAllCategories } from "../../api/category";
 import CustomSelect from "../../components/input/CustomSelect";
 import { useEffect, useState } from "react";
-import { updateJobForm } from "../../api/job-form";
+import { getJobFormById, updateJobForm } from "../../api/job-form";
 
 export default function EditForms() {
   const { id } = useParams();

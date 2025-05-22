@@ -27,15 +27,20 @@ const CustomSelect = ({
             {disabledOption}
           </option>
         )}
-        {options.map((option) => (
-          <option
-            key={option.value}
-            value={option.value}
-            className="bg-white text-gray-700 hover:bg-[#00ab0c] hover:text-white"
-          >
-            {option.label}
-          </option>
-        ))}
+        {options &&
+          options.map((option) => {
+            if(!option?.value) return null;
+
+            return (
+              <option
+                key={option?.value}
+                value={option?.value}
+                className="bg-white text-gray-700 hover:bg-[#00ab0c] hover:text-white"
+              >
+                {option?.label}
+              </option>
+            );
+          })}
       </select>
       <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-600">
         <svg
@@ -45,7 +50,11 @@ const CustomSelect = ({
           strokeWidth="2"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </div>
     </div>
