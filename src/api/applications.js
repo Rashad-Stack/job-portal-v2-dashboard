@@ -14,3 +14,22 @@ export const getAllApplications = async () => {
     throw error;
   }
 };
+
+export const applicationUpdate = async (applicationId, updatedData) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/job/application/update/${applicationId}`,
+      updatedData
+    );
+
+    if (response.status !== 200) {
+      throw new Error("Failed to update application");
+    }
+    return response.data;
+  } catch (error) {
+    console.error("Error updating application:", error);
+    throw error;
+  }
+};
+
+
