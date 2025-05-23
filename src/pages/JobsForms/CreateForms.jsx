@@ -213,6 +213,20 @@ export default function CreateForms() {
             </select>
           </div>
         );
+      case "url":
+        return (
+          <div>
+            <label className={labelClasses}>
+              {field.title} {field.required && "*"}
+            </label>
+            <input
+              type="url"
+              className={baseClasses}
+              placeholder={`Enter ${field.title}`}
+              {...register(`fields[${index}].value`)}
+            />
+          </div>
+        );
       default:
         return null;
     }
@@ -362,6 +376,7 @@ export default function CreateForms() {
                     { label: "Number", value: "number" },
                     { label: "Date", value: "date" },
                     { label: "Radio", value: "radio" },
+                    { label: "Url", value: "url" },
                     { label: "Select", value: "select" },
                   ]}
                   disabledOption="Select Field Type"

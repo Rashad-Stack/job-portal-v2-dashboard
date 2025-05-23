@@ -21,6 +21,16 @@ const DynamicFieldRenderer = ({ field, index, register, control }) => {
           {...register(`fields.${index}.value`)}
         />
       );
+    case "url":
+      return (
+        <InputField
+          {...commonProps}
+          label={field.title}
+          type="url"
+          placeholder={`Enter ${field.title}`}
+          {...register(`fields.${index}.value`)}
+        />
+      );
     case "number":
       return (
         <InputField
