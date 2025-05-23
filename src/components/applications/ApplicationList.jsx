@@ -1,7 +1,6 @@
-// components/applications/ApplicationList.jsx
 import { MdClose } from "react-icons/md";
 import { Link } from "react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { applicationUpdate } from "../../api/applications";
 import { format, parseISO } from "date-fns";
 
@@ -10,25 +9,77 @@ export default function ApplicationList({
   onClose,
   jobTitle,
 }) {
-  const [applications, setApplications] = useState(initialApplications);
+  // Get all unique field names from othersFields across all applications
+  const dynamicFields = useMemo(() => {
+    const fields = new Set();
+    initialApplications.forEach(app => {
+      if (app.othersFields) {
+        Object.keys(app.othersFields).forEach(field => fields.add(field));
+      }
+    });
+    return Array.from(fields);
+  }, [initialApplications]);
+
+  // Sort applications by update status and completeness
+  const sortedApplications = useMemo(() => {
+    return [...initialApplications].sort((a, b) => {
+      const updatedAtA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+      const updatedAtB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+      if (updatedAtB !== updatedAtA) return updatedAtB - updatedAtA;
+      return calculateCompleteness(b) - calculateCompleteness(a);
+    });
+  }, [initialApplications]);
+
+  const [applications, setApplications] = useState(sortedApplications);
   const [editingId, setEditingId] = useState(null);
   const [editedData, setEditedData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [comments, setComments] = useState({});
+  const [expandedDynamicFields, setExpandedDynamicFields] = useState({});
+
+  // Helper function to calculate completeness score
+  function calculateCompleteness(application) {
+    const fieldsToCheck = [
+      'shortListStatus',
+      'calStatus',
+      'mailed',
+      'designation',
+      'testResult',
+      'level',
+      'profile',
+      'hiringType',
+      'internShipProbationSalary',
+      'finalSalary',
+      'hiringStatus',
+      'joining',
+      'comments',
+      ...dynamicFields
+    ];
+    
+    let filledCount = 0;
+    fieldsToCheck.forEach(field => {
+      if (field === 'comments') {
+        if (application.comments?.comment) filledCount++;
+      } else if (dynamicFields.includes(field)) {
+        if (application.othersFields?.[field]) filledCount++;
+      } else if (application[field] && application[field] !== 'NONE') {
+        filledCount++;
+      }
+    });
+    
+    return filledCount;
+  }
 
   useEffect(() => {
-    setApplications(initialApplications);
+    setApplications(sortedApplications);
     const initialComments = {};
-    initialApplications.forEach((app) => {
-      // Initialize comments from the application's comment relationship
+    sortedApplications.forEach((app) => {
       initialComments[app.id] = app.comments?.comment || "";
     });
-    console.log(initialApplications);
-    
     setComments(initialComments);
-  }, [initialApplications]);
+  }, [sortedApplications]);
 
   const handleUpdateApplication = async (applicationId) => {
     setIsLoading(true);
@@ -41,24 +92,27 @@ export default function ApplicationList({
         joining: editedData.joining
           ? new Date(editedData.joining).toISOString()
           : null,
-        comment: comments[applicationId] || "", // Send comment text
-        commentId:
-          applications.find((a) => a.id === applicationId)?.comments?.id ||
-          null, // Include commentId if exists
+        comment: comments[applicationId] || " ",
+        commentId: applications.find((a) => a.id === applicationId)?.comments?.id || null,
       };
 
       const response = await applicationUpdate(applicationId, updatePayload);
 
-      setApplications((prev) =>
-        prev.map((app) =>
-          app.id === applicationId
-            ? {
-                ...app,
-                ...response.data,
-                comments: response.data.comments || app.comments, // Preserve comment relationship
-              }
-            : app
-        )
+      const updatedApplication = {
+        ...response.data,
+        updatedAt: new Date().toISOString(),
+        comments: response.data.comments || 
+          applications.find(a => a.id === applicationId)?.comments
+      };
+
+      setApplications(prev =>
+        [updatedApplication, ...prev.filter(app => app.id !== applicationId)]
+          .sort((a, b) => {
+            const updatedAtA = a.updatedAt ? new Date(a.updatedAt).getTime() : 0;
+            const updatedAtB = b.updatedAt ? new Date(b.updatedAt).getTime() : 0;
+            if (updatedAtB !== updatedAtA) return updatedAtB - updatedAtA;
+            return calculateCompleteness(b) - calculateCompleteness(a);
+          })
       );
 
       setEditingId(null);
@@ -71,6 +125,9 @@ export default function ApplicationList({
       setIsLoading(false);
     }
   };
+
+
+
 
   const handleEdit = (application) => {
     setEditingId(application.id);
@@ -113,7 +170,7 @@ export default function ApplicationList({
     shortListStatus: ["NONE", "SHORTLIST", "REJECTED"],
     calStatus: ["YES", "NO_RESPONSE", "BUSY", "PHONE_OFF"],
     mailed: ["SENT", "NOT_YET"],
-    hiringStatus: ["NONE", "HIRED", "REJECTED", "PENDING"],
+    hiringStatus: ["NONE", "HIRED", "REJECTED", "PENDING_NEED_TO_DISCUSS"],
     level: ["NONE", "LEVEL_A", "LEVEL_B", "LEVEL_C", "LEVEL_D"],
     profile: ["NONE", "YES", "NO"],
     hiringType: ["NONE", "INTERN", "PROBATION"],
@@ -126,7 +183,7 @@ export default function ApplicationList({
       "DEVOPS",
     ],
   };
-  const tableHeaders = [
+const baseTableHeaders = [
     "Name",
     "Email",
     "Phone",
@@ -149,6 +206,8 @@ export default function ApplicationList({
     "Actions",
   ];
 
+    const tableHeaders = [...baseTableHeaders, ...dynamicFields];
+
   const formatDateForDisplay = (dateString) => {
     if (!dateString) return "N/A";
     try {
@@ -163,6 +222,11 @@ export default function ApplicationList({
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
           Applications for {jobTitle}
+          {dynamicFields.length > 0 && (
+            <span className="ml-2 text-sm text-gray-500">
+              ({dynamicFields.length} additional fields)
+            </span>
+          )}
         </h2>
         <button
           onClick={onClose}
@@ -195,7 +259,9 @@ export default function ApplicationList({
                 {tableHeaders.map((header) => (
                   <th
                     key={header}
-                    className="px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                    className={`px-3 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider ${
+                      dynamicFields.includes(header) ? 'bg-gray-100 dark:bg-gray-800' : ''
+                    }`}
                   >
                     <p className="w-max">{header}</p>
                   </th>
@@ -203,15 +269,32 @@ export default function ApplicationList({
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {applications.map((application) => (
-                <tr
-                  key={application.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  {/* Basic Info (non-editable) */}
-                  <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
-                    {application.fullName}
-                  </td>
+              {applications.map((application) => {
+                const isRecentlyUpdated = application.updatedAt && 
+                  (new Date() - new Date(application.updatedAt)) < 24 * 60 * 60 * 1000;
+                const completeness = calculateCompleteness(application);
+                
+                return (
+                  <tr
+                    key={application.id}
+                    className={`hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                      isRecentlyUpdated ? 'bg-blue-50 dark:bg-blue-900' : ''
+                    }`}
+                  >
+                    {/* Base fields */}
+                    <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-200">
+                      <div className="flex items-center">
+                        {application.fullName}
+                        {completeness > 8 && (
+                          <span className="ml-2 px-1.5 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            Complete
+                          </span>
+                        )}
+                      </div>
+                    </td>
+
+
+
                   <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                     {application.email}
                   </td>
@@ -259,6 +342,15 @@ export default function ApplicationList({
                       )}
                     </div>
                   </td>
+
+                  {dynamicFields.map(field => (
+                      <td 
+                        key={`${application.id}-${field}`}
+                        className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300"
+                      >
+                        {application.othersFields?.[field] || "N/A"}
+                      </td>
+                    ))}
 
                   {/* Editable Fields */}
                   <td className="px-3 py-2 whitespace-nowrap">
@@ -438,7 +530,7 @@ export default function ApplicationList({
                         onChange={(e) =>
                           handleChange(
                             "internShipProbationSalary",
-                            e.target.value
+                            parseInt(e.target.value)
                           )
                         }
                         className="text-sm border rounded p-1 w-full"
@@ -456,7 +548,7 @@ export default function ApplicationList({
                         type="number"
                         value={parseInt(editedData.finalSalary) || ""}
                         onChange={(e) =>
-                          handleChange("finalSalary", e.target.value)
+                          handleChange("finalSalary", parseInt(e.target.value ))
                         }
                         className="text-sm border rounded p-1 w-full"
                       />
@@ -533,37 +625,37 @@ export default function ApplicationList({
                     )}
                   </td>
 
-                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                    {editingId === application.id ? (
-                      <div className="flex space-x-2">
+                                      {/* Actions cell */}
+                    <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                      {editingId === application.id ? (
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleUpdateApplication(application.id)}
+                            className="px-2 py-1 bg-green-500 text-white rounded text-xs"
+                            disabled={isLoading}
+                          >
+                            {isLoading ? "Saving..." : "Save"}
+                          </button>
+                          <button
+                            onClick={() => setEditingId(null)}
+                            className="px-2 py-1 bg-gray-500 text-white rounded text-xs"
+                            disabled={isLoading}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
                         <button
-                          onClick={() =>
-                            handleUpdateApplication(application.id)
-                          }
-                          className="px-2 py-1 bg-green-500 text-white rounded text-xs"
-                          disabled={isLoading}
+                          onClick={() => handleEdit(application)}
+                          className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
                         >
-                          {isLoading ? "Saving..." : "Save"}
+                          Edit
                         </button>
-                        <button
-                          onClick={() => setEditingId(null)}
-                          className="px-2 py-1 bg-gray-500 text-white rounded text-xs"
-                          disabled={isLoading}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => handleEdit(application)}
-                        className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
-                      >
-                        Edit
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

@@ -1,4 +1,3 @@
-// components/applications/JobTable.jsx
 import { MdDelete, MdVisibility } from "react-icons/md";
 import Swal from "sweetalert2";
 import ApplicationList from "./ApplicationList";
