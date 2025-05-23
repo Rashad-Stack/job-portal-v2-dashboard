@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import TopCard from "../../components/home/TopCard";
-import axios from "axios";
 import { getAllJobs } from "../../api/jobs";
 import { getAllCategories } from "../../api/category";
 

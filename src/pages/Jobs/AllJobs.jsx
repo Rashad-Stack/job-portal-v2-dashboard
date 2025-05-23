@@ -18,7 +18,10 @@ const AllJobs = () => {
       setLoading(true);
       setError("");
       const { data } = await getAllJobs();
-      setJobs(data || []);
+      const sortedData = data.sort(
+        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+      );
+      setJobs(sortedData || []);
     } catch (err) {
       console.error("Failed to fetch jobs:", err.message);
       setError("Failed to fetch jobs. Please try again later.");
