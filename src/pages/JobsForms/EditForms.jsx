@@ -170,6 +170,14 @@ export default function EditForms() {
             {...commonProps}
           />
         );
+      case "url":
+        return (
+          <input
+            type="url"
+            placeholder={`Enter ${field.title}`}
+            {...commonProps}
+          />
+        );
       case "number":
         return (
           <input
