@@ -3,15 +3,26 @@ import { Link } from "react-router";
 import { useState, useEffect, useMemo } from "react";
 import { applicationUpdate } from "../../api/applications";
 import { format, parseISO } from "date-fns";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function ApplicationList({
   applications: initialApplications,
   onClose,
   jobTitle,
 }) {
+  const { isAuthenticated, user } = useAuth();
+  const userRole = user?.role;
+  console.log(userRole);
+
+  // Check role permissions
+  const canEditAll = userRole === "ADMIN";
+  const canEditHiringOnly = userRole === "HR";
+  const canEditExceptHiring = userRole === "MODERATOR";
+  const canEditCallAndMailOnly = userRole === "SOCIAL_MEDIA_MANAGER";
+
   // Check if any application has othersFields
   const hasOthersFields = useMemo(() => {
-    return initialApplications.some(app => app.othersFields);
+    return initialApplications.some((app) => app.othersFields);
   }, [initialApplications]);
 
   // Sort applications by update status and completeness
@@ -23,8 +34,7 @@ export default function ApplicationList({
       return calculateCompleteness(b) - calculateCompleteness(a);
     });
   }, [initialApplications]);
-  console.log(JSON.parse(initialApplications[2].othersFields));
-  
+
 
   const [applications, setApplications] = useState(sortedApplications);
   const [editingId, setEditingId] = useState(null);
@@ -34,8 +44,7 @@ export default function ApplicationList({
   const [success, setSuccess] = useState(null);
   const [comments, setComments] = useState({});
 
-
-
+ 
   // Helper function to calculate completeness score
   function calculateCompleteness(application) {
     const fieldsToCheck = [
@@ -78,8 +87,10 @@ export default function ApplicationList({
   // Function to parse and render othersFields content
   const renderOthersFields = (application) => {
     try {
-      const othersFields = application.othersFields ? JSON.parse(application.othersFields) : {};
-      
+      const othersFields = application.othersFields
+        ? JSON.parse(application.othersFields)
+        : {};
+
       if (!othersFields || Object.keys(othersFields).length === 0) {
         return "N/A";
       }
@@ -87,15 +98,16 @@ export default function ApplicationList({
       return (
         <div className="flex flex-col space-y-1">
           {Object.entries(othersFields).map(([field, value]) => {
-            // Check if the value is a URL
-            if (typeof value === 'string' && 
-                (value.startsWith('http://') || value.startsWith('https://'))) {
+            if (
+              typeof value === "string" &&
+              (value.startsWith("http://") || value.startsWith("https://"))
+            ) {
               return (
                 <div key={field}>
                   <span className="font-medium">{field}: </span>
-                  <Link 
-                    to={value} 
-                    target="_blank" 
+                  <Link
+                    to={value}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-indigo-600 dark:text-indigo-400 hover:underline"
                   >
@@ -104,7 +116,7 @@ export default function ApplicationList({
                 </div>
               );
             }
-            
+
             return (
               <div key={field}>
                 <span className="font-medium">{field}: </span>
@@ -136,6 +148,45 @@ export default function ApplicationList({
           applications.find((a) => a.id === applicationId)?.comments?.id ||
           null,
       };
+
+      // For HR, only allow updating hiringStatus
+      if (canEditHiringOnly) {
+        const currentApp = applications.find((a) => a.id === applicationId);
+        updatePayload.shortListStatus = currentApp.shortListStatus;
+        updatePayload.calStatus = currentApp.calStatus;
+        updatePayload.mailed = currentApp.mailed;
+        updatePayload.designation = currentApp.designation;
+        updatePayload.testResult = currentApp.testResult;
+        updatePayload.level = currentApp.level;
+        updatePayload.profile = currentApp.profile;
+        updatePayload.hiringType = currentApp.hiringType;
+        updatePayload.internShipProbationSalary =
+          currentApp.internShipProbationSalary;
+        updatePayload.finalSalary = currentApp.finalSalary;
+        updatePayload.joining = currentApp.joining;
+      }
+
+      // For MODERATOR, don't allow updating hiringStatus
+      if (canEditExceptHiring) {
+        const currentApp = applications.find((a) => a.id === applicationId);
+        updatePayload.hiringStatus = currentApp.hiringStatus;
+      }
+
+      // For SOCIAL_MEDIA_MANAGER, only allow updating calStatus and mailed
+      if (canEditCallAndMailOnly) {
+        const currentApp = applications.find((a) => a.id === applicationId);
+        updatePayload.shortListStatus = currentApp.shortListStatus;
+        updatePayload.designation = currentApp.designation;
+        updatePayload.testResult = currentApp.testResult;
+        updatePayload.level = currentApp.level;
+        updatePayload.profile = currentApp.profile;
+        updatePayload.hiringType = currentApp.hiringType;
+        updatePayload.internShipProbationSalary =
+          currentApp.internShipProbationSalary;
+        updatePayload.finalSalary = currentApp.finalSalary;
+        updatePayload.hiringStatus = currentApp.hiringStatus;
+        updatePayload.joining = currentApp.joining;
+      }
 
       const response = await applicationUpdate(applicationId, updatePayload);
 
@@ -171,8 +222,7 @@ export default function ApplicationList({
   };
 
 
-
-
+  
   const handleEdit = (application) => {
     setEditingId(application.id);
     setEditedData({
@@ -253,7 +303,7 @@ export default function ApplicationList({
     "Actions",
   ];
 
-    const formatDateForDisplay = (dateString) => {
+  const formatDateForDisplay = (dateString) => {
     if (!dateString) return "N/A";
     try {
       return format(parseISO(dateString), "MMM dd, yyyy");
@@ -262,9 +312,34 @@ export default function ApplicationList({
     }
   };
 
-  const tableHeaders = hasOthersFields 
+  const tableHeaders = hasOthersFields
     ? [...baseTableHeaders]
     : baseTableHeaders;
+
+  // Function to check if edit button should be shown
+  const shouldShowEditButton = () => {
+    return (
+      canEditAll ||
+      canEditHiringOnly ||
+      canEditExceptHiring ||
+      canEditCallAndMailOnly
+    );
+  };
+
+  // Function to check if a field should be editable
+  const isFieldEditable = (fieldName) => {
+    if (canEditAll) return true;
+    if (canEditHiringOnly) return fieldName === "hiringStatus";
+    if (canEditExceptHiring)
+      return (
+        fieldName !== "hiringStatus" &&
+        fieldName !== "calStatus" &&
+        fieldName !== "mailed"
+      );
+    if (canEditCallAndMailOnly)
+      return fieldName === "calStatus" || fieldName === "mailed";
+    return false;
+  };
 
   return (
     <div className="p-4">
@@ -390,7 +465,7 @@ export default function ApplicationList({
                       </div>
                     </td>
 
-                     {hasOthersFields && (
+                    {hasOthersFields && (
                       <td className="px-3 py-2 text-sm text-gray-500 dark:text-gray-300">
                         {renderOthersFields(application)}
                       </td>
@@ -398,13 +473,14 @@ export default function ApplicationList({
 
                     {/* Editable Fields */}
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("shortListStatus") ? (
                         <select
                           value={editedData.shortListStatus || "NONE"}
                           onChange={(e) =>
                             handleChange("shortListStatus", e.target.value)
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                         >
                           {statusOptions.shortListStatus.map((option) => (
                             <option key={option} value={option}>
@@ -420,13 +496,14 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("calStatus") ? (
                         <select
                           value={editedData.calStatus || "NONE"}
                           onChange={(e) =>
                             handleChange("calStatus", e.target.value)
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                         >
                           {statusOptions.calStatus.map((option) => (
                             <option key={option} value={option}>
@@ -442,13 +519,14 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("mailed") ? (
                         <select
                           value={editedData.mailed || "NOT_YET"}
                           onChange={(e) =>
                             handleChange("mailed", e.target.value)
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                         >
                           {statusOptions.mailed.map((option) => (
                             <option key={option} value={option}>
@@ -464,13 +542,14 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("designation") ? (
                         <select
                           value={editedData.designation || "NOT_YET"}
                           onChange={(e) =>
                             handleChange("designation", e.target.value)
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                         >
                           {statusOptions.designation.map((option) => (
                             <option key={option} value={option}>
@@ -486,14 +565,15 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("testResult") ? (
                         <input
                           type="text"
                           value={editedData.testResult || ""}
                           onChange={(e) =>
                             handleChange("testResult", parseInt(e.target.value))
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className={`text-sm border rounded p-1 w-max visible`}
                         />
                       ) : (
                         <span className="text-sm text-gray-500 dark:text-gray-300">
@@ -503,13 +583,14 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("level") ? (
                         <select
                           value={editedData.level || "NONE"}
                           onChange={(e) =>
                             handleChange("level", e.target.value)
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                         >
                           {statusOptions.level.map((option) => (
                             <option key={option} value={option}>
@@ -525,13 +606,14 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("profile") ? (
                         <select
                           value={editedData.profile || "NONE"}
                           onChange={(e) =>
                             handleChange("profile", e.target.value)
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                         >
                           {statusOptions.profile.map((option) => (
                             <option key={option} value={option}>
@@ -547,13 +629,14 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("hiringType") ? (
                         <select
                           value={editedData.hiringType || "NONE"}
                           onChange={(e) =>
                             handleChange("hiringType", e.target.value)
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                         >
                           {statusOptions.hiringType.map((option) => (
                             <option key={option} value={option}>
@@ -569,7 +652,8 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("internShipProbationSalary") ? (
                         <input
                           type="number"
                           value={
@@ -581,7 +665,7 @@ export default function ApplicationList({
                               parseInt(e.target.value)
                             )
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                         />
                       ) : (
                         <span className="text-sm text-gray-500 dark:text-gray-300">
@@ -591,7 +675,8 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("finalSalary") ? (
                         <input
                           type="number"
                           value={parseInt(editedData.finalSalary) || ""}
@@ -601,7 +686,7 @@ export default function ApplicationList({
                               parseInt(e.target.value)
                             )
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                         />
                       ) : (
                         <span className="text-sm text-gray-500 dark:text-gray-300">
@@ -611,13 +696,14 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("hiringStatus") ? (
                         <select
                           value={editedData.hiringStatus || "NONE"}
                           onChange={(e) =>
                             handleChange("hiringStatus", e.target.value)
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                         >
                           {statusOptions.hiringStatus.map((option) => (
                             <option key={option} value={option}>
@@ -633,7 +719,8 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("joining") ? (
                         <input
                           type="date"
                           value={
@@ -653,7 +740,7 @@ export default function ApplicationList({
                               date ? date.toISOString() : null
                             );
                           }}
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                         />
                       ) : (
                         <span className="text-sm text-gray-500 dark:text-gray-300">
@@ -663,13 +750,14 @@ export default function ApplicationList({
                     </td>
 
                     <td className="px-3 py-2 whitespace-nowrap">
-                      {editingId === application.id ? (
+                      {editingId === application.id &&
+                      isFieldEditable("comments") ? (
                         <textarea
                           value={comments[application.id] || ""}
                           onChange={(e) =>
                             handleCommentChange(application.id, e.target.value)
                           }
-                          className="text-sm border rounded p-1 w-full"
+                          className="text-sm border rounded p-1 w-max"
                           rows={2}
                         />
                       ) : (
@@ -701,15 +789,17 @@ export default function ApplicationList({
                           </button>
                         </div>
                       ) : (
-                        <button
-                          onClick={() => handleEdit(application)}
-                          className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
-                        >
-                          Edit
-                        </button>
+                        shouldShowEditButton() && (
+                          <button
+                            onClick={() => handleEdit(application)}
+                            className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
+                          >
+                            Edit
+                          </button>
+                        )
                       )}
                     </td>
-                 </tr>
+                  </tr>
                 );
               })}
             </tbody>

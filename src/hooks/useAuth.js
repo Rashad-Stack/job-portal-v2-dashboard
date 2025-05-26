@@ -33,4 +33,4 @@ export function useAuth() {
   }, []);
 
   return { isAuthenticated, user };
-}
+} 
