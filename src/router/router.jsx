@@ -3,7 +3,6 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router"; // use 'r
 import DashboardLayout from "../layout/DashboardLayout";
 import Applications from "../pages/Applications/Applications.jsx";
 import Login from "../pages/Auth/Login";
-import Moderators from "../pages/Auth/Moderators/Moderators";
 import Home from "../pages/Home/Home";
 import Category from "../pages/jobIndex/Category.jsx";
 import Manage from "../pages/jobIndex/ManageJobIndex.jsx";
@@ -16,14 +15,13 @@ import CreateForms from "../pages/JobsForms/CreateForms.jsx";
 import JobForms from "../pages/JobsForms/JobForms.jsx";
 import ChangePassword from "../pages/Password/ChangePassword";
 import Profile from "../pages/Profile/Profile";
-import Register from "../pages/Register/Register";
 import PrivateRoute from "./PrivateRoute.jsx";
 import EditForms from "../pages/JobsForms/EditForms.jsx";
 import TemplateForm from "../pages/JobsForms/TemplateForm.jsx";
-import { useAuth } from "../hooks/useAuth.js";
+import Users from "../pages/Auth/Users.jsx";
+import Register from "../pages/Auth/Register.jsx";
 
 export default function Router() {
-  const { user } = useAuth();
 
   return (
     <BrowserRouter>
@@ -53,13 +51,22 @@ export default function Router() {
           <Route path="/jobs/forms/create" element={<CreateForms />} />
           <Route path="/jobs/forms/edit/:id" element={<EditForms />} />
 
-          {/* Admin only Routes */}
-          {user?.role === "ADMIN" && (
-            <>
-              <Route path="setting/manage_moderator" element={<Moderators />} />
-              <Route path="moderator/register" element={<Register />} />
-            </>
-          )}
+          <Route
+            path="setting/manage_moderator"
+            element={
+              <PrivateRoute requireAdmin={true}>
+                <Users />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="moderator/register"
+            element={
+              <PrivateRoute requireAdmin={true}>
+                <Register />
+              </PrivateRoute>
+            }
+          />
 
           <Route path="/job-index/status" element={<Status />} />
           <Route path="/job-index/manage" element={<Manage />} />

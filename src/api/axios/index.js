@@ -18,7 +18,6 @@ axiosInstance.interceptors.request.use(
   (error) => {
     if (error.status === 401) {
       localStorage.removeItem("svaAuth");
-      // Redirect to login page
       window.location.replace("/login");
     }
 
@@ -31,9 +30,9 @@ axiosInstance.interceptors.response.use(
     return response;
   },
   (error) => {
+    console.log("error in axios interceptor", error);
     if (error.status === 401) {
       localStorage.removeItem("svaAuth");
-      // Redirect to login page
       window.location.replace("/login");
     }
 

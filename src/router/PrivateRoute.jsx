@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router';
 import { jwtDecode } from 'jwt-decode';
 
-const PrivateRoute = ({ children }) => {
+const PrivateRoute = ({ children, requireAdmin = false }) => {
   const token = localStorage.getItem('svaAuth');
 
   if (!token) {
@@ -16,6 +16,12 @@ const PrivateRoute = ({ children }) => {
     if (isExpired) {
       localStorage.removeItem('svaAuth');
       return <Navigate to="/login" replace />;
+    }
+
+    // Check if admin role is required and user is not an admin
+    if (requireAdmin && decoded.role !== 'ADMIN') {
+      // Redirect to a "forbidden" page or home page
+      return <Navigate to="/" replace />;
     }
 
     return children;
