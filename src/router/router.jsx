@@ -20,9 +20,9 @@ import EditForms from "../pages/JobsForms/EditForms.jsx";
 import TemplateForm from "../pages/JobsForms/TemplateForm.jsx";
 import Users from "../pages/Auth/Users.jsx";
 import Register from "../pages/Auth/Register.jsx";
+import EditUser from "../pages/Auth/EditUser.jsx";
 
 export default function Router() {
-
   return (
     <BrowserRouter>
       <Routes>
@@ -56,6 +56,14 @@ export default function Router() {
             element={
               <PrivateRoute requireAdmin={true}>
                 <Users />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="moderator/edit/:id"
+            element={
+              <PrivateRoute requireAdmin={true}>
+                <EditUser />
               </PrivateRoute>
             }
           />

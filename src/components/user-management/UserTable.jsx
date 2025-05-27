@@ -3,6 +3,10 @@ import clsx from "clsx";
 import { UserRowActions } from "./UserRowAction";
 import { ErrorInfoIcon } from "../icons/error-info";
 import { getUserStatusColor } from "./utils/utils";
+// import { Navigate, useNavigate } from "react-router";
+import { deleteUser } from "../../api/auth";
+import { useNavigate } from 'react-router';
+
 
 export const UserTable = ({ users, isLoading, error, setUsers }) => {
   const renderTable = () => {
@@ -21,6 +25,7 @@ export const UserTable = ({ users, isLoading, error, setUsers }) => {
             <Table.Cell>Name</Table.Cell>
             <Table.Cell>Email</Table.Cell>
             <Table.Cell>Role</Table.Cell>
+            <Table.Cell>Action</Table.Cell> {/* Added Action column */}
           </Table.Row>
         </Table.Header>
         {renderTable()}
@@ -32,24 +37,50 @@ export const UserTable = ({ users, isLoading, error, setUsers }) => {
 UserTable.displayName = "UserTable";
 
 const UserTableBody = ({ users, setUsers }) => {
+  const navigate = useNavigate(); // Move useNavigate to the top level
   const capitalizeFirstLetter = (name) => {
     if (!name) return "";
     return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
   };
-  
+
+  const handleDelete = async (userId) => {
+    try {
+      await deleteUser(userId);
+      setUsers(users.filter((user) => user.id !== userId));
+      Swal.fire("Success", "User deleted successfully", "success");
+    } catch (error) {
+      Swal.fire("Error", error.message, "error");
+    }
+  };
+
+  const handleEdit = (userId) => {
+    navigate(`/moderator/edit/${userId}`); // Use the navigate function here
+  };
+
   return (
     <Table.Body>
       {users.map((user, index) => (
-        <Table.Row key={user.id} className="group">
+        <Table.Row key={user.id}>
           <Table.Cell>{index + 1}</Table.Cell>
-          <Table.Cell className="font-medium">{capitalizeFirstLetter(user?.name)}</Table.Cell>
+          <Table.Cell className="font-medium">
+            {capitalizeFirstLetter(user?.name)}
+          </Table.Cell>
           <Table.Cell>{user.email}</Table.Cell>
-          <Table.Cell className="w-[150px]">
-            <span className={clsx("group-hover:hidden inline-block")}>
-              {user.role}
-            </span>
-            <div className="hidden group-hover:inline-flex items-center gap-2">
-              <UserRowActions user={user} setUsers={setUsers} />
+          <Table.Cell>{user.role}</Table.Cell>
+          <Table.Cell>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handleDelete(user.id)}
+                className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => handleEdit(user.id)} // Call handleEdit here
+                className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+              >
+                Edit
+              </button>
             </div>
           </Table.Cell>
         </Table.Row>
@@ -78,14 +109,14 @@ const UserTableSkeleton = () => {
             <div className="h-4 w-20 animate-pulse rounded bg-gray-200" />
           </Table.Cell>
           <Table.Cell>
-            <div className="h-4 w-16 animate-pulse rounded bg-gray-200" />
+            <div className="h-4 w-32 animate-pulse rounded bg-gray-200" />{" "}
+            {/* Added for Action column */}
           </Table.Cell>
         </Table.Row>
       ))}
     </Table.Body>
   );
 };
-
 const UserTableNoData = () => {
   return (
     <Table.Body>
