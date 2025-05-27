@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import { applicationUpdate } from "../../api/applications";
 import { format, parseISO } from "date-fns";
 import { useAuth } from "../../hooks/useAuth";
+import { IoIosArrowBack } from "react-icons/io";
+
 
 export default function ApplicationList({
   applications: initialApplications,
@@ -357,7 +359,7 @@ export default function ApplicationList({
           className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           disabled={isLoading}
         >
-          <MdClose size={24} />
+          <p className="inline-flex items-center gap-1 px-2 py-1 rounded-md font-medium transition duration-200 focus:outline-none bg-green-500 text-white hover:bg-green-700 cursor-pointer "><IoIosArrowBack size={24} /> Back </p>
         </button>
       </div>
 

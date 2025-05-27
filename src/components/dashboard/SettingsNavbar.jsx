@@ -19,22 +19,22 @@ export default function SettingsNavbar({ toggleSidebar }) {
         <li>
           <Link
             to="/moderator/register"
-            className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+            className="flex items-center gap-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             onClick={handleOnClick}
           >
             <AiOutlineForm />
-            <span className="text-sm">Create Moderator</span>
+            <span className="text-sm">Create User</span>
           </Link>
         </li>
 
         <li>
           <Link
             to="/setting/manage_moderator"
-            className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+            className="flex items-center gap-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             onClick={handleOnClick}
           >
             <FaUsersCog />
-            <span className="text-sm">Manage Moderators</span>
+            <span className="text-sm">Manage User</span>
           </Link>
         </li>
       </ul>

@@ -62,3 +62,33 @@ export const deleteUser = async (id) => {
 
   return res.data;
 };
+
+
+
+
+export const getUserById = async (id) => {
+  const res = await axiosInstance.get(`/user/${id}`);
+
+  if (!res.status === 200) {
+    const err = await res.json();
+    throw new Error(err.message || "Failed To Get User");
+  }
+
+  return res.data;
+};
+
+// update user
+export const updateUser = async (id, data) => {
+  const res = await axiosInstance.put(`/user/update/${id}`, {
+    name: data.name,
+    email: data.email,
+    role: data.role
+  });
+
+  if (!res.status === 200) {
+    const err = await res.json();
+    throw new Error(err.message || "Failed To Update User");
+  }
+
+  return res.data;
+};
